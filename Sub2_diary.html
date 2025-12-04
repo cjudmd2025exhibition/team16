@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>comma , page</title>
+  <style>
+
+    
+:root{
+  --bg:#212121;       
+  --ink:#f3f1ea;      
+  --muted:#8b8b8b; 
+  --line:#444444;     
+  --accent:#b4a78a; 
+  --accent-ink:#f3f1ea; 
+  --paper:#2b2b2b;    
+
+  --page-left:240px;
+  --brandbar-h:72px;
+}
+
+/* 전체 폰트 및 기본 */
+html,body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Pretendard",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  line-height:1.5;
+  overflow: hidden auto; /* 스크롤 허용 */
+}
+
+/* 페이드 효과 기본값 */
+body {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+  margin-bottom: 100px;
+}
+body.fade-out {
+  opacity: 0;
+}
+
+
+/* 좌측 기준선 */
+.page-gutter { 
+    margin-left: var(--page-left);
+    margin-right: var(--page-left); 
+}
+
+/* 작은 화면에서는 여백 줄이기 */
+@media (max-width: 1200px){
+  :root{ --page-left:24px; }
+}
+
+
+/* Overlay (생략) */
+
+/* 섹션 타이틀 */
+.sect-title{
+  margin: 28px 0 10px;
+  font-size: 16px; font-weight: 700;
+  color: var(--ink); 
+}
+
+/* 좌우 카드 래퍼 */
+.profile-row{
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* 카드 공통 (어두운 배경색으로 변경) */
+.card{
+  background: var(--paper); 
+  border: 1px solid var(--line); 
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.5); /* 🚨 그림자 강조 */
+  position: relative;
+}
+
+/* 왼쪽 카드 상단 '정보 수정하기' */
+.edit-link{
+  position: absolute; top: 10px; right: 14px;
+  font-size: 12px; color: var(--muted); text-decoration: none;
+}
+.edit-link:hover{ color: var(--ink); }
+
+/* 왼쪽 카드 내용 */
+.card-profile .card-body{
+  display: grid;
+  grid-template-columns: 100px 1fr 420px; 
+  column-gap: 22px;
+  align-items: center;
+  padding: 30px 20px 18px 22px;
+}
+
+.avatar{
+  width: 88px; height: 88px; border-radius: 50%; object-fit: cover;
+  display: block;
+}
+
+/* 이름/소개 */
+.profile-col .rel{
+  font-size: 12px; color: var(--muted); margin-bottom: 2px;
+}
+.profile-col .name{
+  font-size: 22px; margin: 0 0 8px; font-weight: 800;
+  padding-bottom: 8px; 
+  border-bottom: 1px solid var(--line); 
+  width: 220px;
+  color: var(--ink); 
+}
+.profile-col .from{
+  display: flex; gap: 6px; align-items: baseline;
+  font-size: 13px; color: var(--muted); /* 🚨 글자색 밝게 */
+}
+.profile-col .from b{
+  font-weight: 600; color: var(--ink); /* 🚨 글자색 밝게 */
+}
+
+/* 메타(전화/메일/주소) 테이블 느낌 */
+.meta{ margin: 0; }
+.meta > div{
+  display: grid; grid-template-columns: 68px 1fr;
+  gap: 10px; align-items: baseline;
+  font-size: 14px;
+}
+.meta dt{
+  margin: 0; color: var(--muted); font-weight: 600; /* 🚨 글자색 밝게 */
+}
+.meta dd{
+  margin: 0; color: var(--ink); /* 🚨 글자색 밝게 */
+}
+
+/* 오른쪽 카드: 함께한 인물 */
+.card-friends{ padding: 14px 16px 18px; }
+.card-friends .card-head{
+  margin: 2px 0 12px;
+  font-size: 16px; font-weight: 700; color: var(--ink); /* 🚨 글자색 밝게 */
+}
+.friend-list{
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.friend-list li{ text-align: center; }
+.friend-list img{
+  width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+  display: block; margin: 0 auto 6px;
+  /* 필터 제거 후 대비 유지 */
+  filter: saturate(1) brightness(1); 
+}
+.friend-list p{
+  margin: 0; font-size: 12px; color: var(--muted); /* 🚨 글자색 밝게 */
+}
+
+/* 반응형 (1200↓ 화면에서 좌우 여백 규칙 유지) */
+@media (max-width:1200px){
+  .profile-row{ grid-template-columns: 1fr; }
+  .card-profile .card-body{
+    grid-template-columns: 88px 1fr; row-gap: 14px;
+  }
+  .meta{ grid-column: 1 / -1; }
+}
+
+
+/* 탭 메뉴 */
+.tabs {
+  display: flex; 
+  gap: 50px;
+  margin-top: 24px; 
+  margin-bottom: 24px;
+  padding-bottom: 0px;
+}
+.tabs a {
+  text-decoration:none; color:var(--muted); font-weight:500;
+}
+.tabs .is-active { 
+  color: var(--ink); 
+  padding-bottom:4px; 
+}
+.tabs a:hover {
+  color: var(--ink); /* 🚨 호버 시 글자색 밝게 */
+}
+
+/* 리스트를 ‘블럭(그리드)’으로 */
+.visit-cards.blocks{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 12px;
+}
+
+/* 카드 박스 */
+.visit-card.block{
+  background:var(--paper); /* 🚨 어두운 카드 배경색 */
+  border:1px solid var(--line); 
+  border-radius:18px; 
+  box-shadow: 0 8px 18px rgba(0,0,0,.3); /* 🚨 그림자 강조 */
+  padding:14px 14px 18px;
+}
+
+/* 상단: 날짜/장소 */
+.vc-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:8px 4px 12px; border-radius:12px;
+}
+.vc-date{ font-size:18px; line-height:1.25; color:var(--ink); } /* 🚨 글자색 밝게 */
+.vc-date b{ font-size:20px; font-weight:800; }
+.vc-place{ text-align:right; font-size:13px; color:var(--muted); } /* 🚨 글자색 밝게 */
+.vc-place span{ opacity:.8; }
+
+/* 섹션 타이틀(회색 라인) */
+.vc-sec{
+  margin:12px 0 10px; padding:8px 0 6px;
+  font-size:14px; font-weight:700; color:var(--muted); /* 🚨 글자색 밝게 */
+  border-bottom:1px solid var(--line); /* 🚨 선 색상 어둡게 */
+}
+
+/* 아이템(썸네일 + 텍스트 2줄) */
+.vc-item{
+  display:grid; grid-template-columns: 80px 1fr; gap:12px;
+  padding:10px 6px; border-bottom:1px solid var(--line); /* 🚨 선 색상 어둡게 */
+}
+
+.thumb{
+  width:80px; height:80px; border-radius:6px; object-fit:cover;
+  display:block; background:var(--paper);
+}
+.thumb.muted{ filter:saturate(.4) brightness(.98); }
+
+.txt .kind{
+  font-size:12px; font-weight:700; margin:2px 0 4px;
+  color:var(--accent); /* 🚨 초록 포인트 대신 강조색 */
+}
+.txt .title{ font-size:15px; color:var(--ink); } /* 🚨 글자색 밝게 */
+.txt .sub{ font-size:14px; color:var(--muted); } /* 🚨 글자색 밝게 */
+
+/* 감정 태그 */
+.vc-tags{ display:flex; gap:18px; padding:8px 6px 4px; }
+.vc-tags span{ font-size:14px; color:var(--muted); } /* 🚨 글자색 밝게 */
+
+/* 좁은 화면 */
+@media (max-width:420px){
+  .vc-date b{ font-size:18px; }
+  .visit-cards.blocks{ grid-template-columns: 1fr; }
+}
+
+/* ... Pagination Styles remain the same ... */
+
+.visit-card.block { display:flex; flex-direction:column; }
+.is-hidden { display:none !important; }
+
+/* ... Responsive Styles remain the same ... */
+
+/* 전체 폰트 및 기본 */
+html,body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"SUIT",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  line-height:1.5;
+}
+
+/* 페이드 효과 기본값 */
+body {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+body.fade-out {
+  opacity: 0;
+}
+
+
+/* 좌측 기준선 */
+.page-gutter { margin-left: var(--page-left); }
+
+/* 작은 화면에서는 여백 줄이기 */
+@media (max-width: 1200px){
+  :root{ --page-left:24px; }
+}
+
+
+/* ===== Brandbar / Nav ===== */
+.brandbar{
+  position:sticky; top:0; left:0; right:0; height:var(--brandbar-h);
+  display:flex; align-items:center; gap:20px; z-index:10;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(to bottom, rgba(255,255,255,0.101), rgba(255,255,255,0.044));
+  backdrop-filter:blur(4px);
+}
+.logo{ margin-left: var(--page-left); display:flex; align-items:center; text-decoration:none; color: var(--ink); }
+.logo:hover{ color: var(--accent); }
+.logo-svg{ height: 28px; width:auto; display:block; }
+.nav-spacer{ flex:1 1 auto; }
+.nav-hamburger{ width:36px;height:36px;border:0;background:transparent; margin-right: calc(var(--page-left) + 15px); display:grid;place-items:center;cursor:pointer; }
+.nav-hamburger span,.nav-hamburger span::before,.nav-hamburger span::after{ display:block;width:18px;height:2px;background:var(--ink);content:"";position:relative; }
+.nav-hamburger span::before{ position:absolute; top:-6px; left:0; }
+.nav-hamburger span::after{ position:absolute; top:6px; left:0; }
+
+
+
+
+
+
+
+
+/* ----- Section title ----- */
+.section-title{
+  font-size:24px; font-weight:700; margin: 0 240px 12px;
+}
+
+/* ----- Month selector ----- */
+.month-button { 
+  position: relative; /* ⭐️ 드롭다운의 기준점 */
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  cursor: pointer; 
+  user-select: none; 
+}
+
+.month-row { 
+  color: #f3f1ea; /* 밝은 글씨 */
+  font-size: 24px; 
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 화살표 아이콘 */
+.chev { 
+  width: 10px; 
+  height: 10px; 
+  border-right: 2px solid #f3f1ea;   /* 밝은 색 */
+  border-bottom: 2px solid #f3f1ea;  /* 밝은 색 */
+  transform: rotate(45deg); 
+  margin-bottom: 4px; 
+  transition: transform 0.2s;
+}
+.month-button.open .chev { 
+  transform: rotate(-135deg); 
+  margin-bottom: -4px;
+}
+
+/* 드롭다운 메뉴 (레이아웃 필수 속성 포함) */
+.month-dropdown { 
+  position: absolute;     /* ⭐️ 붕 띄워서 배치 (필수!) */
+  top: 100%;              /* 버튼 바로 아래 */
+  left: 0; 
+  z-index: 100;           /* 다른 요소보다 위에 */
+  margin-top: 10px;       /* 간격 */
+  
+  display: none;          /* 평소엔 숨김 (필수!) */
+  min-width: 150px;
+  
+  /* 다크 모드 디자인 */
+  background: #2b2b2b;    /* 어두운 배경 */
+  border: 1px solid #444; /* 어두운 테두리 */
+  color: #f3f1ea;         /* 밝은 글씨 */
+  
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5); /* 그림자 */
+  overflow: hidden;
+}
+
+/* 버튼이 열렸을 때만 드롭다운 보이기 */
+.month-button.open + .month-dropdown { 
+  display: block; 
+}
+
+.month-item { 
+  padding: 12px 16px; 
+  cursor: pointer; 
+  transition: background 0.2s;
+}
+.month-item:hover { 
+  background: #3a3a3a; /* 호버 시 약간 밝게 */
+}
+
+/* ----- Calendar ----- */
+.calendar { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px; max-width:580px; }
+.dow { display:grid; grid-template-columns: repeat(7, 1fr); gap: 8px; color: var(--muted); font-size: 12px; }
+.grid{
+  --gap: 8px;
+  --cell-min: 72px;
+  --cell-max: 96px;
+  --cell: clamp(var(--cell-min), (580px - 6*var(--gap))/7, var(--cell-max));
+  display: grid;
+  grid-template-columns: repeat(7, var(--cell));
+  grid-auto-rows: calc(var(--cell) * 0.8); /* 세로 높이 */
+  gap: var(--gap);
+  justify-content: start;
+}
+/* ----- Calendar ----- (238번째 줄 근처) */
+/* ... 기존 .grid 스타일 유지 ... */
+
+/* 🚨 .day 스타일 수정 (260번째 줄 근처) */
+.day {
+  /* ... 기존 스타일 유지 ... */
+  border: 1px solid #444; 
+  border-radius: 12px;
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+  justify-content: flex-start;
+  padding: 10px; font-weight: 600; 
+  color: var(--ink); 
+  background-color: var(--paper);
+  position: relative; /* 🚨 아이콘 배치의 기준점 (필수) */
+  cursor: pointer;
+}
+/* 🚨 [추가] 날짜 번호 스타일 (숫자를 좌상단에 확실히 고정) */
+.day > span {
+    font-weight: 600;
+}
+/* 🚨 [수정] 이모지 스타일 (280번째 줄 근처) */
+.mood-icon {
+  /* 🚨 기존 margin-top 제거 및 절대 위치 설정 */
+  position: absolute;
+  right: 10px; /* 오른쪽에서 10px 여백 */
+  bottom: 10px; /* 아래쪽에서 10px 여백 */
+  line-height: 1;
+}
+.mood-icon img {
+    width: 24px; 
+    height: 24px;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+/* 🚨 [추가] 선택된 날짜 강조 스타일 (288번째 줄 근처) */
+.day.active {
+    background: #363636; /* 선택 시 배경색을 살짝 진하게 */
+    border: 2px solid var(--ink); /* 🚨 테두리 색상 강조 (기록 있는 날과 동일) */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6); /* 🚨 빛 효과를 더 강하게 */
+}
+
+
+/* 빈 날짜는 투명하게 유지 */
+.day.empty { background: transparent; border: 1px dashed transparent; cursor: default; }
+
+/* ... 기존 .day.active 스타일 유지 ... */
+
+/* ----- Related records ----- */
+.related { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 18px; max-width:580px; }
+.related h4 { margin: 0 0 10px; font-size: 16px; color: var(--muted); font-weight: 700; }
+.related-list { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+/* 기록 박스 배경 */
+.record { 
+  background: #2b2b2b; /* 어두운 배경 */
+  border: 1px solid #444; 
+  border-radius: 14px; 
+  padding: 12px 14px; 
+  cursor: pointer; 
+  transition: transform .08s ease, box-shadow .15s ease; 
+}
+.record:hover { 
+  background: #333; /* 호버 시 약간 밝아짐 */
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 18px rgba(0,0,0,.2); /* 그림자 진하게 */
+}
+
+/* 기록 제목 */
+.r-title { 
+  color: #f3f1ea; /* 밝은 제목 */
+  font-weight: 700; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+}
+
+/* 태그 스타일 */
+.tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { 
+  font-size: 12px; 
+  color: #b4a78a; /* 태그 글자색 (포인트 컬러) */
+  background: #3a3a3a; /* 태그 배경 (박스보다 약간 밝게) */
+  border: 1px solid #555; 
+  padding: 2px 8px; 
+  border-radius: 12px; 
+}
+/* Right Book - 라이프타임 스타일 통일 */
+  
+  /* 1. 패널 위치 및 배경 */
+  .book-panel { 
+    position: absolute; 
+    top: 0; right: 0; bottom: 0; 
+    /* 라이프타임과 동일한 왼쪽 위치 계산 */
+    left: calc(240px + 560px + 190px); 
+    margin-top: 72px; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-image: url('img/book.png'); 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
+  }
+  /* dim 효과 (필요 시) */
+  .book-panel.dim::before { 
+    content: ""; position: absolute; inset: 0; background: rgba(255,255,245,0.0); 
+  }
+
+  /* 2. 책 레이아웃 (제목 고정의 핵심) */
+  .book { 
+    position: absolute; 
+    top: 72px; right: 0; bottom: 0; left: 0; 
+    margin-right: 240px; 
+    padding: 22px 60px 40px 60px; 
+    box-sizing: border-box; 
+    background: transparent; 
+    
+    /* ⭐ 제목 고정을 위한 Grid 설정 */
+    display: grid; 
+    grid-template-rows: auto 1fr; /* 헤더(auto) + 내용(나머지) */
+    overflow: hidden; 
+    z-index: 1; 
+  }
+
+  /* 3. 고정된 헤더 스타일 */
+  .book-header { 
+  padding-bottom: 16px; 
+  /* 👇 아주 연한 검정(투명도 10%)이나 연한 회색(#dedbd2)으로 변경하세요 */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
+  margin-bottom: 0; 
+}
+
+  .book-title { 
+    font-size: 28px; 
+    font-weight: 800; 
+    margin: 0 0 4px; 
+    color: #2b2b2b; /* 종이 위니까 진한 색 */
+  }
+  .book-date { 
+    font-size: 13px; 
+    color: #555555; /* 진한 회색 */
+  }
+
+  /* 4. 스크롤되는 본문 영역 */
+  .book-pane { 
+    overflow-y: auto;      /* 세로 스크롤 허용 */
+    overflow-x: hidden;    /* 가로 스크롤 방지 */
+    padding-top: 16px;     /* 헤더와의 간격 */
+    padding-bottom: 40px;  /* 하단 여백 */
+  }
+
+  /* ⭐ 스크롤바 스타일 (라이프타임과 동일하게) */
+  .book-pane::-webkit-scrollbar { width: 10px; }
+  .book-pane::-webkit-scrollbar-track { 
+    background: #f3f1ea; 
+    border-radius: 10px; 
+  }
+  .book-pane::-webkit-scrollbar-thumb {
+    background: #dbd7ca; 
+    border-radius: 10px; 
+    border: 2px solid #f3f1ea; 
+  }
+  .book-pane::-webkit-scrollbar-thumb:hover { background: #c4bba4; }
+
+  /* 5. 내용 스타일 */
+  .qa { margin: 0 0 16px; }
+  
+  /* 질문 스타일 */
+  .q { 
+    color: #5a5241; /* 진한 갈색 포인트 */
+    font-weight: 700; 
+    margin-bottom: 6px; 
+  }
+  
+  /* 본문 텍스트 */
+  .prose { color: #2b2b2b; }
+  .prose p { margin: 0 0 12px; }
+
+  /* 추가 질문 스타일 */
+  .sub-q {
+    display: block;
+    color: #5a5241; /* 진한 갈색 포인트 */
+    font-weight: 700;
+    margin-top: 24px;
+    margin-bottom: 4px;
+  }
+
+  /* 이미지 그리드 (라이프타임과 통일) */
+  .figure-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .figure-grid img {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.1);
+    display: block;
+  }
+
+
+
+
+/* ----- Fullscreen overlay ----- */
+.nav-overlay{
+  position:fixed; inset:0; z-index:10000; background:#000;
+  color:#fff; display:none;
+}
+.nav-overlay[aria-hidden="false"]{ display:block; }
+
+.nav-close{
+  position:absolute; top:24px; right:240px; width:40px; height:40px;
+  background:transparent; border:0; color:#fff; font-size:32px; line-height:1; cursor:pointer;
+}
+
+.nav-overlay-inner{
+  position:absolute; inset:72px 0 0 0; /* 네비 바 높이만큼 내림 */
+  display:grid; grid-template-columns: 1fr 1fr; height:calc(100% - 72px);
+}
+
+/* Left column (menu) */
+.nav-left{
+  padding-left:240px; padding-top:24px;
+}
+.nav-sections{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:36px; }
+.nav-index{ display:block; font-size:12px; opacity:.6; margin-bottom:8px; }
+.nav-head{
+  display:inline-block; font-size:28px; font-weight:800; color:#fff; text-decoration:none;
+}
+.nav-sub{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+.nav-sub a{ color:#d6d6d6; text-decoration:none; font-size:14px; }
+.nav-sub a:hover{ color:#fff; }
+
+/* Right column (branding/info) */
+.nav-right{
+  display:flex; align-items:center; justify-content:flex-start;
+}
+.nav-brand-block{ max-width:520px; color:#d6d6d6; }
+.nav-brand{ font-size:32px; font-weight:800; color:#fff; margin-bottom:6px; }
+.nav-brand-sub{ margin-bottom:16px; }
+.nav-hr{ height:1px; background:#444; margin:14px 0 18px; }
+.nav-meta b{ color:#fff; font-weight:700; margin-right:10px; }
+.nav-copy{ margin-top:24px; font-size:12px; opacity:.7; }
+
+/* 작은 화면에서도 패딩 유지 */
+@media (max-width:1200px){
+  .nav-close{ right:24px; }
+  .nav-left{ padding-left:24px; }
+}
+
+
+
+
+  </style>
+</head>
+<body>     
+ <!-- SVG Sprite -->
+ <!-- SVG Sprite: 재사용 가능한 로고 심볼 -->
+<!-- ⬇️ head 바로 아래 쪽 스프라이트 영역에 추가 -->
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="comma-logo-full" viewBox="0 0 1460 213">
+    <!-- ↓ /mnt/data/Logo.svg의 내용 그대로 -->
+    <path d="M879.318 186H859L867.983 130H896L879.318 186Z" fill="currentColor"/>
+    <path d="M1012.7 146.991C1022.32 146.991 1030.81 144.64 1038.16 139.939C1045.71 135.049 1051.56 128.279 1055.71 119.628C1059.86 110.978 1061.93 101.199 1061.93 90.291C1061.93 79.3836 1059.86 69.6985 1055.71 61.2358C1051.56 52.7731 1045.71 46.191 1038.16 41.4896C1030.81 36.6 1022.32 34.1552 1012.7 34.1552C1004.21 34.1552 996.195 36.694 988.65 41.7716C981.105 46.8493 975.069 53.7134 970.542 62.3642C966.015 71.0149 963.752 80.3239 963.752 90.291C963.752 100.446 966.015 109.943 970.542 118.782C975.069 127.433 981.105 134.297 988.65 139.375C996.195 144.452 1004.21 146.991 1012.7 146.991ZM953 24.2821H963.469V57.8507C967.996 48.6358 974.786 40.9254 983.84 34.7194C992.895 28.3254 1002.61 25.1284 1012.98 25.1284C1024.49 25.1284 1034.68 27.9492 1043.54 33.591C1052.59 39.0448 1059.67 46.7552 1064.76 56.7224C1069.85 66.5015 1072.4 77.691 1072.4 90.291C1072.4 103.079 1069.85 114.457 1064.76 124.424C1059.67 134.391 1052.59 142.196 1043.54 147.837C1034.68 153.291 1024.49 156.018 1012.98 156.018C1001.48 156.018 991.291 152.727 982.426 146.145C973.749 139.375 967.43 131.664 963.469 123.013V213H953V24.2821Z" fill="currentColor"/>
+    <path d="M1139.6 155.454C1128.09 155.454 1117.81 152.727 1108.76 147.273C1099.89 141.631 1092.91 133.827 1087.82 123.86C1082.73 113.893 1080.18 102.609 1080.18 90.009C1080.18 77.409 1082.73 66.1254 1087.82 56.1582C1092.91 46.191 1099.89 38.4806 1108.76 33.0269C1117.81 27.3851 1128.09 24.5642 1139.6 24.5642C1150.73 24.5642 1160.63 27.5731 1169.31 33.591C1177.98 39.4209 1184.49 47.1313 1188.83 56.7224V24.2821H1199.02V154.325H1188.83V123.296C1185.06 131.57 1178.74 138.999 1169.87 145.581C1161.01 152.163 1150.92 155.454 1139.6 155.454ZM1090.65 90.009C1090.65 100.916 1092.73 110.696 1096.88 119.346C1101.02 127.809 1106.78 134.391 1114.13 139.093C1121.68 143.794 1130.17 146.145 1139.6 146.145C1148.28 146.145 1156.39 143.794 1163.93 139.093C1171.48 134.203 1177.51 127.433 1182.04 118.782C1186.57 110.131 1188.83 100.54 1188.83 90.009C1188.83 79.4776 1186.57 69.8866 1182.04 61.2358C1177.51 52.5851 1171.48 45.909 1163.93 41.2075C1156.39 36.3179 1148.28 33.8731 1139.6 33.8731C1130.17 33.8731 1121.68 36.3179 1114.13 41.2075C1106.78 45.909 1101.02 52.491 1096.88 60.9537C1092.73 69.4164 1090.65 79.1015 1090.65 90.009Z" fill="currentColor"/>
+    <path d="M1273.27 146.427C1282.52 146.427 1291.01 143.888 1298.74 138.81C1306.47 133.733 1312.6 126.869 1317.13 118.218C1321.66 109.567 1323.92 100.164 1323.92 90.009C1323.92 80.0418 1321.66 70.8269 1317.13 62.3642C1312.6 53.7134 1306.47 46.8493 1298.74 41.7716C1291.01 36.694 1282.52 34.1552 1273.27 34.1552C1264.03 34.1552 1255.73 36.506 1248.38 41.2075C1241.21 45.909 1235.55 52.5851 1231.4 61.2358C1227.44 69.6985 1225.46 79.2895 1225.46 90.009C1225.46 100.916 1227.44 110.696 1231.4 119.346C1235.55 127.809 1241.21 134.485 1248.38 139.375C1255.73 144.076 1264.03 146.427 1273.27 146.427ZM1214.99 90.009C1214.99 77.409 1217.44 66.2194 1222.35 56.4403C1227.25 46.6612 1234.14 39.0448 1243 33.591C1251.87 27.9492 1261.96 25.1284 1273.27 25.1284C1283.27 25.1284 1293.08 28.3254 1302.7 34.7194C1312.51 41.1134 1319.49 48.8239 1323.64 57.8507V24.2821H1333.82V146.145C1333.82 159.121 1331.47 170.687 1326.75 180.842C1322.03 190.997 1315.24 198.896 1306.38 204.537C1297.7 210.179 1287.52 213 1275.82 213C1265.07 213 1255.83 211.213 1248.09 207.64C1240.36 204.255 1233.19 198.049 1226.59 189.022L1234.51 182.534C1240.17 190.245 1246.21 195.699 1252.62 198.896C1259.03 202.093 1266.77 203.691 1275.82 203.691C1290.35 203.691 1301.95 198.237 1310.62 187.33C1319.3 176.422 1323.64 162.224 1323.64 144.734V121.603C1320.43 131.57 1314.11 139.751 1304.68 146.145C1295.44 152.539 1284.97 155.736 1273.27 155.736C1261.96 155.736 1251.87 152.915 1243 147.273C1234.14 141.631 1227.25 133.827 1222.35 123.86C1217.44 113.893 1214.99 102.609 1214.99 90.009Z" fill="currentColor"/>
+    <path d="M1403.69 154.607C1392.19 154.607 1381.91 151.881 1372.85 146.427C1363.8 140.785 1356.73 133.075 1351.63 123.296C1346.54 113.328 1343.99 102.045 1343.99 89.4448C1343.99 76.8448 1346.54 65.5612 1351.63 55.594C1356.73 45.6269 1363.8 37.9164 1372.85 32.4627C1381.91 26.8209 1392.19 24 1403.69 24C1415.39 24 1424.92 26.5388 1432.27 31.6164C1439.82 36.506 1444.34 40.2672 1445.85 42.9C1447.55 45.5328 1450.38 50.8925 1454.34 58.9791C1458.11 67.8179 1460 79.1015 1460 92.8299H1354.18C1354.18 102.985 1356.26 112.106 1360.41 120.193C1364.74 128.091 1370.59 134.297 1377.95 138.81C1385.49 143.324 1394.08 145.581 1403.69 145.581C1413.69 145.581 1421.61 143.888 1427.46 140.503C1433.5 136.93 1437.18 134.109 1438.5 132.04C1439.82 129.972 1441.8 126.304 1444.44 121.039L1453.21 125.27C1449.63 133.545 1443.78 140.503 1435.67 146.145C1427.56 151.787 1416.9 154.607 1403.69 154.607ZM1449.81 83.5209C1449.63 75.2463 1447.64 67.1597 1443.87 59.2612C1440.29 51.1746 1435.01 44.6866 1428.03 39.797C1421.24 34.9075 1413.13 32.6507 1403.69 33.0269C1389.17 33.0269 1377.29 37.7284 1368.04 47.1313C1358.99 56.3463 1354.37 68.4761 1354.18 83.5209H1449.81Z" fill="currentColor"/>
+    <path d="M722.11 0.01C696.96 0.01 674.54 11.79 659.97 30.09C645.4 11.8 622.98 0.01 597.83 0.01C572.68 0.01 550.28 11.78 535.7 30.06C521.13 11.79 498.72 0.01 473.57 0.01C448.42 0.01 426 11.79 411.43 30.09C396.86 11.8 374.44 0.01 349.29 0.01C316.82 0.01 288.88 19.6 276.56 47.57C264.23 19.61 236.29 0.01 203.82 0.01C201.25 0.01 198.74 0.15 196.04 0.4C195.42 0.46 194.81 0.55 193.69 0.7C192 0.92 190.33 1.16 188.71 1.47C187.98 1.61 187.21 1.78 186.12 2.04C185.82 2.11 185.53 2.19 185.24 2.26C183.99 2.56 182.73 2.87 181.49 3.23C180.94 3.39 180.3 3.6 179.7 3.79C177.87 4.38 176.05 5.01 174.28 5.73C173.93 5.87 173.61 6.01 173.27 6.15C163.92 10.1 155.31 15.84 147.92 23.24C132.85 38.31 124.55 58.34 124.55 79.65C124.55 90.3 126.62 100.63 130.58 110.17C130.6 110.2 130.6 110.21 130.6 110.21C131.51 112.4 132.54 114.54 133.65 116.65C133.81 116.97 133.98 117.28 134.15 117.6C135.1 119.36 136.15 121.06 137.24 122.75C137.56 123.28 137.89 123.81 138.2 124.25C139.56 126.25 141 128.18 142.53 130.04C157.7 148.41 180.04 158.95 203.84 158.95C231.33 158.95 255.59 144.92 269.86 123.65V159.03H304.52V79.48H304.49C304.49 54.77 324.59 34.66 349.31 34.66C374.03 34.66 394.13 54.76 394.13 79.48H394.16V159.03H428.82V79.48H428.79C428.79 54.77 448.89 34.66 473.61 34.66C498.33 34.66 518.23 54.58 518.41 79.14C518.41 79.25 518.39 79.36 518.39 79.47H518.42V159.02H553.08V79.47C553.08 79.36 553.06 79.25 553.06 79.14C553.24 54.58 573.26 34.66 597.86 34.66C622.46 34.66 642.68 54.76 642.68 79.48C642.68 123.3 678.33 158.95 722.15 158.95V124.29C697.44 124.29 677.33 104.19 677.33 79.47C677.33 54.75 697.43 34.65 722.15 34.65C746.87 34.65 766.97 54.75 766.97 79.47V159.02H801.63V79.47C801.63 35.65 765.98 0 722.16 0H722.11V0.01ZM203.82 124.31C190.4 124.31 177.79 118.36 169.22 107.98C168.36 106.95 167.57 105.87 166.61 104.43L166.1 103.62C165.6 102.84 165.1 102.06 164.64 101.24L163.96 99.91C163.57 99.13 163.17 98.36 162.86 97.65L162.2 96.05C161.9 95.3 161.62 94.53 161.31 93.59L160.85 92.17C160.61 91.33 160.4 90.48 160.05 88.99L159.83 88.02C159.65 87.09 159.53 86.15 159.42 85.27L159.22 83.84C159.08 82.41 159 80.96 159 79.5C159 66.08 164.95 53.47 175.29 44.92C176.34 44.06 177.43 43.25 178.94 42.25L179.73 41.76C180.47 41.28 181.23 40.8 182.11 40.31L183.38 39.66C184.14 39.27 184.91 38.88 185.78 38.5L187.21 37.91C188.01 37.59 188.81 37.29 189.68 37.01L191.14 36.54C191.99 36.29 192.85 36.08 194.17 35.78L195.29 35.53C196.22 35.35 197.16 35.23 198.07 35.11L199.42 34.91C200.87 34.77 202.33 34.69 203.81 34.69C228.52 34.69 248.63 54.79 248.63 79.51C248.63 104.23 228.53 124.33 203.81 124.33V124.31H203.82ZM34.65 79.49C34.65 104.21 54.75 124.3 79.46 124.31C89.77 124.31 99.44 120.92 107.43 114.49C108.72 117.8 110.16 121 111.63 124.1C115.15 131.5 119.79 138.35 125.35 144.37C112 153.81 95.91 158.96 79.46 158.96C35.65 158.96 0 123.31 0 79.49C0 35.67 35.65 0.01 79.47 0.01C102.07 0.01 122.41 9.57 136.88 24.77C133.79 28.59 131.09 32.6 128.59 36.58C124.34 43.34 121.11 50.72 119.02 58.42C111.47 44.3 96.57 34.67 79.47 34.67C54.75 34.67 34.65 54.77 34.65 79.49Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+
+  <!-- Brandbar -->
+  <div class="brandbar">
+    <a href="index.html" class="logo" aria-label="comma , page">
+      <svg class="logo-svg" role="img" aria-hidden="true" preserveAspectRatio="xMinYMid meet">
+        <use href="#comma-logo-full" transform="translate(-42,0)" ></use>
+      </svg>
+    </a>
+    
+    <div class="nav-spacer"></div>
+    <button id="navHamburger" class="nav-hamburger" aria-label="메뉴 열기" aria-controls="navOverlay" aria-expanded="false">
+      <span></span>
+    </button>
+  </div>
+
+
+<!-- 풀스크린 네비 오버레이 -->
+<div id="navOverlay" class="nav-overlay" aria-hidden="true">
+  <button id="navClose" class="nav-close" aria-label="메뉴 닫기">×</button>
+
+  <div class="nav-overlay-inner">
+    <div class="nav-left">
+      <ul class="nav-sections">
+        <li>
+          <span class="nav-index">01</span>
+          <a href="index.html" class="nav-head">HOME</a>
+        </li>
+        <li>
+          <span class="nav-index">02</span>
+          <a href="about_us.html" class="nav-head">ABOUT –</a>
+          <div class="nav-sub">
+            <a href="about_us.html">우리는</a>
+            <a href="about_d.html">디지털 유산이란</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">03</span>
+          <a href="Sub1_lifetime.html" class="nav-head">일생기록</a>
+          <div class="nav-sub">
+        
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">04</span>
+          <a href="Sub2_diary.html" class="nav-head">하루기록 –</a>
+          <div class="nav-sub">
+            <a href="Sub2_diary.html">일기</a>
+            <a href="Sub2_qna.html">질문질답</a>
+            <a href="Sub2_buket.html">버킷리스트</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">05</span>
+          <a href="Sub3_ heritage.html" class="nav-head">접근목록 <small>[에필로그]</small></a>
+        </li>
+        <li>
+          <span class="nav-index">06</span>
+          <a href="Sub4_visiting_list.html" class="nav-head">마이페이지</a>
+        </li>
+      </ul>
+    </div>
+      <div class="nav-right">
+        <div class="nav-brand-block">
+          <div class="nav-brand">comma ,</div>
+          <div class="nav-brand-sub">고인이 준비한 당신을 위한 기억의 공간</div>
+          <div class="nav-hr"></div>
+          <div class="nav-meta">
+            <div><b>디자이너</b> 김민정 김선정 노채린</div>
+            <div><b>문의전화</b> 043 - 229 - 8660(학과사무실)</div>
+          </div>
+          <div class="nav-copy">© 2025, Department of Digital Media Design, Cheongju University. All rights reserved.</div>
+        </div>
+      </div>           
+   </div>
+
+</div>
+<aside class="left">
+  <nav class="tabs page-gutter" role="tablist" aria-label="하루기록 탭">
+    <a href="Sub2_diary.html" class="tab is-active" role="tab" aria-selected="true">일기</a>
+    <a href="Sub2_qna.html" class="tab" role="tab">질문질답</a>
+    <a href="Sub2_buket.html" class="tab" role="tab">버킷리스트</a>
+  </nav>
+</aside>
+
+
+  
+  <h2 class="section-title page-gutter">정민, 3개월 간의 하루기록들</h2>
+  
+  <!-- 월 선택 드롭다운 -->
+  <div class="page-gutter" style="position:relative; width:max-content; margin-bottom:16px;">
+    <div id="monthBtn" class="month-button">
+      <div id="monthText" class="month-row">
+        <span id="displayMonth">2025년 6월</span>
+        <span class="chev"></span>
+      </div>
+    </div>
+    <div id="monthDropdown" class="month-dropdown" aria-hidden="true"></div>
+  </div>
+  
+  <!-- 캘린더 -->
+  <section class="calendar page-gutter">
+    <div class="dow">
+      <div>Mon</div><div>Tue</div><div>Wed</div>
+      <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+    </div>
+    <div id="calGrid" class="grid" aria-live="polite"></div>
+  </section>
+  
+  <!-- 연관 기록 -->
+  <section class="related page-gutter">
+    <h4>연관된 기록들</h4>
+    <div class="related-list" id="relatedList"></div>
+  </section>
+  
+
+
+  <!-- RIGHT (independent, fills to window edge, ignores .fit) -->
+  <div id="bookPanel" class="book-panel dim">
+    <article class="book" aria-labelledby="entryTitle">
+      <header class="book-header">
+        <h1 id="entryTitle" class="book-title">정민, 할아버지와 나</h1>
+        <div id="entryDate" class="book-date">2002년 6월</div>
+      </header>
+      <div class="book-pane" id="bookPane">
+        <div class="qa"><div class="q">Q. 어떤 추억과 감정을 담고있나요?</div><div class="prose" id="entryBody"></div></div>
+        <div class="figure-grid" id="entryImages"></div>
+      </div>
+    </article>
+  </div>
+<script>
+  // -------------------------------------------------------------
+  // ✅ JS 로직 통합 (최종 수정본 - 이미지 아이콘 링크 적용)
+  // -------------------------------------------------------------
+  (function(){
+    
+    // ------------------ 🚨 1. 아이콘 URL 관리 맵 (여기서 링크를 수정하세요!) ------------------
+    const moodIconMap = {
+        'happy': 'img/happy.svg',   // 👈 행복한 기분 아이콘 URL
+        'nomal': 'img/nomal.svg',   // 👈 행복한 기분 아이콘 URL
+        'sad': 'img/sad.svg',   // 👈 행복한 기분 아이콘 URL
+        'love': 'img/love.svg',   // 👈 행복한 기분 아이콘 URL
+        'unhappy': 'img/unhappy.svg',   // 👈 행복한 기분 아이콘 URL
+        'surprise': 'img/surprise.svg',   // 👈 행복한 기분 아이콘 URL
+        'tired': 'img/tired.svg',   // 👈 행복한 기분 아이콘 URL
+    };
+    
+    // ------------------ Data (예시) ------------------
+   // ------------------ Data (최정민, 94년생, 디자이너) ------------------
+  const sampleEntries = {
+    // Week 1 (6/1 ~ 6/7)
+    // 6/2(월), 6/3(화), 6/4(수), 6/5(목), 6/6(금)
+    "2025-06-02": { // 월요일 (시안 수정 무한 루프)
+      title: "시안 수정 무한 루프, 이직 준비 시작",
+      date: "2025년 6월 2일",
+      mood: 'unhappy',
+      q: "Q. 오늘 나를 가장 잘 나타낸 게시글/콘텐츠는 어떤 것이 있었나요?",
+       body:[
+        "하루 종일 시안 N차 수정으로 시간을 다 보냈다. 팀장님은 '트렌디함'을 외치지만 정작 피드백은 20년 전 스타일이다. 익명의 디자이너들이 올린 '시안 갈아엎는 짤'을 보며 헛웃음이 나왔다. 내가 이직을 결심한 이유다.",
+        "<span class='sub-q'>Q. 오늘 들은 음악 중 인상 깊었던 것은?</span>",
+        "퇴근 지하철에서 들은 '검정치마 - Antifreeze'. '나는 너에게 아주 큰 숙제를 맡길 거야'라는 가사가 현재 내 상황을 대변하는 것 같았다.",
+        "<span class='sub-q'>Q. 오늘 산책 코스에 대한 감상은?</span>",
+        "집 근처 편의점 앞 3분 코스. 맥주 캔 하나 들고 벤치에 앉아 빌딩 숲을 올려다봤다. 낭만은 없고 야근하는 불빛만 가득했다. 이 코스를 빨리 탈출해야지.",
+        "<span class='sub-q'>Q. 오늘 가장 크게 느낀 감정은?</span>",
+        "지침과 답답함 사이. 작업 파일을 열어놓고도 한참을 멍하니 바라만 봤다. 머릿속은 분명 꽉 찼는데 손은 한 글자도, 한 픽셀도 움직이지 않았다.",
+        "<span class='sub-q'>Q. 오늘 스스로에게 해주고 싶은 말은?</span>",
+        "‘너 잘하고 있어’라는 말이 이렇게 낯설 줄이야. 하지만 그래도 괜찮다. 방향 잃었다고 끝이 아니고, 오히려 지금이 바꿀 수 있는 순간일지도 모른다.",
+      ],
+      images:["img/diary_1.jpg","img/diary_2.jpg"],
+      related:[{id:"r1",title:"트렌디함이란 무엇인가",tags:["#야근","#이직","#트렌드"],linkDate:"2025-06-04"}] 
+    },
+
+    "2025-06-03": { // 화요일 (오래된 디자인 영감 발견)
+      title: "오래된 잡지 속에서 찾은 진짜 영감",
+      date: "2025년 6월 3일",
+      mood: 'nomal', // 🚨 calm -> nomal
+      q: "Q. 오늘 작업 중 가장 큰 영감을 준 '미적 요소'가 있다면?",
+    body:[
+  "창고에서 오래된 1990년대 디자인 잡지를 발견했다. 현재 유행하는 '레트로'와는 또 다른, 정직하고 단순한 레이아웃이 신선했다. 그 속에 진짜 영감이 있었다.",
+  "<span class='sub-q'>Q. 오늘 당신의 점심 메뉴 '컬러 팔레트'를 평가한다면?</span>",
+  "점심으로 먹은 김치찌개(빨강, 흰색, 검은색). 매우 강렬하고 대비가 확실한 한국적인 팔레트였다. '자연의 색이 가장 완벽한 팔레트'라는 생각을 했다.",
+  "<span class='sub-q'>Q. 오늘 가장 마음에 남은 사소한 순간은?</span>",
+  "작업실 창문을 열었을 때 들어온 바람. 종이 냄새랑 함께 스쳐 지나가는데, 그 순간만큼은 잡다한 생각이 멈췄다.",
+  "<span class='sub-q'>Q. 오늘의 작업 공간 분위기는 어땠나요?</span>",
+  "모니터 불빛은 차갑고 책상은 어수선했지만, 책장 위에 쌓여 있던 잡지들이 오늘만큼은 작은 전시처럼 보였다.",
+  "<span class='sub-q'>Q. 오늘 스스로에게 준 점수는?</span>",
+  "70점. 크게 잘한 건 없지만, 그래도 멈추지 않고 무언가를 보고 느끼려 했다는 점에서 그 정도는 주고 싶었다."
+],
+      images:["img/diary_3.jpg"],
+      related:[{id:"r2",title:"옛날 잡지의 미학",tags:["#레트로","#타이포그래피"],linkDate:"2025-06-06"}] 
+    },
+
+    "2025-06-04": { // 수요일 (포트폴리오 스케치)
+      title: "혼자만의 작업: 개인 포폴 아이디어 스케치",
+      date: "2025년 6월 4일",
+      mood: 'nomal', // 🚨 calm -> nomal
+      q: "Q. 오늘 기억하고 싶은 콘텐츠는 어떤 것이 있었나요?",
+    body:[
+  "인스타그램에서 찾은 '덴마크 디자인 박물관'의 타이포그래피 전시회 이미지. 깔끔하고 여백의 미가 살아있는 디자인을 보니 잠시 회사 일을 잊었다. 이직 포폴 콘셉트에 한옥의 처마 곡선을 적용해 봐야겠다.",
+  "<span class='sub-q'>Q. 오늘 산책 코스에 대한 감상은?</span>",
+  "오후 반차를 쓰고 북촌 한옥마을의 좁은 골목길을 걸었다. 흙과 돌담, 그리고 나무의 색감에서 영감을 받았다. 산책이라기보다는 '영감 탐사 코스'였다. 이직 포폴 콘셉트에 한옥의 처마 곡선을 적용해 봐야겠다.",
+  "<span class='sub-q'>Q. 오늘 가장 인상 깊었던 디테일은?</span>",
+  "어느 한옥의 처마 끝에 달린 작은 풍경(風磬). 바람에 흔들리며 내는 미세한 소리가 시각적 영감보다 더 오래 남았다. 포폴에 ‘소리의 여백’이라는 개념을 넣어볼까 하는 생각까지 했다.",
+  "<span class='sub-q'>Q. 오늘 느낀 감정의 색은?</span>",
+  "약간 바랜 회갈색. 차분하지만, 땅에 단단히 닿아 있는 색. 답답함보다는 어떤 준비가 시작될 것 같은 느낌에 가까웠다.",
+  "<span class='sub-q'>Q. 오늘 스스로에게 해준 작은 칭찬은?</span>",
+  "반차를 쓰고라도 나를 위한 시간을 만든 것. 영감은 책상 앞이 아니라 길 위에서 더 쉽게 만날 수 있다는 걸 다시 확인했다."
+],
+      images:["img/diary_4.jpg","img/diary_5.jpg"],
+      related:[{id:"r3",title:"북촌의 미니멀리즘",tags:["#영감","#포트폴리오"],linkDate:"2025-06-06"}] 
+
+    },
+    "2025-06-05": { // 목요일 (개발팀과의 논쟁)
+      title: "개발팀과의 치열한 논쟁, 1px의 가치",
+      date: "2025년 6월 5일",
+      mood: 'tired',
+      q: "Q. 오늘 업무 중 가장 '나의 고집'을 지킨 순간이 있다면?",
+      body:[
+  "개발팀과 버튼의 '1px 여백' 문제로 30분간 싸웠다. 개발자는 '티도 안 난다' 했지만, 나는 '완성도' 문제라고 항변했다. 결국 이겼지만 에너지를 다 소진했다.",
+  "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+  "회의실을 박차고 나와 들은 'Radiohead - Fitter Happier'. 현대인의 강박을 노래하는 곡. 나도 1px에 목숨 거는 강박적인 디자이너구나 싶었다.",
+  "<span class='sub-q'>Q. 오늘 나를 잘 나타낸 게시글은?</span>",
+  "핀터레스트에 'Perfect Grid System' 이미지를 공유했다. 내 마음의 안정을 찾기 위한 무의식적인 행동이었다.",
+  "<span class='sub-q'>Q. 오늘 가장 웃겼던 순간은?</span>",
+  "정작 유저는 그 1px 차이를 절대 모른다는 사실을 생각하며 혼자 피식 웃었다. 그런데도 고집을 꺾지 못하는 내 자신이 더 웃겼다.",
+  "<span class='sub-q'>Q. 오늘 스스로에게 하고 싶은 말은?</span>",
+  "완벽한 디자인은 없지만, 너의 기준은 분명 존재한다고. 그 기준 때문에 힘들어도 결국 너를 살리는 건 그 집요함일지도 모른다."
+],
+       images:["img/diary_6.jpg","img/diary_7.jpg"],
+      related:[{id:"r4",title:"그리드 시스템의 중요성",tags:["#개발팀","#완성도","#강박"],linkDate:"2025-06-02"}] 
+    },
+
+    "2025-06-06": { // 금요일 (현충일 - 휴식)
+      title: "오랜만에 혼자, 한강에서 멍 때리기",
+      date: "2025년 6월 6일",
+      mood: 'nomal', // 🚨 calm -> nomal
+      q: "Q. 오늘 당신을 가장 위로해 준 시각적 경험은 무엇인가요?",
+     body:[
+  "현충일 덕분에 푹 쉴 수 있었다. 잔디밭에 누워 하늘을 봤는데, 구름의 윤곽이 내가 만든 로고의 곡선과 닮아 보였다. 억지로 일하지 않아도 영감은 오는구나 싶었다.",
+  "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+  "잔디밭에 누워 'Lauv - I Like Me Better'를 들었다. 시끄러운 도시 속에서 잠시 나를 잊고 나 자신을 좋아하는 시간을 가졌다. 산책이라기보다는 '정화 코스'였다.",
+  "<span class='sub-q'>Q. 오늘 마음을 가장 편안하게 만든 순간은?</span>",
+  "햇빛이 나뭇잎을 통과해 잔디에 만들어낸 얼룩 같은 패턴을 바라볼 때였다. 그 단순한 리듬이 오히려 복잡한 생각을 하나씩 정리해주는 느낌이었다.",
+  "<span class='sub-q'>Q. 오늘의 기분을 향으로 표현한다면?</span>",
+  "햇볕에 데워진 풀냄새. 차갑지도 따뜻하지도 않은, 그냥 그대로의 냄새가 마음을 조금씩 비워줬다.",
+  "<span class='sub-q'>Q. 오늘 스스로에게 하고 싶은 말은?</span>",
+  "가끔은 이렇게 아무것도 하지 않는 시간이 필요하다고. 멈춘다고 해서 뒤처지는 건 아니라는 걸 잊지 말자."
+],
+      images:["img/diary_8.jpg","img/diary_9.jpg"],
+      related:[{id:"r5",title:"맥북 정리의 미학",tags:["#휴식","#한강","#미니멀"],linkDate:"2025-06-03"}] 
+    },
+    
+    // Week 2 (6/8 ~ 6/14)
+    // 6/9(월), 6/10(화), 6/11(수), 6/12(목), 6/13(금), 6/14(토)
+    "2025-06-09": { // 월요일 (재택 중 늦잠)
+      title: "재택근무의 폐해: 알람을 무시한 죄",
+      date: "2025년 6월 9일",
+      mood: 'unhappy',
+      q: "Q. 오늘 아침, 가장 후회되는 선택은 무엇인가요?",
+   body:[
+  "알람을 5번이나 껐다. 결국 아슬아슬하게 출근 도장을 찍었다. 아침 미팅 내내 내 영혼은 침대에 남아있었다. 이직이 시급하다는 사실을 온몸으로 체감한 날이었다.",
+  "<span class='sub-q'>Q. 오늘 가장 인상적인 시각적 경험은?</span>",
+  "회사 화장실 거울 속, 부스스한 머리를 한 내 얼굴. '이것이 바로 워라밸 붕괴의 현장'이었다. 이직해야지.",
+  "<span class='sub-q'>Q. 오늘 가장 나를 벼랑 끝으로 몰아넣은 순간은?</span>",
+  "팀장님이 ‘오늘만 좀 버티자’고 말했을 때. 그 말을 올해만 벌써 14번째 들었다는 사실이 더 충격이었다.",
+  "<span class='sub-q'>Q. 오늘 스스로를 위한 작은 행동은?</span>",
+  "점심시간에 회사 근처 작은 카페에 숨어 10분간 멍을 때렸다. 아무것도 안 하고 숨만 쉬었는데도 조금 살 것 같았다.",
+  "<span class='sub-q'>Q. 오늘 나에게 남긴 한마디는?</span>",
+  "지금의 피곤함이 신호라는 걸 인정하자. 이직을 꿈꾸는 게 아니라, 정말 준비를 시작해야 한다고."
+],
+      images:["img/diary_10.jpg"],
+      related:[{id:"r6",title:"이직 준비의 압박",tags:["#재택근무","#월요병"],linkDate:"2025-06-02"}] 
+    },
+
+    "2025-06-10": { // 화요일 (개인 프로젝트 진전)
+      title: "포트폴리오의 실마리, 드디어 찾았다",
+      date: "2025년 6월 10일",
+      mood: 'happy',
+      q: "Q. 오늘 작업 중 가장 '유레카!'를 외친 순간은?",
+   body:[
+  "개인 포폴 프로젝트의 로고 디자인이 드디어 풀렸다. 한옥 처마 곡선과 타이포그래피의 세리프를 결합하는 아이디어를 찾았을 때, 온몸에 소름이 돋았다. 폰트도 직접 만들어볼까 생각 중이다.",
+  "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+  "M83 - Midnight City. 웅장한 신시사이저 사운드가 마치 내 아이디어가 도시를 밝히는 빛처럼 느껴지게 했다. 작업 효율 200% 증가!",
+  "<span class='sub-q'>Q. 오늘 작업하면서 가장 짜릿했던 순간은?</span>",
+  "곡선을 미세하게 조정하다가 딱 ‘맞았다’ 싶은 포인트를 찾은 순간. 그때의 쾌감은 누구에게 설명할 수 없는 디자이너만의 영역이다.",
+  "<span class='sub-q'>Q. 오늘 기분을 색으로 표현한다면?</span>",
+  "전기적인 네온 퍼플. 번쩍이는 영감이 지나가고, 마음속에서도 미세하게 진동이 계속 이어지는 느낌.",
+  "<span class='sub-q'>Q. 오늘 스스로에게 하고 싶은 말은?</span>",
+  "지금의 몰입감을 잃지 말자. 완벽을 강박처럼 쫓는 게 아니라, 재미있어서 파고드는 오늘 같은 날이 계속되면 좋겠다."
+],
+      images:["img/diary_11.jpg","img/diary_12.jpg"],
+      related:[{id:"r7",title:"로고 디자인 영감",tags:["#유레카","#포트폴리오"],linkDate:"2025-06-04"}] 
+    },
+
+    "2025-06-11": { // 수요일 (클라이언트 미팅 대참사)
+      title: "클라이언트 미팅 대참사, 비상 탈출 경로 탐색",
+      date: "2025년 6월 11일",
+      mood: 'surprise',
+      q: "Q. 오늘 가장 놀라거나 예상치 못한 상황은 무엇이었나요?",
+     body:[
+  "클라이언트 미팅에서 '이건 너무 예쁘긴 한데, 우리의 타겟과는 안 맞아요. 좀 더... 올드하게...' 이 말을 듣고 눈이 휘둥그레지는 게 느껴졌다. 회의실을 박차고 나갈 뻔했다.",
+  "<span class='sub-q'>Q. 오늘 산책 코스에 대한 감상은?</span>",
+  "퇴근 후, 화가 나서 24시간 하는 무인 카페까지 냅다 뛰었다. 산책이 아니라 '비상 탈출 코스'였다. 에스프레소 투 샷을 들이켰더니 겨우 진정됐다.",
+  "<span class='sub-q'>Q. 오늘 가장 벼락처럼 떠오른 생각은?</span>",
+  "‘타겟에 맞게 올드하게’라는 말이 사실상 '디자인을 못하게 해달라'는 요청이라는 걸 다시 깨달았다.",
+  "<span class='sub-q'>Q. 오늘 기분을 이미지로 표현한다면?</span>",
+  "포토샵에서 레이어가 겹쳐 오류로 생긴 깨진 글리치 화면 같은 느낌. 화나고, 답답하고, 그래도 어딘가 웃기기도 했다.",
+  "<span class='sub-q'>Q. 오늘 나에게 남긴 한마디는?</span>",
+  "이쯤 되면 화낼 에너지도 아까우니까, 차라리 이직 포폴에 모든 걸 쏟아붓자."
+],
+      images:["img/diary_13.jpg","img/diary_14.jpg"],
+      related:[{id:"r8",title:"24시간 카페의 위로",tags:["#스트레스","#퇴사","#클라이언트"],linkDate:"2025-06-09"}] 
+    },
+
+    "2025-06-12": { // 목요일 (혼자 밥먹기)
+      title: "점심시간의 해방, 벤치에서 혼밥",
+      date: "2025년 6월 12일",
+      mood: 'nomal', // 🚨 calm -> nomal
+      q: "Q. 오늘 업무 효율을 위해 시도한 '작은 반항'은 무엇인가요?",
+   body:[
+  "답답한 회사 식당 대신 도시락을 싸서 근처 공원 벤치에서 혼자 먹었다. 동료들과 억지로 대화하지 않아도 되는 30분이 너무 소중했다. 점심시간의 해방!",
+  "<span class='sub-q'>Q. 오늘 가장 인상적인 시각적 경험은?</span>",
+  "벤치 옆에 떨어진 은행잎 한 장. 초록색에서 노란색으로 변해가는 미묘한 그라데이션이 아름다웠다. '자연의 색이 가장 완벽한 팔레트'라는 생각을 했다.",
+  "<span class='sub-q'>Q. 오늘 마음을 가장 편안하게 만든 순간은?</span>",
+  "바람에 흔들리는 나무 그림자가 도시락 위로 조용히 떨어질 때였다. 복잡한 회사 얘기 대신 잎사귀의 리듬을 보며 한숨을 길게 내쉴 수 있었다.",
+  "<span class='sub-q'>Q. 오늘 기분을 질감으로 표현한다면?</span>",
+  "햇볕에 따뜻하게 데워진 나무 벤치의 표면. 거칠지만 포근해서, 잠시나마 일상에서 떨어져 나온 느낌을 줬다.",
+  "<span class='sub-q'>Q. 오늘 스스로에게 남긴 말은?</span>",
+  "이 30분을 지키자. 혼자만의 작은 공간이 나를 버티게 하는 힘이라는 걸 깨달았다."
+],
+      images:["img/diary_15.jpg","img/diary_16.jpg"],
+      related:[{id:"r9",title:"자연의 팔레트",tags:["#혼밥","#여백의미"],linkDate:"2025-06-05"}] 
+    },
+
+    "2025-06-13": { // 금요일 (불금의 자기계발)
+      title: "불금은 없다, 코딩과의 사투",
+      date: "2025년 6월 13일",
+      mood: 'tired',
+      q: "Q. 오늘 가장 시간을 투자한 '자기계발' 영역은 무엇인가요?",
+    body:[
+  "금요일 밤, 술 대신 코딩을 선택했다. 포트폴리오 웹사이트의 반응형 레이아웃을 잡느라 밤을 꼬박 새웠다. 디자인은 쉬운데 코딩은 왜 이렇게 변수가 많은지!",
+  "<span class='sub-q'>Q. 오늘 당신의 에너지를 가장 많이 뺏어간 것은?</span>",
+  "미세하게 안 맞는 그리드를 잡는 일. '1px의 저주'는 디자인뿐만 아니라 코딩에서도 이어졌다. 해결될 때까지 잠을 잘 수 없었다.",
+  "<span class='sub-q'>Q. 오늘 가장 허무했던 순간은?</span>",
+  "세 시간 동안 붙잡고 있던 버그가 알고 보니 세미콜론 하나 때문이었다는 사실을 깨달았을 때. 허탈함과 분노와 웃음이 동시에 밀려왔다.",
+  "<span class='sub-q'>Q. 오늘의 감정을 사운드로 표현한다면?</span>",
+  "키보드를 빠르게 두드리다 멈칫하는 소리, 그리고 깊은 한숨. 그 사이사이에 아주 작은 승리의 ‘딸깍’ 소리가 섞여 있었다.",
+  "<span class='sub-q'>Q. 오늘 나에게 남긴 한마디는?</span>",
+  "완벽한 코드는 없지만 완벽을 향해 밤새 헤매는 나만의 리듬은 있다. 이 리듬을 잘 기억해두자, 포폴이 완성될 때까지."
+],
+      images:["img/diary_17.jpg","img/diary_18.jpg"],
+      related:[{id:"r10",title:"코딩의 변수",tags:["#코딩","#프론트엔드"],linkDate:"2025-06-17"}] 
+    },
+    "2025-06-14": { // 토요일 (썸남과의 데이트)
+      title: "괜찮은 사람, 하지만 지켜볼 필요가 있다",
+      date: "2025년 6월 14일",
+      mood: 'love',
+      q: "Q. 오늘 당신의 마음을 가장 잘 표현한 것은 무엇인가요?",
+      body:[
+        "오랜만에 썸남과 만났다. 전시회에 갔는데, 그 사람이 내 디자인 철학에 대해 진지하게 물어봐 줘서 놀랐다. 나의 '가치관'을 보려고 한다는 느낌을 받았다.",
+        "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+        "백예린의 'Square'. '난 이미 알고 있었지'라는 가사가 묘하게 설렜다. 이 사람, 나에게 진심인 걸까?",
+        "<span class='sub-q'>Q. 오늘 산책 코스는 어땠나요?</span>",
+        "경복궁 돌담길. 전통적인 아름다움과 현대적인 감각이 공존하는 공간이 참 좋았다. 그의 옆모습도 아름다웠다."
+      ],
+      images:["img/diary_19.jpg","img/diary_20.jpg"],
+      related:[{id:"r11",title:"돌담길의 설렘",tags:["#연애","#설렘","#경복궁"],linkDate:"2025-06-26"}] 
+    },
+    
+    // Week 3 (6/15 ~ 6/21)
+    // 6/16(월), 6/17(화), 6/18(수), 6/19(목), 6/20(금), 6/21(토)
+    "2025-06-16": { // 월요일 (재택근무 중 회의 피로)
+      title: "줌 회의의 악몽, 영혼까지 털린 오후",
+      date: "2025년 6월 16일",
+      mood: 'tired',
+      q: "Q. 오늘 가장 비효율적이라고 느낀 업무 방식은?",
+      body:[
+      "오전 내내 이어진 줌(Zoom) 회의. 1시간 반 동안 10명이 각자 할 말만 쏟아내는데, 나는 듣기만 하느라 체력이 반쯤 빠져나갔다. 그런데 정작 중요한 내용은 마지막 5분에 툭 던져졌다. 이럴 거면 처음부터 말해주지! 내 귀한 오전 시간을 정말 돌려받고 싶다.",
+    "<span class='sub-q'>Q. 오늘 가장 인상적인 시각적 경험은?</span>",
+    "회의 중 실수로 켜진 셀카 모드 속, 멍하니 앉아 있는 내 얼굴. 다크서클은 선명했고 표정은 영혼이 반쯤 나가 있었다. 그 모습을 보는 순간 ‘아, 오늘 이렇게 살면 안 되겠다…’ 싶어서 회의가 끝나자마자 급하게 눈 화장을 다시 했다. 그 후로는 화면 켜기 전에 무조건 카메라 확인하기가 내 새로운 규칙이 되었다."
+      ],
+      images:["img/diary_21.jpg"],
+      related:[{id:"r12",title:"회의 피로",tags:["#재택","#비효율"],linkDate:"2025-06-09"}] 
+    },
+    "2025-06-17": { // 화요일 (개인 프로젝트의 진전)
+      title: "포폴 디자인 확정! 이제 코딩만 남았다",
+      date: "2025년 6월 17일",
+      mood: 'happy',
+      q: "Q. 오늘 당신의 직업적 성취를 높여준 요소는?",
+       body: [
+  "오후 늦게 개인 포트폴리오의 메인 디자인을 확정했다. 몇 주간 이 레이아웃 때문에 붙잡고 씨름했던 시간들이 한순간에 보상받는 느낌이었다. 요소들이 딱 맞아떨어지며 전체 화면이 깔끔하게 정리되는 순간, 머릿속까지 정돈되는 듯한 기분이 들었다. ‘아, 이거다’ 싶은 확신이 드니 마음이 날아갈 만큼 가벼워졌다. 이제 코딩과 내용 구성만 남았지만, 그래도 가장 큰 산은 넘은 셈이라 훨씬 여유가 생겼다. 작업을 마무리하고 나니 스스로에게 괜찮은 선물 하나를 준 것 같은 기분도 들었다. 오랫동안 불안하게 붙잡고 있던 매듭이 풀리는 순간만의 후련함이 오늘 하루를 전체적으로 밝게 만들었다.",
+
+  "<span class='sub-q'>Q. 오늘 나를 잘 나타낸 게시글은?</span>",
+
+  "개인 포폴 와이어프레임을 찍어서 '90% 완료'라고 스토리에 올렸다. 사실 90%라기엔 더 만지고 싶은 부분이 많겠지만, 오늘만큼은 그 정도 진척만으로도 충분히 뿌듯했다. 결과를 완벽하게 보여주기보다는 ‘여기까지 왔다’는 흐름을 기록해두고 싶었다. 아무도 축하해주지 않아도 스스로에게 괜찮다고, 여기까지 잘 왔다고 말해주고 싶은 마음이었다. 자기만족 100%, 그리고 내일의 나에게 작은 응원이 될만한 흔적 하나를 남긴 셈."
+],
+      images:["img/diary_22.jpg"],
+      related:[{id:"r13",title:"코딩의 압박",tags:["#포트폴리오","#성취"],linkDate:"2025-06-13"}] 
+    },
+
+
+  // 2025-06-18: 클라우드 정리 (Digital Life)
+  "2025-06-18": { 
+    title: "미니멀리즘 웹사이트 클리닝 루틴", 
+    date: "2025년 6월 18일", // 날짜를 2025년으로 변경
+    mood: 'nomal', // 평온함
+    q: "Q. 오늘 기억하고 싶은 콘텐츠는 어떤 것이 있었나요?",
+   body: [
+  "퇴근 후 클라우드 저장소(Google Drive/Dropbox)에 쌓여있던 3년 전 파일을 대거 정리했다. 예전 프로젝트, 필요 없는 캡처, 한 번도 다시 열지 않았던 참고자료들까지 묵혀 있던 것들을 과감하게 비웠다. 10GB가 넘는 불필요한 파일들을 삭제하고 나니, 디지털 공간마저 미니멀해진 느낌이야. 물건을 정리할 때처럼 머릿속도 같이 환기되는 기분이라 뜻밖의 성취감이 있었다.",
+  
+  "불필요한 요소를 덜어내는 것이 디자인의 본질이듯, 내 디지털 라이프도 '여백의 미'가 필요하다는 것을 다시 깨달았다. 쌓여만 가는 디지털 흔적들이 사실은 집중을 흐리는 배경 소음처럼 느껴졌다는 것도 오늘에서야 인정하게 됐다. 정리만 해도 삶의 밀도가 조금은 단단해지는 것 같아 묘하게 기분이 좋다.",
+  
+  "<span class='sub-q'>Q. 오늘 나를 잘 나타낸 게시글은?</span>",
+  
+  "핀터레스트에서 'Less is More'라는 문구를 담은 깔끔한 디자인 템플릿을 저장했다. 레이아웃도 차분하고 군더더기 없이 깔끔해서 오늘의 디지털 정리 철학을 정확히 대변해주는 느낌이었다. 더 가지는 것보다 덜어내는 게 오히려 나를 더 선명하게 만든다는 말이 오늘 하루에 딱 맞았다.",
+  
+  "<span class='sub-q'>Q. 오늘의 정리로 얻은 가장 큰 변화는?</span>",
+  
+  "정리하면서 불필요한 것들 사이에 숨어 있던 작은 아이디어 스케치 하나를 다시 발견했다. 잊고 지냈지만 지금 진행 중인 작업과 닿아 있어서, 어쩌면 이게 다음 디자인의 힌트가 될지도 모른다. 정리는 단순히 없애는 게 아니라, 중요한 것을 다시 보이게 만드는 과정이라는 걸 새삼 느꼈다."
+],
+    images: ["img/diary_23.jpg", "img/diary_24.jpg"],
+    related: [{
+      id: "r14",
+      title: "알고리즘이 찾은 음악",
+      tags: ["#클라우드정리", "#디지털미니멀", "#여백의미"],
+      linkDate: "2025-06-19"
+    }]
+  },
+  
+  // 2025-06-19: 음악과 알고리즘 (Digital Life)
+  "2025-06-19": { 
+    title: "알고리즘이 찾아준 완벽한 배경음악", 
+    date: "2025년 6월 19일", // 날짜를 2025년으로 변경
+    mood: 'happy', // 즐거움
+    q: "Q. 오늘 들은 음악 중에 인상 깊었던 것과 오늘 나를 잘 나타낸 게시글은?",
+    body: [
+  "Spotify 알고리즘이 퇴근길에 완벽한 재즈힙합 트랙('Nomad - Late Night')을 추천해 줬다. 도시의 야경에 딱 맞춰 흐르는 묵직한 비트와 잔잔한 피아노 루프가 너무 좋아서, 그대로 20분 동안 지하철에서 내리지 못할 뻔했다. 이어폰 속 음악과 창밖 불빛이 합쳐지니 하루의 피로가 서서히 풀리는 느낌이었고, 괜히 오늘을 잘 버텼다는 생각도 들었다. 음악 하나가 기분의 결을 이렇게 바꿔줄 수 있다는 게 신기했다.",
+  
+  "<span class='sub-q'>Q. 오늘 나를 잘 나타낸 게시글은?</span>",
+  
+  "Dribbble에 'Pixel Perfect'라는 캡션과 함께 코딩이 거의 마무리된 포트폴리오 스크린샷을 올렸다. 사실 아직 고쳐야 할 디테일도 있긴 하지만, 오늘만큼은 그 작은 완성도가 내 성취감을 그대로 드러내는 것 같았다. 누군가 보지 않아도 스스로 ‘이 정도면 잘하고 있다’고 말해주고 싶었던 순간이었다. 그중에서도 버튼의 미세한 애니메이션이 깔끔하게 적용된 걸 보며 혼자 흐뭇해했다.",
+  
+  "<span class='sub-q'>Q. 오늘 음악이 준 감정은?</span>",
+  
+  "지친 하루의 끝에서 나를 천천히 다시 숨 쉬게 만드는 여유 같은 것. 빠르지도 느리지도 않은 리듬이 오늘 내 마음의 속도와 이상하게 잘 맞아떨어졌고, 생각보다 훨씬 부드러운 밤을 선물받은 기분이었다."
+],
+    images: ["img/diary_25.jpg","img/diary_26.jpg"],
+    related: [{
+      id: "r15",
+      title: "미니멀리즘 웹사이트",
+      tags: ["#Spotify", "#재즈힙합", "#픽셀완벽"],
+      linkDate: "2025-06-18"
+    }]
+  },
+
+
+    "2025-06-20": { // 금요일 (퇴근길의 충동)
+      title: "충동적인 퇴근길, 네일샵에 가다",
+      date: "2025년 6월 20일",
+      mood: 'happy',
+      q: "Q. 오늘 당신에게 가장 큰 '소확행'을 준 것은 무엇인가요?",
+     body:[
+  "야근을 간신히 피하고 퇴근길에 홀리듯 네일샵에 들어갔다. 회사 일로 얼룩진 내 손에 깔끔한 누드 톤 네일을 받으니 기분이 전환되었다. 작업하느라 거칠어진 손끝에 색이 얹히는 것만으로도 하루의 피로가 조금씩 벗겨지는 느낌이었다. 바쁘다는 이유로 계속 미뤄왔던 작은 관리 하나가 이렇게 큰 온기를 주다니, 스스로를 조금 더 챙겨야겠다는 생각까지 들었다.",
+  
+  "<span class='sub-q'>Q. 오늘 가장 인상적인 시각적 경험은?</span>",
+  
+  "네일샵의 조명 아래 반짝이는 내 손톱. 부드럽게 퍼지는 누드 톤 위로 은은하게 비치는 광택이 내가 생각보다 더 잘 버티고 있다는 작은 증거처럼 느껴졌다. 이 사소한 변화 하나가 내일의 출근길을 버티게 해줄 힘이 될 것 같다. 손끝이 단정해지니 마음도 따라 정리되는 것 같아 괜히 자신감이 살짝 올라갔다."
+],
+      images:["img/diary_27.jpg"],
+      related:[{id:"r16",title:"기분 전환의 기술",tags:["#소확행","#네일샵"],linkDate:"2025-06-17"}] 
+    },
+    "2025-06-21": { // 토요일 (3D 툴 익히기)
+      title: "새로운 디자인 툴 익히기, 맥북 앞에서 녹아내리다",
+      date: "2025년 6월 21일",
+      mood: 'tired',
+      q: "Q. 오늘 당신의 에너지를 가장 많이 뺏어간 것은?",
+    body:[
+  "새 포트폴리오를 위해 새로운 3D 디자인 툴(Blender)을 익히기 시작했다. 유튜브 튜토리얼을 5시간째 봤더니 눈이 빠질 것 같다. 머리로는 이해하는데 손가락이 안 따라주는 고통. 한 번 잘못 눌렀다가 화면이 날아가고, 어디서부터 다시 해야 하는지 감도 안 와서 멍하니 모니터만 바라보는 순간도 있었다. 그래도 몇 번 반복하니 아주 미세하게 ‘아 이거구나’ 싶은 감이 조금씩 살아난다. 이직하려면 이 정도 고통은 감수해야지, 라고 스스로 다짐하며 버티는 중이다. 오늘만큼은 배움의 굴욕과 성취가 동시에 온 하루였다.",
+  
+  "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+  
+  "작업할 때 집중하려고 들은 'Nujabes'의 음악. 복잡한 툴을 다룰 때도 마음을 차분하게 해준다. 화면 속에서 수십 개의 단축키가 춤추는 와중에도, 잔잔한 비트가 흐르면 최소한 멘탈만큼은 흐트러지지 않는 느낌이었다. 클릭이 꼬이고 장면이 날아가도 음악이 균형을 잡아주는 기분이라 계속 반복해서 듣게 됐다."
+],
+      images:["img/diary_28.jpg","img/diary_29.jpg"],
+      related:[{id:"r17",title:"Nujabes의 영감",tags:["#Blender","#재즈힙합"],linkDate:"2025-06-17"}] 
+    },
+    
+    // Week 4 (6/22 ~ 6/28)
+    // 6/23(월), 6/24(화), 6/25(수), 6/26(목), 6/27(금), 6/28(토)
+   "2025-06-23": { // 월요일 (포트폴리오 면접 통보)
+    title: "성공적인 포트폴리오 면접 결과 통보", 
+    date: "2025년 6월 23일", // 2025년 현재 기록으로 변경
+    mood: 'happy', // 행복
+    q: "Q. 오늘 당신에게 가장 큰 성취감을 준 것은 무엇인가요?",
+   body:[
+  "그동안 준비했던 이직 포트폴리오를 제출했던 회사에서 '2차 면접에 초대하고 싶다'는 연락을 받았다. 메일을 열자마자 심장이 두 번은 더 뛰는 느낌이었다. 내 디자인 철학을 이해해 주는 곳을 만난 것 같아 기분이 날아갈 것 같다. 지난 몇 달간의 밤샘과 고민들이 단순한 ‘노력’이 아니라 ‘이미 닿아가고 있는 결과’였다는 걸 확인한 날이었다. 아직 끝난 건 아니지만, 그래도 오늘만큼은 나 스스로를 조금 자랑스러워해도 될 것 같다.",
+  
+  "<span class='sub-q'>Q. 오늘 당신을 가장 잘 나타낸 게시글은?</span>",
+  
+  "내 Dribbble 계정에 포트폴리오 메인 시안을 올렸다. 'Minimal & Bold'라는 캡션과 함께. 군더더기 없이 담백하지만 확실한 메시지를 가진 레이아웃이라, 오늘 받은 연락과 묘하게 연결되는 느낌이 들었다. 이 디자인이 인정받았다는 사실이 기쁘다. 한동안 고치고 또 고쳤던 그 화면이 누군가에게 ‘좋다’는 신호로 닿았다는 사실이 오늘 하루를 통째로 빛나게 했다.",
+  
+  "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+  
+  "Sam Smith의 'Lay Me Down'. 기쁜 날이지만, 나를 차분하게 만들고 다음 도전을 준비하게 해주는 음악이었다. 들을 때마다 현실과 감정의 속도를 부드럽게 맞춰주는 느낌이라, 오늘의 벅찬 마음을 과하지 않게 가라앉혀 줬다. 앞으로 해야 할 준비를 조용히 정리하게 만든 곡."
+],
+
+    images:["img/diary_30.jpg","img/diary_31.jpg"], 
+    related:[{
+      id:"r18",
+      title:"미니멀리즘 웹사이트 클리닝", // 연결 타이틀 수정
+      tags:["#면접", "#포트폴리오", "#성취감"],
+      linkDate:"2025-06-18" // 다른 2025년 기록과 연결
+    }] 
+  },
+
+    "2025-06-24": { // 화요일 (출근길 미적 발견)
+      title: "출근길, 완벽한 황금비율을 발견하다",
+      date: "2025년 6월 24일",
+      mood: 'nomal', // 🚨 calm -> nomal
+      q: "Q. 오늘 일상에서 발견한 '가장 아름다운 비율'은?",
+      body:[
+        "출근길 버스 창문으로 보인 아파트 건물과 가로등의 배열. 건물의 수직선과 가로등 간의 간격이 완벽한 황금비율(Golden Ratio)처럼 느껴졌다. 직업병인가 보다.",
+        "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+        "새벽에 들은 'Sigur Rós - Hoppípolla'. 웅장하고 청량한 사운드가 복잡한 도시 풍경을 마치 영화의 한 장면처럼 만들어 주었다.",
+      ],
+      images:["img/diary_32.jpg","img/diary_33.jpg"],
+      related:[{id:"r19",title:"황금비율의 집착",tags:["#직업병","#미적발견"],linkDate:"2025-06-23"}] 
+    },
+
+
+    "2025-06-25": { // 수요일 (디자인 시상식 소식)
+      title: "시상식에서 만난 대학 동기, 역시 디자인이 좋아!",
+      date: "2025년 6월 25일",
+      mood: 'surprise',
+      q: "Q. 오늘 당신에게 가장 큰 영감을 준 것은 무엇인가요?",
+      body:[
+        "오랜만에 디자인 시상식에 참여했다. 대학 동기였던 '민수'의 작품이 대상을 받았다. 그의 독창적인 아이디어와 과감함이 부러웠다. 나도 저렇게 과감해져야 하는데.",
+        "<span class='sub-q'>Q. 오늘 산책 코스에 대한 감상은?</span>",
+        "시상식이 열린 코엑스 주변을 걷다가 별마당 도서관에 잠시 들렀다. 책장 가득한 책들이 주는 시각적 압도감! 저 거대한 공간 속에 갇혀 있어도 좋겠다는 생각이 들었다."
+      ],
+      images:["img/diary_34.jpg"],
+      related:[{id:"r20",title:"민수의 독창성",tags:["#시상식","#영감","#동기"],linkDate:"2025-06-21"}] 
+    },
+
+    "2025-06-26": { // 목요일 (남자친구와의 갈등)
+      title: "말의 온도차, 차가웠던 저녁 공기",
+      date: "2025년 6월 26일",
+      mood: 'unhappy',
+      q: "Q. 오늘 가장 '말의 온도차'를 느낀 순간은?",
+      body:[
+        "남자친구와 사소한 문제로 다퉜다. 나는 진지하게 감정을 설명했는데, 그는 '디자이너라 너무 예민하다'는 식으로 넘어갔다. 이해받지 못한다는 느낌에 서러웠다.",
+        "<span class='sub-q'>Q. 오늘 나를 잘 나타낸 게시글은?</span>",
+        "익명 게시판에 '내 감정을 왜 디자인 문제로 치부하냐'는 푸념 글을 올렸다. 공감 댓글에 잠시 위로받았다."
+      ],
+      images:["img/diary_35.jpg"],
+      related:[{id:"r21",title:"연애의 딜레마",tags:["#갈등","#예민함"],linkDate:"2025-06-14"}] 
+    },
+
+
+    "2025-06-27": { // 금요일 (야근과 택시)
+      title: "밤 11시 택시, 오늘 나는 몇 점짜리 디자이너?",
+      date: "2025년 6월 27일",
+      mood: 'tired',
+      q: "Q. 오늘 하루의 업무 만족도를 점수로 매긴다면?",
+      body:[
+        "밤 11시에 택시를 탔다. 야근했지만 오늘 처리한 업무 결과는 엉망이었다. 완성도 대신 속도를 선택했기 때문이다. 만족도는 50점.",
+        "<span class='sub-q'>Q. 오늘 당신의 에너지를 가장 많이 뺏어간 것은?</span>",
+        "팀장님의 '대충 하자'라는 말. 그 말을 들은 순간, 오늘 야근의 의미를 완전히 잃었다."
+      ],
+      images:["img/diary_36.jpg"],
+      related:[{id:"r22",title:"속도와 완성도 사이",tags:["#야근","#만족도"],linkDate:"2025-06-26"}] 
+    },
+
+    "2025-06-28": { // 토요일 (썸남과의 관계 발전)
+      title: "돌담길의 그 사람, 드디어 손을 잡다",
+      date: "2025년 6월 28일",
+      mood: 'love',
+      q: "Q. 오늘 당신의 기분을 가장 잘 나타낸 것은 무엇인가요?",
+      body:[
+        "남자친구와 밤에 만났다. 돌담길을 다시 걸었는데, 드디어 손을 잡았다. 그의 손이 따뜻하고 단단했다. 이젠 '남자친구'라고 불러도 되겠지?",
+        "<span class='sub-q'>Q. 오늘 들은 음악 중에 인상 깊었던 것은?</span>",
+        "브루노 마스의 'Marry You'. 내 플레이리스트가 순식간에 달달하게 바뀌었다. 콧노래가 절로 나온다."
+      ],
+      images:["img/diary_37.jpg","img/diary_38.jpg"],
+      related:[{id:"r23",title:"Marry You",tags:["#남자친구","#연애시작"],linkDate:"2025-06-26"}] 
+    },
+    
+    // Week 5 (6/29 ~ 6/30)
+    "2025-06-30": { // 월요일 (6월의 마지막 날, 총평)
+      title: "6월의 마지막 날, 나는 성장 중",
+      date: "2025년 6월 30일",
+      mood: 'happy',
+      q: "Q. 6월 한 달을 되돌아봤을 때, 가장 큰 변화는 무엇인가요?",
+      body:[
+        "6월은 지옥 같은 회사 업무와 이직 준비, 그리고 설렘 가득한 연애가 공존했던 달이었다. 가장 큰 변화는 '스스로에게 투자'하기 시작했다는 점. 더 나은 디자이너가 되기 위해 퇴근 후 시간을 허투루 쓰지 않았다.",
+        "<span class='sub-q'>Q. 7월에 기대하는 것은?</span>",
+        "7월에는 이직 포트폴리오를 완성하고 면접을 볼 수 있기를! 그리고 남자친구와 첫 해외여행을 계획하고 싶다. 발리? 이탈리아?",
+        "<span class='sub-q'>Q. 이 달의 나에게 한 마디?</span>",
+        "최정민, 지치지 않고 여기까지 와줘서 고마워. 파이팅!"
+      ],
+      images:["img/diary_39.jpg"],
+      related:[{id:"r24",title:"포폴 완성 계획",tags:["#7월계획","#성장"],linkDate:"2025-06-25"}] 
+    },
+    // ------------------ Data (추가할 7월 및 8월 기록) ------------------
+
+// ... (기존 6월 기록 끝) ...
+
+
+    // Week 1 (7/1)
+    "2025-07-01": { // 월요일 (새로운 시작과 불안감)
+      title: "새로운 회사에서의 첫날, 그리고 불안감",
+      date: "2025년 7월 1일",
+      mood: 'nomal',
+      q: "Q. 오늘 당신에게 가장 큰 '낯선 느낌'을 준 것은 무엇이었나요?",
+      body:[
+        "새 직장 첫 출근. 모든 것이 깔끔하고 새롭다. 하지만 익숙했던 이전 회사 사무실의 지저분한 내 자리가 그리워지는 묘한 불안감이 있다. 새로운 기회에 대한 설렘과, 잘 해낼 수 있을까 하는 압박감이 교차한다.",
+        "<span class='sub-q'>Q. 오늘 당신의 마음을 가장 잘 표현한 건축물은?</span>",
+        "유리 건물. 겉은 투명하고 당당하지만, 속에서는 온갖 복잡한 생각들이 촘촘히 얽혀 있는 모습이 지금의 나를 닮았다.",
+        "<span class='sub-q'>Q. 오늘 스스로에게 해주고 싶은 말은?</span>",
+        "적어도 이곳에서는 너의 디자인 철학을 지킬 수 있을 거야. 1px에 대한 집요함이 존중받는 곳이니까. 불안해하지 마.",
+      ],
+      images:["img/diary_40.jpg"],
+      related:[{id:"r25",title:"이직 후의 자기 성찰",tags:["#이직","#새로운시작"],linkDate:"2025-06-30"}]
+    },
+
+    "2025-07-04": { // 목요일 (오래된 파일의 영원한 삭제)
+      title: "오래된 파일의 영원한 삭제",
+      date: "2025년 7월 4일",
+      mood: 'nomal',
+      q: "Q. 오늘 당신의 디지털 삶에서 가장 큰 '여백'을 만든 것은?",
+      body:[
+        "사용하지 않는 클라우드 파일, 10년 전 대학교 과제 파일, 심지어 몇 년간 잊고 살았던 웹하드 계정까지 싹 다 정리했다. '영원한 삭제' 버튼을 누를 때마다 마음속의 짐도 함께 사라지는 기분이었다.",
+        "<span class='sub-q'>Q. '디지털 미니멀리즘'이 당신에게 주는 의미는?</span>",
+        "단순히 용량을 비우는 게 아니라, 과거의 불필요한 흔적에서 벗어나 현재와 미래에 집중할 에너지를 확보하는 일이다. 남겨질 기록만 선명하게 남기고 싶다.",
+        "<span class='sub-q'>Q. 오늘 당신을 가장 잘 나타낸 폰트는?</span>",
+        "본고딕(Noto Sans). 군더더기 없고 깔끔해서 모든 플랫폼에서 오류 없이 안정적으로 보이는 폰트. 내 남은 삶도 그렇게 정리하고 싶다.",
+      ],
+      images:["img/diary_41.jpg"],
+      related:[{id:"r26",title:"디지털 미니멀리즘의 시작",tags:["#미니멀리즘","#디지털유산"],linkDate:"2025-06-18"}]
+    },
+
+    "2025-07-10": { // 수요일 (버킷리스트 수정)
+      title: "버킷리스트 수정, '여행'의 의미",
+      date: "2025년 7월 10일",
+      mood: 'happy',
+      q: "Q. 버킷리스트에서 가장 시급하다고 느낀 항목은 무엇이었나요?",
+      body:[
+        "오늘 버킷리스트를 점검했다. '발리에서 서핑 배우기'를 '제주도에서 한 달 살기'로 수정했다. 멀리 가는 것보다, 좋아하는 사람들과 익숙한 공간에서 조용히 시간을 보내는 것이 지금 나에게 더 중요하다는 것을 깨달았다.",
+        "<span class='sub-q'>Q. '여행'의 정의가 어떻게 바뀌었나요?</span>",
+        "예전의 여행은 '도피'였다면, 지금의 여행은 '충전'이다. 남겨질 시간을 가장 잘 채울 수 있는 장소를 고르고 싶다. 곧 남자친구와 함께할 제주 여행이 기대된다.",
+        "<span class='sub-q'>Q. 오늘 당신을 가장 잘 나타낸 음악은?</span>",
+        "윤하의 '사건의 지평선'. 끝을 알지만, 그래도 흘러가는 대로 즐겁게 나아가고 싶다.",
+      ],
+      images:["img/diary_42.jpg"],
+      related:[{id:"r27",title:"7월의 기대감",tags:["#버킷리스트","#여행"],linkDate:"2025-06-30"}]
+    },
+
+    "2025-07-15": { // 월요일 (마지막 편지 초안)
+      title: "부모님께 드리는 마지막 편지 초안",
+      date: "2025년 7월 15일",
+      mood: 'love',
+      q: "Q. 편지에 담고 싶은 가장 중요한 한 문장은?",
+      body:[
+        "부모님께 보낼 편지 초안을 썼다. 수십 번을 썼다 지우기를 반복했다. '감사합니다'라는 다섯 글자를 쓰는 데 한 시간이 걸렸다. 너무 슬픈 내용이 되지 않도록 담백하게 쓰려고 노력했다.",
+        "<span class='sub-q'>Q. 편지 속에서 숨기고 싶었던 감정은?</span>",
+        "미안함. 먼저 떠나는 것에 대한 죄책감이다. 하지만 그 대신, 함께했던 시간에 대한 순수한 기쁨과 사랑만을 남기기로 했다.",
+        "<span class='sub-q'>Q. 오늘 당신의 마음을 위로한 것은?</span>",
+        "남자친구가 퇴근길에 사다 준 달콤한 마카롱. 이 순간의 행복에 집중할 수 있도록 도와주었다.",
+      ],
+      images:["img/diary_43.jpg","img/diary_44.jpg"],
+      related:[{id:"r28",title:"가족에 대한 사랑",tags:["#가족","#편지","#사랑"],linkDate:"2025-06-28"}]
+    },
+
+    "2025-07-22": { // 월요일 (병원 예약)
+      title: "병원 예약, 이제는 늦출 수 없다",
+      date: "2025년 7월 22일",
+      mood: 'unhappy',
+      q: "Q. 오늘 당신을 가장 현실적으로 직면하게 만든 순간은?",
+      body:[
+        "미뤄왔던 정기 검진 예약을 잡았다. 전화를 끊고 나니 손이 떨렸다. 더 이상 회피할 수 없다는 것을 안다. 두려움과 체념이 섞인 복잡한 감정이다.",
+        "<span class='sub-q'>Q. 오늘 당신의 기분을 표현한 색은?</span>",
+        "짙은 회색. 아무리 햇빛이 비춰도 잘 변하지 않는, 무겁고 어두운 색이다. 하지만 이 색 안에도 아직 작은 희망이 있다는 것을 잊지 않으려고 한다.",
+        "<span class='sub-q'>Q. 오늘 스스로에게 해주고 싶은 말은?</span>",
+        "도망치지 마. 현실을 인정하는 것이야말로 가장 용기 있는 디자인이다. 남은 시간을 더 단단하게 채울 수 있도록.",
+      ],
+      images:["img/diary_45.jpg"],
+      related:[{id:"r29",title:"현실과 용기",tags:["#병원","#두려움"],linkDate:"2025-06-27"}]
+    },
+
+    "2025-07-29": { // 월요일 (삶의 아름다운 여백을 설계하다)
+      title: "삶의 아름다운 여백을 설계하다",
+      date: "2025년 7월 29일",
+      mood: 'happy',
+      q: "Q. 오늘 당신에게 가장 큰 '미적 영감'을 준 것은 무엇인가요?",
+      body:[
+        "새 직장 프로젝트의 마지막 단계, '여백의 미'를 극대화하는 작업을 했다. 문득 내 삶도 여백이 필요하다는 생각이 들었다. 너무 많은 걱정과 짐들을 내려놓고, 아름다운 마무리만을 남기는 것.",
+        "<span class='sub-q'>Q. '여백'의 정의가 어떻게 바뀌었나요?</span>",
+        "이전에는 여백이 '비어 있음'이나 '낭비'라고 생각했다. 이제는 여백이 '배려'라는 것을 안다. 남겨진 사람들에게 숨 쉴 틈을 주는 배려, 나에게는 현재를 온전히 느낄 수 있는 공간이다.",
+        "<span class='sub-q'>Q. 오늘 당신을 가장 잘 나타낸 음악은?</span>",
+        "Ludovico Einaudi의 'Nuvole Bianche'. 고요하고 평화로운 피아노 선율. 이 음악처럼 내 마음도 잔잔해지기를 바란다.",
+      ],
+      images:["img/diary_46.jpg","img/diary_47.jpg"],
+      related:[{id:"r30",title:"미니멀리즘과 여백",tags:["#여백의미","#삶의철학"],linkDate:"2025-07-04"}]
+    },
+
+
+    // -------------------------------------------------------------------------------------------------------
+
+    // Week 1 (8/1)
+    "2025-08-01": { // 금요일 (디지털 유산 목록 확정)
+      title: "디지털 유산 목록 확정, 비밀번호를 남기다",
+      date: "2025년 8월 1일",
+      mood: 'nomal',
+      q: "Q. 오늘 당신의 디지털 유산 정리에서 가장 어려웠던 부분은?",
+      body:[
+        "평소 쓰던 모든 계정 목록과 비밀번호를 정리했다. 은행, 이메일, SNS, 심지어 넷플릭스 계정까지. 너무 사소한 것까지 남기는 것이 우습기도 했지만, 남겨진 사람이 편안하게 정리할 수 있도록 하는 것이 마지막 배려라는 생각이 들었다.",
+        "<span class='sub-q'>Q. 비밀번호를 남기는 행위의 의미는?</span>",
+        "나의 사생활을 노출하는 마지막 행위. 하지만 사랑하는 사람들에게 나의 흔적을 깨끗하게 정리할 수 있는 '열쇠'를 넘겨주는 것이라 믿는다. 기록이 아닌 짐을 남기고 싶지 않다.",
+        "<span class='sub-q'>Q. 오늘 당신의 기분을 표현한 오브제는?</span>",
+        "완벽하게 정렬된 그리드 시스템. 모든 것이 제자리를 찾은 듯한 안도감을 준다.",
+      ],
+      images:["img/diary_48.jpg"],
+      related:[{id:"r31",title:"남겨진 배려",tags:["#디지털유산","#정리"],linkDate:"2025-07-29"}]
+    },
+
+    "2025-08-08": { // 금요일 (comma, 서비스 테스트 완료)
+      title: "'comma,' 서비스 테스트 완료",
+      date: "2025년 8월 8일",
+      mood: 'happy',
+      q: "Q. 오늘 당신이 느낀 가장 큰 '안도감'은 무엇이었나요?",
+      body:[
+        "나의 모든 기록을 담을 'comma,' 페이지의 최종 테스트를 마쳤다. 나의 일생기록, 하루기록, 버킷리스트가 모두 정상적으로 작동하는 것을 확인했다. 이 모든 것이 남겨질 사람에게 잘 전달될 수 있다는 확신에 큰 안도감을 느꼈다.",
+        "<span class='sub-q'>Q. 이 페이지는 당신에게 어떤 의미인가요?</span>",
+        "나의 마지막 포트폴리오이자, 부모님과 남자친구에게 보내는 가장 긴 편지. 내가 사라지더라도, 나의 존재는 이 페이지에 남아 그들을 위로할 것이다.",
+        "<span class='sub-q'>Q. 오늘 당신을 가장 잘 나타낸 음악은?</span>",
+        "Coldplay의 'Fix You'. 이젠 내가 아닌, 이 페이지가 남겨진 이들을 고쳐주기를 바란다.",
+      ],
+      images:["img/diary_49.jpg","img/diary_50.jpg"],
+      related:[{id:"r32",title:"마지막 포트폴리오",tags:["#comma","#안도감","#유산전달"],linkDate:"2025-07-15"}]
+    },
+
+    "2025-08-15": { // 금요일 (남자친구에게 전하는 기록)
+      title: "남자친구에게 전하는 기록",
+      date: "2025년 8월 15일",
+      mood: 'love',
+      q: "Q. 남자친구와의 추억 중 가장 '선명한 색'으로 기억되는 순간은?",
+      body:[
+        "남자친구에게 남길 기록을 따로 정리했다. 우리의 첫 만남, 돌담길에서 손을 잡았던 순간, 그리고 내가 아픈 것을 알고도 묵묵히 옆에 있어준 고마움까지. 우리의 시간은 짧지만, 그 어떤 시간보다 선명했다.",
+        "<span class='sub-q'>Q. 남자친구에게 남기고 싶은 가장 중요한 메시지는?</span>",
+        "'네 잘못이 아니야.' 그리고 '너는 여전히 사랑받을 자격이 충분해.' 내가 없더라도 행복하기를 바란다. 이별은 슬프지만, 그와의 만남은 내 삶의 가장 아름다운 디자인이었다.",
+        "<span class='sub-q'>Q. 오늘 당신을 가장 잘 나타낸 폰트는?</span>",
+        "손글씨 폰트. 투박하지만 진심이 담긴, 나의 마음을 가장 잘 표현해주는 폰트다.",
+      ],
+      images:["img/diary_51.jpg"],
+      related:[{id:"r33",title:"사랑의 시간",tags:["#남자친구","#사랑","#이별준비"],linkDate:"2025-06-28"}]
+    },
+
+    "2025-08-20": { // 수요일 (통증과 잠 못 이루는 밤)
+      title: "통증, 그리고 잠 못 이루는 밤",
+      date: "2025년 8월 20일",
+      mood: 'sad',
+      q: "Q. 오늘 당신의 몸이 당신에게 보낸 가장 강렬한 신호는?",
+      body:[
+        "진통제가 듣지 않는 밤. 통증 때문에 새벽 내내 잠을 이루지 못했다. 두려움과 고통이 뒤섞여 나를 잠식하는 것 같았다. 이 고통마저 내 마지막 기록의 일부가 될 것임을 받아들여야 했다.",
+        "<span class='sub-q'>Q. 이 고통 속에서 당신을 지탱하는 것은?</span>",
+        "남겨질 사람들을 위한 기록을 완성해야 한다는 사명감. 아직 'comma,' 페이지에 채워 넣어야 할 마지막 마음들이 남아있다. 이 작업이 나를 살게 한다.",
+        "<span class='sub-q'>Q. 오늘 당신의 기분을 표현한 색은?</span>",
+        "블랙 아웃. 빛이 사라진 어둠. 하지만 어둠 속에 별이 가장 잘 보이듯, 이 고통 속에서도 소중한 사람들의 얼굴을 떠올린다.",
+      ],
+      images:["img/diary_52.jpg"],
+      related:[{id:"r34",title:"어둠 속의 별",tags:["#통증","#사명감"],linkDate:"2025-07-22"}]
+    },
+
+    "2025-08-25": { // 월요일 (음악 정리)
+      title: "내가 사랑했던 모든 음악들을 모아서",
+      date: "2025년 8월 25일",
+      mood: 'nomal',
+      q: "Q. 당신의 일생을 담은 '최종 플레이리스트'의 제목은?",
+      body:[
+        "내가 사랑했던 모든 음악들을 모은 플레이리스트를 만들었다. 기쁠 때 들었던 노래, 슬플 때 위로받았던 노래, 그리고 그와 함께 들었던 노래까지. 이 음악들이 남겨진 사람들에게 나의 감정을 전달할 수 있기를 바란다.",
+        "<span class='sub-q'>Q. 플레이리스트에서 가장 아끼는 트랙은?</span>",
+        "Queen의 'Bohemian Rhapsody'. 복잡하고 격렬하지만, 결국 아름다운 곡. 나의 삶도 이 곡과 같았다고 생각한다.",
+        "<span class='sub-q'>Q. 음악을 남기는 행위의 의미는?</span>",
+        "기억은 흐려지지만 음악은 영원하다. 이 음악들이 나의 목소리를 대신해 그들의 곁에서 오래오래 위로가 되어주기를 바란다.",
+      ],
+      images:["img/diary_53.jpg","img/diary_54.jpg"],
+      related:[{id:"r35",title:"음악과 기억",tags:["#플레이리스트","#기억"],linkDate:"2025-06-19"}]
+    },
+
+    "2025-08-31": { // 일요일 (마지막 기록)
+      title: "마지막 기록, 안녕 최정민",
+      date: "2025년 8월 31일",
+      mood: 'sad',
+      q: "Q. 당신의 삶을 한 문장으로 정의한다면?",
+      body:[
+        "오늘은 내가 이 페이지에 남기는 마지막 기록이다. 나의 삶은 '완벽하지는 않았지만, 아름답게 디자인된 페이지'였다. 후회는 없다. 사랑하는 사람들을 위한 기록을 모두 마쳤다.",
+        "<span class='sub-q'>Q. 남겨질 이들에게 전하는 마지막 한마디는?</span>",
+        "슬퍼하지 마. 나는 당신들을 사랑했어. 그리고 당신들의 삶은 계속 아름다워야 해. 내가 남긴 기록들을 보며, 가끔은 웃어주기를 바라.",
+        "<span class='sub-q'>Q. 마지막으로 당신의 이름을 부른다면?</span>",
+        "안녕, 최정민. 수고했어. 이제 편히 쉬어.",
+      ],
+      images:[],
+      related:[{id:"r36",title:"수고했어",tags:["#마지막","#안녕"],linkDate:"2025-08-08"}]
+    }
+
+// ... (sampleEntries 객체 닫는 부분에 추가) ...
+
+
+  };
+  
+
+    const entryKeys = Object.keys(sampleEntries);
+    
+    // ... (이하 생략: nav, tab 전환, loadEntry 함수 등은 동일)
+    const navHamburger = document.getElementById('navHamburger');
+    const navOverlay   = document.getElementById('navOverlay');
+    const navClose     = document.getElementById('navClose');
+
+    function openNav(){ navOverlay.setAttribute('aria-hidden','false'); navHamburger.setAttribute('aria-expanded','true'); document.documentElement.style.overflow = 'hidden'; }
+    function closeNav(){ navOverlay.setAttribute('aria-hidden','true'); navHamburger.setAttribute('aria-expanded','false'); document.documentElement.style.overflow = ''; }
+    navHamburger.addEventListener('click', openNav);
+    navClose.addEventListener('click', closeNav);
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && navOverlay.getAttribute('aria-hidden') === 'false') closeNav(); });
+    
+    document.querySelectorAll('.tabs .tab').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); 
+        const href = link.getAttribute('href');
+        document.body.classList.add('fade-out'); 
+        setTimeout(() => { window.location.href = href; }, 400); 
+      });
+    });
+
+    const monthBtn = document.getElementById('monthBtn');
+    const monthDropdown = document.getElementById('monthDropdown');
+    const displayMonth = document.getElementById('displayMonth');
+    const calGrid = document.getElementById('calGrid');
+    const entryTitle = document.getElementById('entryTitle');
+    const entryDate = document.getElementById('entryDate');
+    const entryBody = document.getElementById('entryBody');
+    const entryImages = document.getElementById('entryImages');
+    const relatedList = document.getElementById('relatedList');
+    const bookPanel = document.getElementById('bookPanel');
+
+    const months = [ { y:2025, m:6 },{ y:2025, m:7 },{ y:2025, m:8 } ];
+    function monthLabel(y, m){ return `${y}년 ${m}월`; }
+    function buildMonthDropdown(){ monthDropdown.innerHTML = months.map(({y,m}) => `<div class="month-item" data-y="${y}" data-m="${m}">${monthLabel(y,m)}</div>`).join(''); }
+
+    let currentYear = 2025; let currentMonth = 6; let selectedDateStr = '2025-06-18';
+    function toDateStr(y, m, d){ return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+    function firstMondayIndex(date){ return (date.getDay() + 6) % 7; }
+
+
+    // 🚨 [수정] renderCalendar 함수: 이미지 아이콘 렌더링
+    function renderCalendar(y, m){
+      calGrid.innerHTML = '';
+      const first = new Date(y, m-1, 1); const daysInMonth = new Date(y, m, 0).getDate();
+      const lead = firstMondayIndex(first);
+      for(let i=0; i<lead; i++){ calGrid.appendChild(Object.assign(document.createElement('div'),{className:'day empty'})); }
+      
+      for(let d=1; d<=daysInMonth; d++){
+        const cell = document.createElement('button'); cell.type='button'; cell.className='day'; 
+        const key = toDateStr(y,m,d); 
+        
+        const hasEntry = entryKeys.includes(key);
+        const entryData = sampleEntries[key];
+        
+        let content = `<span>${d}</span>`; // 날짜 번호
+        
+        if (hasEntry) {
+            cell.classList.add('has-entry');
+            
+            // 🚨 핵심 로직: 키를 기반으로 아이콘 URL을 찾고 <img> 태그 생성
+            const moodKey = entryData.mood || 'default';
+            const iconUrl = moodIconMap[moodKey] || moodIconMap['default'];
+            
+            content += `<div class="mood-icon"><img src="${iconUrl}" alt="${moodKey} mood icon"></div>`;
+        }
+        
+        cell.innerHTML = content; 
+        cell.dataset.key = key; 
+        if(key===selectedDateStr) cell.classList.add('active');
+
+        cell.addEventListener('click', () => { 
+            selectedDateStr = key; 
+            [...calGrid.querySelectorAll('.day')].forEach(x=>x.classList.remove('active')); 
+            cell.classList.add('active'); 
+            loadEntry(key); 
+        });
+        calGrid.appendChild(cell);
+      }
+    }
+
+    function loadEntry(key){
+      const e = sampleEntries[key];
+      if(!e){ entryTitle.textContent='기록이 없습니다'; entryDate.textContent=''; entryBody.innerHTML='<p>선택한 날짜에 해당하는 기록이 아직 등록되지 않았습니다.</p>'; entryImages.innerHTML=''; relatedList.innerHTML=''; return; }
+      entryTitle.textContent = e.title; entryDate.textContent = e.date; document.querySelector('.q').textContent = e.q;
+      entryBody.innerHTML = e.body.map(p=>`<p>${p}</p>`).join(''); 
+      entryImages.innerHTML = e.images.map(src=>`<img src="${src}" alt="image" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x600?text=Image+Not+Found'"/>`).join('');
+      relatedList.innerHTML = e.related.map(r=>`<div class="record" data-link="${r.linkDate}"><div class="r-title">${r.title}</div><div class="tags">${r.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`).join('');
+      relatedList.querySelectorAll('.record').forEach(card=>{ card.addEventListener('click',()=>{ const k=card.dataset.link; if(!k) return; const [yy,mm]=k.split('-').map(Number); if(yy===currentYear&&mm===currentMonth){ selectedDateStr=k; renderCalendar(currentYear,currentMonth);} loadEntry(k); }); });
+      document.getElementById('bookPane').scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    // Background setter (유지)
+    function setBookBackground(url, {dim=true, position='center', size='cover'}={}){
+      const bookPanel = document.getElementById('bookPanel');
+      if(!bookPanel) return; if(url){ bookPanel.style.backgroundImage = `url('${url}')`; bookPanel.style.backgroundPosition=position; bookPanel.style.backgroundSize=size; if(dim) bookPanel.classList.add('dim'); else bookPanel.classList.remove('dim'); } else { bookPanel.style.backgroundImage=''; bookPanel.classList.remove('dim'); }
+    }
+
+
+    // 스케일 조정 로직 (유지)
+    function applyScale(){
+      const stage = document.getElementById('stage');
+      if(!stage) return;
+      const inner = document.getElementById('inner');
+      const fit = document.documentElement;
+      const scale = Math.min(fit.clientWidth / 1920, fit.clientHeight / 1080);
+      stage.style.transform = `scale(${scale})`;
+      const PAGE_LEFT = 240; 
+      inner.style.left = (PAGE_LEFT / scale) + 'px';
+    }
+
+
+    // Init after DOM ready (유지)
+    window.addEventListener('DOMContentLoaded', () => {
+      buildMonthDropdown();
+      monthBtn.addEventListener('click', () => { monthBtn.classList.toggle('open'); monthDropdown.setAttribute('aria-hidden', monthBtn.classList.contains('open') ? 'false' : 'true'); });
+      monthDropdown.addEventListener('click', (e) => { const item=e.target.closest('.month-item'); if(!item) return; currentYear=+item.dataset.y; currentMonth=+item.dataset.m; displayMonth.textContent=monthLabel(currentYear,currentMonth); renderCalendar(currentYear,currentMonth); monthBtn.classList.remove('open'); monthDropdown.setAttribute('aria-hidden','true'); });
+      document.addEventListener('click', (e) => { if(!monthBtn.contains(e.target) && !monthDropdown.contains(e.target)){ monthBtn.classList.remove('open'); monthDropdown.setAttribute('aria-hidden','true'); } });
+      
+      displayMonth.textContent = monthLabel(currentYear, currentMonth); 
+      renderCalendar(currentYear, currentMonth); 
+      loadEntry(selectedDateStr);
+      
+      applyScale();
+      window.addEventListener('resize', applyScale);
+    });
+  })();
+</script>
+</body>
+</html>

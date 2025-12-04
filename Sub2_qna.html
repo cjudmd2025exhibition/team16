@@ -1,0 +1,1131 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>comma, page</title>
+        <link href="https://fonts.googleapis.com/css2?family=Apple+SD+Gothic+Neo:wght@400;500;600&display=swap">
+    
+    <!-- ui-core.css (혹은 <style>에 그대로 붙여넣기) -->
+    <style>
+   :root{
+  /* 👇 여기 두 개를 바꿔주세요 */
+  --bg:#212121;       /* 디테일 페이지와 같은 어두운 배경 */
+  --ink:#f3f1ea;      /* 어두운 배경이니까 글자는 밝게 */
+  
+  --muted:#8b8b8b; 
+  --line:#444444;     /* (선택사항) 선 색상도 어둡게 맞추면 더 자연스러워요 */
+  --accent:#b4a78a; 
+  --accent-ink:#5a5241; 
+  --paper:#2b2b2b;    /* (선택사항) 캘린더나 카드 배경도 어둡게 하려면 이것도 수정 */
+
+  --page-left:240px;
+  --brandbar-h:72px;
+}
+    
+   /* 전체 폰트 및 기본 */
+   html,body{
+   margin:0; background:var(--bg); color:var(--ink);
+   font-family:"SUIT",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+   line-height:1.5;
+   }
+
+    /* 페이드 효과 기본값 */
+body {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+body.fade-out {
+  opacity: 0;
+}
+
+    
+    /* 좌측 기준선에 맞춰 들여쓰기 하는 유틸 */
+    .page-gutter { 
+        margin-left: var(--page-left);
+        margin-right: 1100px;
+      }
+    
+    /* 작은 화면에서는 좌우 여백 축소(선택) */
+    @media (max-width: 1200px){
+      :root{ --page-left:24px; }
+    }
+
+
+/* ===== Brandbar / Nav ===== */
+.brandbar{
+  position:sticky; top:0; left:0; right:0; height:var(--brandbar-h);
+  display:flex; align-items:center; gap:20px; z-index:10;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(to bottom, rgba(255,255,255,0.101), rgba(255,255,255,0.044));
+  backdrop-filter:blur(4px);
+}
+.logo{ margin-left: var(--page-left); display:flex; align-items:center; text-decoration:none; color: var(--ink); }
+.logo:hover{ color: var(--accent); }
+.logo-svg{ height: 28px; width:auto; display:block; }
+.nav-spacer{ flex:1 1 auto; }
+.nav-hamburger{ width:36px;height:36px;border:0;background:transparent; margin-right: calc(var(--page-left) + 15px); display:grid;place-items:center;cursor:pointer; }
+.nav-hamburger span,.nav-hamburger span::before,.nav-hamburger span::after{ display:block;width:18px;height:2px;background:var(--ink);content:"";position:relative; }
+.nav-hamburger span::before{ position:absolute; top:-6px; left:0; }
+.nav-hamburger span::after{ position:absolute; top:6px; left:0; }
+
+
+/* Overlay */
+.nav-overlay{ position:fixed; inset:0; background:#000; color:#fff; display:none; z-index:10000; }
+.nav-overlay[aria-hidden="false"]{ display:block; }
+.nav-close{ position:absolute; top:24px; right:var(--page-left); width:40px; height:40px; background:transparent; border:0; color:#fff; font-size:32px; line-height:1; cursor:pointer; }
+.nav-overlay-inner{ position:absolute; inset:var(--brandbar-h) 0 0 0; height:calc(100% - var(--brandbar-h)); display:grid; grid-template-columns:1fr 1fr; }
+.nav-left{ padding-left:var(--page-left); padding-top:24px; }
+.nav-sections{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:36px; }
+.nav-index{ display:block; font-size:12px; opacity:.6; margin-bottom:8px; }
+.nav-head{ display:inline-block; font-size:28px; font-weight:800; color:#fff; text-decoration:none; }
+.nav-sub{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+.nav-sub a{ color:#d6d6d6; text-decoration:none; font-size:14px; }
+.nav-sub a:hover{ color:#fff; }
+
+.nav-right{ display:flex; align-items:center; }
+.nav-brand-block{ max-width:520px; color:#d6d6d6; }
+.nav-brand{ font-size:32px; font-weight:800; color:#fff; margin-bottom:6px; }
+.nav-brand-sub{ margin-bottom:16px; }
+.nav-hr{ height:1px; background:#444; margin:14px 0 18px; }
+.nav-meta b{ color:#fff; font-weight:700; margin-right:10px; }
+.nav-copy{ margin-top:24px; font-size:12px; opacity:.7; }
+
+@media (max-width:1200px){
+  .nav-hamburger{ margin-right:var(--page-left); }
+  .nav-close{ right:24px; }
+  .nav-left{ padding-left:24px; }
+}
+
+.tabs {
+  display: flex; 
+  gap: 50px;
+  margin-top: 24px; 
+  margin-bottom: 24px;
+  padding-bottom: 0px;
+}
+.tabs a {
+  text-decoration:none; color:var(--muted); font-weight:500;
+}
+.tabs .is-active { 
+  color: var(--ink); 
+  padding-bottom:4px; 
+}
+.tabs a:hover {
+  color: var(--ink); /* 🚨 호버 시 글자색 밝게 */
+}
+
+.section-title{
+  font-size:24px; font-weight:700; margin: 0 240px 12px;
+}
+
+.question-gallery{
+  width: 580px;
+  padding-top: 70px;
+  padding-bottom: 70px;
+  display:flex; align-items:center; justify-content:center;
+  gap:40px; margin:40px 240px;
+  font-size:20px; font-weight:600;
+  border-top: 1px solid #d6d6d6;
+  border-bottom: 1px solid #d6d6d6;
+}
+/* 🚨 .question-gallery button 규칙을 이 코드로 교체합니다. */
+.question-gallery button{
+  border:none; background:transparent; font-size:24px; cursor:pointer;
+  color: var(--muted); /* 🚨 화살표 색상을 회색(--muted)으로 변경 */
+  transition: color 0.2s ease;
+}
+/* 🚨 [추가] 화살표 호버 시 색상 강조 */
+.question-gallery button:hover {
+  color: var(--ink); /* 🚨 호버 시 완전 밝은 색(--ink)으로 변경 */
+}
+
+/* 🚨 .q-current span:first-child 규칙을 이 코드로 교체합니다. */
+.q-current span:first-child{ 
+  margin-right:10px; 
+  color:var(--accent); /* 🚨 번호 색상을 밝은 강조색(--accent)으로 변경 */
+}
+
+.question-list{ margin-top:40px; }
+.list-header{ display:flex; justify-content:space-between; margin-bottom:12px; color:var(--muted); font-size:14px; }
+#questionItems{ list-style:none; margin:0; padding:0; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+
+#questionItems li{
+  padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer;
+}
+#questionItems li:hover{ background:#3a3a3a; }
+#questionItems li:last-child{ border-bottom:none; }
+
+
+.list-header .sort-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+
+#sortOption {
+  /* 🚨 브라우저 기본 스타일 제거 (필수) */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* 🚨 다크 모드에 맞는 스타일 적용 */
+  background: var(--paper); /* 어두운 배경 #2b2b2b */
+  color: var(--ink); /* 밝은 글자 #f3f1ea */
+  border: 1px solid var(--line); /* 연한 선 #444 */
+  border-radius: 6px;
+  padding: 6px 30px 6px 10px; /* 오른쪽 여백 확보 (화살표 위치) */
+  cursor: pointer;
+  
+  /* 폰트 및 크기 */
+  font-size: 14px; 
+  font-family: inherit;
+}
+
+/* 🚨 [추가] 커스텀 화살표 스타일 */
+.sort-wrapper .sort-arrow {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  /* 🚨 화살표 색상은 글자색과 동일하게 */
+  border-top: 5px solid var(--ink); 
+  transform: translateY(-50%);
+  pointer-events: none; /* 클릭 이벤트 방지 */
+}
+
+  /* 1. 패널 위치 및 배경 */
+  .book-panel { 
+    position: absolute; 
+    top: 0; right: 0; bottom: 0; 
+    /* 라이프타임과 동일한 왼쪽 위치 계산 */
+    left: calc(240px + 560px + 190px); 
+    margin-top: 72px; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-image: url('img/book.png'); 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
+  }
+  /* dim 효과 (필요 시) */
+  .book-panel.dim::before { 
+    content: ""; position: absolute; inset: 0; background: rgba(255,255,245,0.0); 
+  }
+
+  /* 2. 책 레이아웃 (제목 고정의 핵심) */
+  .book { 
+    position: absolute; 
+    top: 72px; right: 0; bottom: 0; left: 0; 
+    margin-right: 240px; 
+    padding: 22px 60px 40px 60px; 
+    box-sizing: border-box; 
+    background: transparent; 
+    
+    /* ⭐ 제목 고정을 위한 Grid 설정 */
+    display: grid; 
+    grid-template-rows: auto 1fr; /* 헤더(auto) + 내용(나머지) */
+    overflow: hidden; 
+    z-index: 1; 
+  }
+
+  /* 3. 고정된 헤더 스타일 */
+  .book-header { 
+  padding-bottom: 16px; 
+  /* 👇 아주 연한 검정(투명도 10%)이나 연한 회색(#dedbd2)으로 변경하세요 */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
+  margin-bottom: 0; 
+}
+
+  .book-title { 
+    font-size: 28px; 
+    font-weight: 800; 
+    margin: 0 0 4px; 
+    color: #2b2b2b; /* 종이 위니까 진한 색 */
+  }
+  .book-date { 
+    font-size: 13px; 
+    color: #555555; /* 진한 회색 */
+  }
+
+  /* 4. 스크롤되는 본문 영역 */
+  .book-pane { 
+    overflow-y: auto;      /* 세로 스크롤 허용 */
+    overflow-x: hidden;    /* 가로 스크롤 방지 */
+    padding-top: 16px;     /* 헤더와의 간격 */
+    padding-bottom: 40px;  /* 하단 여백 */
+  }
+
+  /* ⭐ 스크롤바 스타일 (라이프타임과 동일하게) */
+  .book-pane::-webkit-scrollbar { width: 10px; }
+  .book-pane::-webkit-scrollbar-track { 
+    background: #f3f1ea; 
+    border-radius: 10px; 
+  }
+  .book-pane::-webkit-scrollbar-thumb {
+    background:#dbd7ca;
+    border-radius: 10px; 
+    border: 2px solid #f3f1ea; 
+  }
+  .book-pane::-webkit-scrollbar-thumb:hover { background: #c4bba4;   }
+
+  /* 5. 내용 스타일 */
+  .qa { margin: 0 0 16px; }
+  
+  /* 질문 스타일 */
+  .q { 
+    color: #5a5241; /* 진한 갈색 포인트 */
+    font-weight: 700; 
+    margin-bottom: 6px; 
+  }
+  
+  /* 본문 텍스트 */
+  .prose { color: #2b2b2b; }
+  .prose p { margin: 0 0 12px; }
+
+  /* 추가 질문 스타일 */
+  .sub-q {
+    display: block;
+    color: #5a5241; /* 진한 갈색 포인트 */
+    font-weight: 700;
+    margin-top: 24px;
+    margin-bottom: 4px;
+  }
+
+  /* 이미지 그리드 (라이프타임과 통일) */
+  .figure-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .figure-grid img {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.1);
+    display: block;
+  }
+
+
+</style>
+</head>
+
+    <body>
+
+ <!-- SVG Sprite -->
+ <!-- SVG Sprite: 재사용 가능한 로고 심볼 -->
+<!-- ⬇️ head 바로 아래 쪽 스프라이트 영역에 추가 -->
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="comma-logo-full" viewBox="0 0 1460 213">
+    <!-- ↓ /mnt/data/Logo.svg의 내용 그대로 -->
+    <path d="M879.318 186H859L867.983 130H896L879.318 186Z" fill="currentColor"/>
+    <path d="M1012.7 146.991C1022.32 146.991 1030.81 144.64 1038.16 139.939C1045.71 135.049 1051.56 128.279 1055.71 119.628C1059.86 110.978 1061.93 101.199 1061.93 90.291C1061.93 79.3836 1059.86 69.6985 1055.71 61.2358C1051.56 52.7731 1045.71 46.191 1038.16 41.4896C1030.81 36.6 1022.32 34.1552 1012.7 34.1552C1004.21 34.1552 996.195 36.694 988.65 41.7716C981.105 46.8493 975.069 53.7134 970.542 62.3642C966.015 71.0149 963.752 80.3239 963.752 90.291C963.752 100.446 966.015 109.943 970.542 118.782C975.069 127.433 981.105 134.297 988.65 139.375C996.195 144.452 1004.21 146.991 1012.7 146.991ZM953 24.2821H963.469V57.8507C967.996 48.6358 974.786 40.9254 983.84 34.7194C992.895 28.3254 1002.61 25.1284 1012.98 25.1284C1024.49 25.1284 1034.68 27.9492 1043.54 33.591C1052.59 39.0448 1059.67 46.7552 1064.76 56.7224C1069.85 66.5015 1072.4 77.691 1072.4 90.291C1072.4 103.079 1069.85 114.457 1064.76 124.424C1059.67 134.391 1052.59 142.196 1043.54 147.837C1034.68 153.291 1024.49 156.018 1012.98 156.018C1001.48 156.018 991.291 152.727 982.426 146.145C973.749 139.375 967.43 131.664 963.469 123.013V213H953V24.2821Z" fill="currentColor"/>
+    <path d="M1139.6 155.454C1128.09 155.454 1117.81 152.727 1108.76 147.273C1099.89 141.631 1092.91 133.827 1087.82 123.86C1082.73 113.893 1080.18 102.609 1080.18 90.009C1080.18 77.409 1082.73 66.1254 1087.82 56.1582C1092.91 46.191 1099.89 38.4806 1108.76 33.0269C1117.81 27.3851 1128.09 24.5642 1139.6 24.5642C1150.73 24.5642 1160.63 27.5731 1169.31 33.591C1177.98 39.4209 1184.49 47.1313 1188.83 56.7224V24.2821H1199.02V154.325H1188.83V123.296C1185.06 131.57 1178.74 138.999 1169.87 145.581C1161.01 152.163 1150.92 155.454 1139.6 155.454ZM1090.65 90.009C1090.65 100.916 1092.73 110.696 1096.88 119.346C1101.02 127.809 1106.78 134.391 1114.13 139.093C1121.68 143.794 1130.17 146.145 1139.6 146.145C1148.28 146.145 1156.39 143.794 1163.93 139.093C1171.48 134.203 1177.51 127.433 1182.04 118.782C1186.57 110.131 1188.83 100.54 1188.83 90.009C1188.83 79.4776 1186.57 69.8866 1182.04 61.2358C1177.51 52.5851 1171.48 45.909 1163.93 41.2075C1156.39 36.3179 1148.28 33.8731 1139.6 33.8731C1130.17 33.8731 1121.68 36.3179 1114.13 41.2075C1106.78 45.909 1101.02 52.491 1096.88 60.9537C1092.73 69.4164 1090.65 79.1015 1090.65 90.009Z" fill="currentColor"/>
+    <path d="M1273.27 146.427C1282.52 146.427 1291.01 143.888 1298.74 138.81C1306.47 133.733 1312.6 126.869 1317.13 118.218C1321.66 109.567 1323.92 100.164 1323.92 90.009C1323.92 80.0418 1321.66 70.8269 1317.13 62.3642C1312.6 53.7134 1306.47 46.8493 1298.74 41.7716C1291.01 36.694 1282.52 34.1552 1273.27 34.1552C1264.03 34.1552 1255.73 36.506 1248.38 41.2075C1241.21 45.909 1235.55 52.5851 1231.4 61.2358C1227.44 69.6985 1225.46 79.2895 1225.46 90.009C1225.46 100.916 1227.44 110.696 1231.4 119.346C1235.55 127.809 1241.21 134.485 1248.38 139.375C1255.73 144.076 1264.03 146.427 1273.27 146.427ZM1214.99 90.009C1214.99 77.409 1217.44 66.2194 1222.35 56.4403C1227.25 46.6612 1234.14 39.0448 1243 33.591C1251.87 27.9492 1261.96 25.1284 1273.27 25.1284C1283.27 25.1284 1293.08 28.3254 1302.7 34.7194C1312.51 41.1134 1319.49 48.8239 1323.64 57.8507V24.2821H1333.82V146.145C1333.82 159.121 1331.47 170.687 1326.75 180.842C1322.03 190.997 1315.24 198.896 1306.38 204.537C1297.7 210.179 1287.52 213 1275.82 213C1265.07 213 1255.83 211.213 1248.09 207.64C1240.36 204.255 1233.19 198.049 1226.59 189.022L1234.51 182.534C1240.17 190.245 1246.21 195.699 1252.62 198.896C1259.03 202.093 1266.77 203.691 1275.82 203.691C1290.35 203.691 1301.95 198.237 1310.62 187.33C1319.3 176.422 1323.64 162.224 1323.64 144.734V121.603C1320.43 131.57 1314.11 139.751 1304.68 146.145C1295.44 152.539 1284.97 155.736 1273.27 155.736C1261.96 155.736 1251.87 152.915 1243 147.273C1234.14 141.631 1227.25 133.827 1222.35 123.86C1217.44 113.893 1214.99 102.609 1214.99 90.009Z" fill="currentColor"/>
+    <path d="M1403.69 154.607C1392.19 154.607 1381.91 151.881 1372.85 146.427C1363.8 140.785 1356.73 133.075 1351.63 123.296C1346.54 113.328 1343.99 102.045 1343.99 89.4448C1343.99 76.8448 1346.54 65.5612 1351.63 55.594C1356.73 45.6269 1363.8 37.9164 1372.85 32.4627C1381.91 26.8209 1392.19 24 1403.69 24C1415.39 24 1424.92 26.5388 1432.27 31.6164C1439.82 36.506 1444.34 40.2672 1445.85 42.9C1447.55 45.5328 1450.38 50.8925 1454.34 58.9791C1458.11 67.8179 1460 79.1015 1460 92.8299H1354.18C1354.18 102.985 1356.26 112.106 1360.41 120.193C1364.74 128.091 1370.59 134.297 1377.95 138.81C1385.49 143.324 1394.08 145.581 1403.69 145.581C1413.69 145.581 1421.61 143.888 1427.46 140.503C1433.5 136.93 1437.18 134.109 1438.5 132.04C1439.82 129.972 1441.8 126.304 1444.44 121.039L1453.21 125.27C1449.63 133.545 1443.78 140.503 1435.67 146.145C1427.56 151.787 1416.9 154.607 1403.69 154.607ZM1449.81 83.5209C1449.63 75.2463 1447.64 67.1597 1443.87 59.2612C1440.29 51.1746 1435.01 44.6866 1428.03 39.797C1421.24 34.9075 1413.13 32.6507 1403.69 33.0269C1389.17 33.0269 1377.29 37.7284 1368.04 47.1313C1358.99 56.3463 1354.37 68.4761 1354.18 83.5209H1449.81Z" fill="currentColor"/>
+    <path d="M722.11 0.01C696.96 0.01 674.54 11.79 659.97 30.09C645.4 11.8 622.98 0.01 597.83 0.01C572.68 0.01 550.28 11.78 535.7 30.06C521.13 11.79 498.72 0.01 473.57 0.01C448.42 0.01 426 11.79 411.43 30.09C396.86 11.8 374.44 0.01 349.29 0.01C316.82 0.01 288.88 19.6 276.56 47.57C264.23 19.61 236.29 0.01 203.82 0.01C201.25 0.01 198.74 0.15 196.04 0.4C195.42 0.46 194.81 0.55 193.69 0.7C192 0.92 190.33 1.16 188.71 1.47C187.98 1.61 187.21 1.78 186.12 2.04C185.82 2.11 185.53 2.19 185.24 2.26C183.99 2.56 182.73 2.87 181.49 3.23C180.94 3.39 180.3 3.6 179.7 3.79C177.87 4.38 176.05 5.01 174.28 5.73C173.93 5.87 173.61 6.01 173.27 6.15C163.92 10.1 155.31 15.84 147.92 23.24C132.85 38.31 124.55 58.34 124.55 79.65C124.55 90.3 126.62 100.63 130.58 110.17C130.6 110.2 130.6 110.21 130.6 110.21C131.51 112.4 132.54 114.54 133.65 116.65C133.81 116.97 133.98 117.28 134.15 117.6C135.1 119.36 136.15 121.06 137.24 122.75C137.56 123.28 137.89 123.81 138.2 124.25C139.56 126.25 141 128.18 142.53 130.04C157.7 148.41 180.04 158.95 203.84 158.95C231.33 158.95 255.59 144.92 269.86 123.65V159.03H304.52V79.48H304.49C304.49 54.77 324.59 34.66 349.31 34.66C374.03 34.66 394.13 54.76 394.13 79.48H394.16V159.03H428.82V79.48H428.79C428.79 54.77 448.89 34.66 473.61 34.66C498.33 34.66 518.23 54.58 518.41 79.14C518.41 79.25 518.39 79.36 518.39 79.47H518.42V159.02H553.08V79.47C553.08 79.36 553.06 79.25 553.06 79.14C553.24 54.58 573.26 34.66 597.86 34.66C622.46 34.66 642.68 54.76 642.68 79.48C642.68 123.3 678.33 158.95 722.15 158.95V124.29C697.44 124.29 677.33 104.19 677.33 79.47C677.33 54.75 697.43 34.65 722.15 34.65C746.87 34.65 766.97 54.75 766.97 79.47V159.02H801.63V79.47C801.63 35.65 765.98 0 722.16 0H722.11V0.01ZM203.82 124.31C190.4 124.31 177.79 118.36 169.22 107.98C168.36 106.95 167.57 105.87 166.61 104.43L166.1 103.62C165.6 102.84 165.1 102.06 164.64 101.24L163.96 99.91C163.57 99.13 163.17 98.36 162.86 97.65L162.2 96.05C161.9 95.3 161.62 94.53 161.31 93.59L160.85 92.17C160.61 91.33 160.4 90.48 160.05 88.99L159.83 88.02C159.65 87.09 159.53 86.15 159.42 85.27L159.22 83.84C159.08 82.41 159 80.96 159 79.5C159 66.08 164.95 53.47 175.29 44.92C176.34 44.06 177.43 43.25 178.94 42.25L179.73 41.76C180.47 41.28 181.23 40.8 182.11 40.31L183.38 39.66C184.14 39.27 184.91 38.88 185.78 38.5L187.21 37.91C188.01 37.59 188.81 37.29 189.68 37.01L191.14 36.54C191.99 36.29 192.85 36.08 194.17 35.78L195.29 35.53C196.22 35.35 197.16 35.23 198.07 35.11L199.42 34.91C200.87 34.77 202.33 34.69 203.81 34.69C228.52 34.69 248.63 54.79 248.63 79.51C248.63 104.23 228.53 124.33 203.81 124.33V124.31H203.82ZM34.65 79.49C34.65 104.21 54.75 124.3 79.46 124.31C89.77 124.31 99.44 120.92 107.43 114.49C108.72 117.8 110.16 121 111.63 124.1C115.15 131.5 119.79 138.35 125.35 144.37C112 153.81 95.91 158.96 79.46 158.96C35.65 158.96 0 123.31 0 79.49C0 35.67 35.65 0.01 79.47 0.01C102.07 0.01 122.41 9.57 136.88 24.77C133.79 28.59 131.09 32.6 128.59 36.58C124.34 43.34 121.11 50.72 119.02 58.42C111.47 44.3 96.57 34.67 79.47 34.67C54.75 34.67 34.65 54.77 34.65 79.49Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+  <!-- Brandbar -->
+  <div class="brandbar">
+    <a href="index.html" class="logo" aria-label="comma , page">
+      <svg class="logo-svg" role="img" aria-hidden="true" preserveAspectRatio="xMinYMid meet">
+        <use href="#comma-logo-full" transform="translate(-42,0)" ></use>
+      </svg>
+    </a>
+    
+    <div class="nav-spacer"></div>
+    <button id="navHamburger" class="nav-hamburger" aria-label="메뉴 열기" aria-controls="navOverlay" aria-expanded="false">
+      <span></span>
+    </button>
+  </div>
+
+  
+<!-- 풀스크린 네비 오버레이 -->
+<div id="navOverlay" class="nav-overlay" aria-hidden="true">
+  <button id="navClose" class="nav-close" aria-label="메뉴 닫기">×</button>
+
+  <div class="nav-overlay-inner">
+    <div class="nav-left">
+      <ul class="nav-sections">
+        <li>
+          <span class="nav-index">01</span>
+          <a href="index.html" class="nav-head">HOME</a>
+        </li>
+        <li>
+          <span class="nav-index">02</span>
+          <a href="about_us.html" class="nav-head">ABOUT –</a>
+          <div class="nav-sub">
+            <a href="about_us.html">우리는</a>
+            <a href="about_d.html">디지털 유산이란</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">03</span>
+          <a href="Sub1_lifetime.html" class="nav-head">일생기록</a>
+          <div class="nav-sub">
+       
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">04</span>
+          <a href="Sub2_diary.html" class="nav-head">하루기록 –</a>
+          <div class="nav-sub">
+            <a href="Sub2_diary.html">일기</a>
+            <a href="Sub2_qna.html">질문질답</a>
+            <a href="Sub2_buket.html">버킷리스트</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">05</span>
+          <a href="Sub3_ heritage.html" class="nav-head">접근목록 <small>[에필로그]</small></a>
+        </li>
+        <li>
+          <span class="nav-index">06</span>
+          <a href="Sub4_visiting_list.html" class="nav-head">마이페이지</a>
+        </li>
+      </ul>
+    </div>
+      <div class="nav-right">
+        <div class="nav-brand-block">
+          <div class="nav-brand">comma ,</div>
+          <div class="nav-brand-sub">고인이 준비한 당신을 위한 기억의 공간</div>
+          <div class="nav-hr"></div>
+          <div class="nav-meta">
+            <div><b>디자이너</b> 김민정 김선정 노채린</div>
+            <div><b>문의전화</b> 043 - 229 - 8660(학과사무실)</div>
+          </div>
+          <div class="nav-copy">© 2025, Department of Digital Media Design, Cheongju University. All rights reserved.</div>
+        </div>
+      </div>           
+   </div>
+
+</div>
+
+  <aside class="left">
+    <nav class="tabs page-gutter" role="tablist" aria-label="하루기록 탭">
+      <a href="Sub2_diary.html" class="tab" role="tab" aria-selected="true">일기</a>
+      <a href="Sub2_qna.html" class="tab is-active" role="tab">질문질답</a>
+      <a href="Sub2_buket.html" class="tab" role="tab">버킷리스트</a>
+    </nav>
+  </aside>
+  
+
+  <h2 class="section-title page-gutter">정민, 3개월 간의 질문들</h2>
+
+  <!-- Question Gallery -->
+<div class="question-gallery page-gutter">
+  <button class="q-prev">←</button>
+  <div class="q-current">
+    <span id="qIndex">1.</span>
+    <span id="qText">‘나’에 대해서</span>
+  </div>
+  <button class="q-next">→</button>
+</div>
+
+<!-- Question List -->
+<div class="question-list page-gutter">
+  <div class="list-header">
+    <span>질문 목록</span>
+    <div class="sort-wrapper"> <select id="sortOption">
+        <option>작성일 순</option>
+        <option>제목 순</option>
+      </select>
+      <span class="sort-arrow"></span> </div> </div>
+  <ul id="questionItems">
+    </ul>
+</div>
+
+  <!-- Book Component -->
+  <comma-book id="bookPanel" class="book-panel dim"></comma-book>
+
+
+  
+
+  <script>
+    // ===== comma-book component =====
+    class CommaBook extends HTMLElement {
+      connectedCallback() {
+        if (!this._rendered) {
+          this.innerHTML = `
+            <article class="book" aria-labelledby="entryTitle">
+              <header class="book-header">
+                <h1 id="entryTitle" class="book-title"></h1>
+                <div id="entryDate" class="book-date"></div>
+              </header>
+              <div class="book-pane" id="bookPane">
+                <div class="qa">
+                  <div class="q"></div>
+                  <div class="prose" id="entryBody"></div>
+                </div>
+                <div class="figure-grid" id="entryImages"></div>
+              </div>
+            </article>
+          `;
+          this._rendered = true;
+        }
+        this.$title  = this.querySelector('#entryTitle');
+        this.$date   = this.querySelector('#entryDate');
+        this.$q      = this.querySelector('.q');
+        this.$body   = this.querySelector('#entryBody');
+        this.$images = this.querySelector('#entryImages');
+        this.$pane   = this.querySelector('#bookPane');
+      }
+      setData(entry){
+        if(!entry) return;
+        const { title='', date='', q='', body=[], images=[] } = entry;
+        this.$title.textContent = title;
+        this.$date.textContent  = date;
+        this.$q.textContent     = q;
+        this.$body.innerHTML    = (body||[]).map(p=>`<p>${p}</p>`).join('');
+        this.$images.innerHTML  = (images||[]).map(src=>`<img src="${src}" alt="">`).join('');
+        this.$pane?.scrollTo({ top:0, behavior:'instant' });
+      }
+      setBackground(url, {dim=true, position='center', size='cover'} = {}){
+        if(url){
+          this.style.backgroundImage   = `url('${url}')`;
+          this.style.backgroundPosition= position;
+          this.style.backgroundSize    = size;
+          this.classList.toggle('dim', !!dim);
+        }else{
+          this.style.backgroundImage = '';
+          this.classList.remove('dim');
+        }
+      }
+    }
+    customElements.define('comma-book', CommaBook);
+    
+    // ===== 네비 =====
+    (function initNav(){
+      const navHamburger = document.getElementById('navHamburger');
+      const navOverlay   = document.getElementById('navOverlay');
+      const navClose     = document.getElementById('navClose');
+      if(!navHamburger || !navOverlay || !navClose) return;
+      function openNav(){ navOverlay.setAttribute('aria-hidden','false'); navHamburger.setAttribute('aria-expanded','true'); document.documentElement.style.overflow='hidden'; }
+      function closeNav(){ navOverlay.setAttribute('aria-hidden','true'); navHamburger.setAttribute('aria-expanded','false'); document.documentElement.style.overflow=''; }
+      navHamburger.addEventListener('click', openNav);
+      navClose.addEventListener('click', closeNav);
+      window.addEventListener('keydown', e => { if(e.key==='Escape' && navOverlay.getAttribute('aria-hidden')==='false') closeNav(); });
+    })();
+
+     //화면전환 효과
+     document.querySelectorAll('.tabs .tab').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault(); // 바로 이동 막기
+    const href = this.getAttribute('href');
+    document.body.classList.add('fade-out'); // 페이드아웃 시작
+    setTimeout(() => {
+      window.location.href = href; // 일정 시간 후 이동
+    }, 400); // transition 시간과 맞추기
+  });
+});
+  
+    /* =======================
+       1) bookComp → data → loader (먼저!)
+       ======================= */
+    const bookComp = document.getElementById('bookPanel');
+    
+  const sampleEntries = {
+  // 1. 나의 태몽에 대해서 알려주세요. (사용자 제공 내용)
+  "2025-07-18-01": {
+    title: "정민의 태몽",
+    date: "2025년 7월 18일에 작성한 답변",
+    q: "Q. 나의 태몽에 대해서 알려주세요.",
+    body: [
+      "내 태몽은 엄마가 말씀해 주시기를, 아주 예쁜 사과들이 있는 과수원 같은 배경이었대.",
+      "그리고 거기에 사과들이 주렁주렁 매달려 있는 꿈이라고 들으셨어.",
+      "그래서 내 이름 한자가 둘 ‘정’, ‘올 린’으로 ‘정민’이 되었나 봐.",
+      "맞다! 원래 지어졌던 이름은 ‘재소’였는데, 철학관에서 이름을 다시 받았어. 우리 집안 남자는 ‘재’ 자 돌림이라서.",
+      "난 재소라는 이름도 좋아. 어감이 귀엽기도 하고. 이제부터 내 별명은 재소야."
+    ],
+    images: [
+
+    ]
+  },
+  // 2. 나의 이름의 뜻은 무엇인가요? (사용자 제공 내용)
+  "2025-07-18-02": {
+    title: "이름의 뜻",
+    date: "2025년 7월 18일",
+    q: "Q. 나의 이름의 뜻은 무엇인가요?",
+    body: [
+      "정(正)의 바름과 민(敏)의 빠름/영민함을 담았어.",
+      "부모님은 ‘바르게 민첩하게’ 사는 사람을 바랐대.",
+      "<span class='sub-q'>Q. 이름처럼 살았나요?</span>",
+      "어쩌면 디자이너로서의 삶이 이 이름에 가장 가까웠던 것 같아. 트렌드를 ‘민첩하게’ 따라가되, 본질은 ‘바르게’ 유지하려고 노력했거든. 마음에 드는 이름이야."
+    ],
+    images: []
+  },
+  // 3. 나의 생년월일과 별자리를 알려주세요. (새롭게 작성)
+  "2025-07-18-03": {
+    title: "94년 7월 18일 게자리의 기록",
+    date: "2025년 7월 18일",
+    q: "Q. 나의 생년월일과 별자리를 알려주세요.",
+    body: [
+      "나는 1994년 7월 18일생이야. 한여름에 태어났고, 별자리는 감수성이 풍부한 게자리지.",
+      "게자리의 특징인 섬세함과 감정의 깊이가 디자이너인 나에게 큰 영향을 주었어. 고객의 숨은 마음을 읽고 디자인에 반영하는 능력이 된 것 같아.",
+      "주변을 잘 챙기려는 마음도 강한데, 가끔은 너무 예민해져서 스스로를 힘들게 할 때도 있어. 그래도 이 모든 게 나를 만드는 요소들이겠지."
+    ],
+    images: []
+  },
+  // 4. 나의 어린 시절 별명은 무엇이었나요? (NEW CONTENT)
+  "2025-07-18-04": {
+    title: "어릴 적 별명: 재소와 정반장",
+    date: "2025년 7월 18일",
+    q: "Q. 나의 어린 시절 별명은 무엇이었나요?",
+    body: [
+      "어릴 적 별명은 '재소'가 가장 익숙해. 태몽에서 언급했듯이, 원래 내 이름이 될 뻔했던 이름이거든. 엄마 아빠도 나를 '재소야'라고 부르실 때가 많았어.",
+      "초등학교 때는 워낙 정리정돈을 잘해서 친구들 사이에서는 '정반장'이라고도 불렸지. 반장보다는 반에서 정리담당 같은 느낌.",
+      "<span class='sub-q'>Q. 그 별명들은 지금의 당신에게 어떤 영향을 주었나요?</span>",
+      "'정반장' 이미지가 디자인의 깔끔함과 정리된 레이아웃을 선호하는 지금의 나를 만들었다고 봐."
+    ],
+    images: []
+  },
+  // 5. 성격을 잘 보여주는 어린 시절 일화는? (NEW CONTENT)
+  "2025-07-18-05": {
+    title: "버리지 못하는 성격과 기록의 애착",
+    date: "2025년 7월 18일",
+    q: "Q. 성격을 잘 보여주는 어린 시절 일화는?",
+    body: [
+      "나는 물건에 대한 애착이 강한 편이야. 어릴 때부터 여행 티켓이나 영화 포스터 같은 것들을 절대 버리지 않고 모아뒀지. 단순한 물건이 아니라, 그 안에 담긴 '기억'을 버리지 못하는 성격인 것 같아.",
+      "이런 성격 때문에 디자이너로서도 한 번 만든 작업물을 쉽게 폐기하지 못하고 계속 보관하는 습관이 생겼어. 이런 기록에 대한 애착이 결국 이 'comma' 서비스를 만들게 된 동기이기도 해."
+    ],
+    images: []
+  },
+"2025-07-20-01": {
+    title: "20년 된 보물상자 속의 노란색 손수건",
+    date: "2025년 7월 20일",
+    q: "Q. 가장 오래 간직했던 물건은 무엇인가요?",
+    body: [
+      "지금도 가지고 있는 노란색 손수건이야. 초등학교 입학 전에 엄마가 내 이름 세 글자를 직접 자수로 놓아주신 건데, 닳아서 색이 바래고 끝부분은 올이 다 풀렸어.",
+      "가방에 달고 다니다가, 슬플 때는 눈물을 닦고, 기쁠 때는 흔들며 자랑했던 내 분신 같은 물건이었지.",
+      "<span class='sub-q'>Q. 그 물건을 볼 때 어떤 감정이 드나요?</span>",
+      "이젠 손수건이라기보다는 누더기에 가까운데, 볼 때마다 마음이 편안해져. 그때 엄마의 따뜻한 손길과, 순수했던 어린 시절의 내가 느껴지는 것 같아."
+    ],
+    images: []
+  },
+  // Q2. 가장 기억에 남는 초등학교 시절의 선생님은?
+  "2025-07-20-02": {
+    title: "6학년 담임 선생님: 나의 첫 번째 디자인 멘토",
+    date: "2025년 7월 20일",
+    q: "Q. 가장 기억에 남는 초등학교 시절의 선생님은?",
+    body: [
+      "6학년 때 담임 선생님. 흔한 미술 선생님이 아니라, 국어 선생님이셨는데 항상 '여백의 미'와 '간결함'을 강조하셨어. 숙제 검사를 할 때도 글씨나 그림이 복잡한 것보다 깔끔한 것을 칭찬하셨지.",
+      "선생님의 가르침이 지금 내가 미니멀 디자인을 선호하는 데 큰 영향을 준 것 같아. 내 첫 번째 디자인 멘토는 학교 선생님이었던 셈이지.",
+      "<span class='sub-q'>Q. 그 선생님에게 지금 감사하다고 전하고 싶은 이야기는?</span>",
+      "그때의 '여백의 미' 덕분에 지금의 내가 1px에 목숨 거는 디자이너가 되었다고 감사하다고 전하고 싶어."
+    ],
+    images: []
+  },
+  // Q3. 친했던 친구와의 에피소드는 무엇인가요?
+  "2025-07-20-03": {
+    title: "복도에서 나눈 '인생의 비밀'",
+    date: "2025년 7월 20일",
+    q: "Q. 친했던 친구와의 에피소드는 무엇인가요?",
+    body: [
+      "초등학교 3학년 때, 복도에서 단짝 친구와 몰래 캔디를 나눠 먹다가 선생님께 걸린 적이 있어. 선생님이 '너희 둘이 지금 인생의 비밀이라도 나누는 거니?'라고 농담하셨지.",
+      "그때 친구와 눈빛을 주고받으며 '우린 지금 인생의 비밀을 나누는 게 맞아' 하고 속으로 생각했어. 사소한 장난도 함께하면 거대한 비밀이 되던 그때가 그립다."
+    ],
+    images: []
+  },
+  // Q4. 학교 끝나고 주로 무엇을 하며 시간을 보냈나요?
+  "2025-07-20-04": {
+    title: "놀이터의 흙먼지 vs. 스케치북",
+    date: "2025년 7월 20일",
+    q: "Q. 학교 끝나고 주로 무엇을 하며 시간을 보냈나요?",
+    body: [
+      "크게 두 종류였어. 하나는 놀이터에서 해가 질 때까지 흙먼지를 뒤집어쓰고 친구들과 노는 것.",
+      "다른 하나는 방에 틀어박혀 스케치북에 그림을 그리는 것. 혼자서도, 함께 있을 때도 만족감을 느낄 수 있었던 어린 시절은 지금의 나에게도 큰 영향을 줘. 혼자 작업과 팀 작업을 모두 즐기는 것처럼 말이야."
+    ],
+    images: []
+  },
+  // Q5. 첫사랑에 대한 기억을 들려주세요.
+  "2025-07-20-05": {
+    title: "첫사랑: 짝꿍의 곰돌이 필통",
+    date: "2025년 7월 20일",
+    q: "Q. 첫사랑에 대한 기억을 들려주세요.",
+    body: [
+      "초등학교 4학년 때 짝꿍이었어. 이름은 기억 안 나는데, 그 친구의 곰돌이 모양 필통이 너무 탐났어. 필통 때문에 그 친구를 좋아하게 된 건가 싶을 정도로.",
+      "순수하게 누군가의 '물건'에 애정을 쏟던 그때의 마음이 참 귀엽다. 지금은 디자인이 예쁜 물건을 보면 마음을 빼앗기는데, 그때부터 '아름다운 것'에 끌리는 취향은 변하지 않은 것 같아."
+    ],
+    images: []
+  },
+  // 🚨 [새로 추가] 2. 가족과 나 카테고리 데이터 시작
+  // ----------------------------------------------------
+  
+  // Q1. 부모님을 한 문장으로 표현한다면?
+  "2025-07-19-01": {
+    title: "부모님: 나의 가장 든든한 '클라이언트'",
+    date: "2025년 7월 19일",
+    q: "Q. 부모님을 한 문장으로 표현한다면?",
+    body: [
+      "부모님은 '나의 가장 든든하고 피드백 없는 클라이언트'라고 표현하고 싶어. 언제나 무조건적인 지지와 사랑을 주셨거든.",
+      "내가 어떤 시안을 들고 가든, 어떤 결정을 하든 '네가 하는 일이라면 뭐든 응원한다'고 해 주셨어. 그 믿음이 나를 여기까지 오게 한 가장 큰 힘이야.",
+      "<span class='sub-q'>Q. 부모님에게 바라는 점은?</span>",
+      "이제는 나에게 신경 쓰는 것보다 두 분의 삶을 더 즐기셨으면 좋겠어. 내 걱정은 잠시 내려놓고, 여행도 자주 가시고 취미 생활도 하셨으면 좋겠어."
+    ],
+    images: []
+  },
+  // Q2. 가족과의 일상 루틴을 소개해 주세요.
+  "2025-07-19-02": {
+    title: "금요일 밤의 영화 감상회",
+    date: "2025년 7월 19일",
+    q: "Q. 가족과의 일상 루틴을 소개해 주세요.",
+    body: [
+      "우리 가족만의 루틴이 있다면 '금요일 밤의 영화 감상회'야.",
+      "일주일 내내 바쁘게 지내다가도, 금요일 저녁에는 다 같이 거실에 모여 치킨이나 피자를 시켜 놓고 영화를 봐. 장르는 가리지 않아.",
+      "<span class='sub-q'>Q. 이 루틴의 특별한 점은?</span>",
+      "영화 보는 시간 외에는 서로 말을 많이 하지 않아도 괜찮다는 점. 그저 한 공간에 같이 있다는 것만으로도 충분히 위로가 되는 시간이야. 내겐 가장 편안한 루틴이야."
+    ],
+    images: []
+  },
+  // Q3. 가족에게 물려받은 습관이 있나요?
+  "2025-07-19-03": {
+    title: "엄마의 '정리 정돈'과 아빠의 '아날로그 취향'",
+    date: "2025년 7월 19일",
+    q: "Q. 가족에게 물려받은 습관이 있나요?",
+    body: [
+      "두 가지 습관이 있어. 하나는 엄마에게 물려받은 '결벽에 가까운 정리 정돈 습관'. 내 컴퓨터 파일이 완벽하게 정리되어 있지 않으면 일이 손에 잡히지 않아.",
+      "다른 하나는 아빠에게 물려받은 '아날로그 취향'이야. 아빠는 아직도 턴테이블로 LP판을 듣고, 나는 손으로 스케치하는 걸 즐겨. 디지털 시대에 아날로그 감성을 놓지 않는 건 아빠 덕분이지."
+    ],
+    images: []
+  },
+  // Q4. 가장 기억에 남는 가족 여행은?
+  "2025-07-19-04": {
+    title: "입시 후, 제주도의 해방감",
+    date: "2025년 7월 19일",
+    q: "Q. 가장 기억에 남는 가족 여행은?",
+    body: [
+      "가장 기억에 남는 건 고등학교 입시가 끝난 직후 가족들과 떠난 제주도 여행이야. 그 긴 터널을 막 벗어났을 때, 미술학원 냄새가 아닌 바다 냄새를 맡았을 때의 해방감은 잊을 수 없어.",
+      "그때 검은 현무암에 부서지는 하얀 파도를 보며, '앞으로 무엇이든 해낼 수 있다'는 용기를 얻었어. 가족들과 함께 그 자유를 만끽했다는 것이 가장 소중해."
+    ],
+    images: []
+  },
+  // Q5. 가족에게 고맙다고 전하고 싶은 이야기는?
+  "2025-07-19-05": {
+    title: "변화에 대한 무조건적인 지지에 감사",
+    date: "2025년 7월 19일",
+    q: "Q. 가족에게 고맙다고 전하고 싶은 이야기는?",
+    body: [
+      "내가 디자이너가 되고 싶다고 했을 때, 다들 '굶어 죽는다'고 반대했지만, 부모님은 묵묵히 응원해 주셨어. 그리고 이번 이직을 준비할 때도 마찬가지였고.",
+      "내 인생의 모든 중요한 변화 앞에서, 단 한 번도 '왜?'라고 묻지 않고 '네 뜻대로 하렴'이라고 해준 그 무조건적인 믿음에 정말 고맙다고 말하고 싶어."
+    ],
+    images: []
+  },
+  
+  // 🚨 [새로 추가] 3. 나의 어린 날들 카테고리 데이터 끝
+  // ----------------------------------------------------
+  
+  // Q1. 가장 오래 간직했던 물건은 무엇인가요?
+  "2025-07-20-01": {
+    title: "20년 된 보물상자 속의 노란색 손수건",
+    date: "2025년 7월 20일",
+    q: "Q. 가장 오래 간직했던 물건은 무엇인가요?",
+    body: [
+      "지금도 가지고 있는 노란색 손수건이야. 초등학교 입학 전에 엄마가 내 이름 세 글자를 직접 자수로 놓아주신 건데, 닳아서 색이 바래고 끝부분은 올이 다 풀렸어. 내 분신 같은 물건이었지.",
+      "<span class='sub-q'>Q. 그 물건을 볼 때 어떤 감정이 드나요?</span>",
+      "이젠 손수건이라기보다는 누더기에 가까운데, 볼 때마다 마음이 편안해져. 그때 엄마의 따뜻한 손길과, 순수했던 어린 시절의 내가 느껴지는 것 같아."
+    ],
+    images: []
+  },
+  // Q2. 가장 기억에 남는 초등학교 시절의 선생님은?
+  "2025-07-20-02": {
+    title: "6학년 담임 선생님: 나의 첫 번째 디자인 멘토",
+    date: "2025년 7월 20일",
+    q: "Q. 가장 기억에 남는 초등학교 시절의 선생님은?",
+    body: [
+      "6학년 때 담임 선생님. 흔한 미술 선생님이 아니라, 국어 선생님이셨는데 항상 '여백의 미'와 '간결함'을 강조하셨어. 숙제 검사를 할 때도 글씨나 그림이 복잡한 것보다 깔끔한 것을 칭찬하셨지.",
+      "선생님의 가르침이 지금 내가 미니멀 디자인을 선호하는 데 큰 영향을 준 것 같아. 내 첫 번째 디자인 멘토는 학교 선생님이었던 셈이지."
+    ],
+    images: []
+  },
+  // Q3. 친했던 친구와의 에피소드는 무엇인가요?
+  "2025-07-20-03": {
+    title: "복도에서 나눈 '인생의 비밀'",
+    date: "2025년 7월 20일",
+    q: "Q. 친했던 친구와의 에피소드는 무엇인가요?",
+    body: [
+      "초등학교 3학년 때, 복도에서 단짝 친구와 몰래 캔디를 나눠 먹다가 선생님께 걸린 적이 있어. 선생님이 '너희 둘이 지금 인생의 비밀이라도 나누는 거니?'라고 농담하셨지.",
+      "그때 친구와 눈빛을 주고받으며 '우린 지금 인생의 비밀을 나누는 게 맞아' 하고 속으로 생각했어. 사소한 장난도 함께하면 거대한 비밀이 되던 그때가 그립다."
+    ],
+    images: []
+  },
+  // Q4. 학교 끝나고 주로 무엇을 하며 시간을 보냈나요?
+  "2025-07-20-04": {
+    title: "놀이터의 흙먼지 vs. 스케치북",
+    date: "2025년 7월 20일",
+    q: "Q. 학교 끝나고 주로 무엇을 하며 시간을 보냈나요?",
+    body: [
+      "크게 두 종류였어. 하나는 놀이터에서 해가 질 때까지 흙먼지를 뒤집어쓰고 친구들과 노는 것.",
+      "다른 하나는 방에 틀어박혀 스케치북에 그림을 그리는 것. 혼자서도, 함께 있을 때도 만족감을 느낄 수 있었던 어린 시절은 지금의 나에게도 큰 영향을 줘."
+    ],
+    images: []
+  },
+  // Q5. 첫사랑에 대한 기억을 들려주세요.
+  "2025-07-20-05": {
+    title: "첫사랑: 짝꿍의 곰돌이 필통",
+    date: "2025년 7월 20일",
+    q: "Q. 첫사랑에 대한 기억을 들려주세요.",
+    body: [
+      "초등학교 4학년 때 짝꿍이었어. 이름은 기억 안 나는데, 그 친구의 곰돌이 모양 필통이 너무 탐났어. 필통 때문에 그 친구를 좋아하게 된 건가 싶을 정도로.",
+      "순수하게 누군가의 '물건'에 애정을 쏟던 그때의 마음이 참 귀엽다. 지금은 디자인이 예쁜 물건을 보면 마음을 빼앗기는데, 그때부터 '아름다운 것'에 끌리는 취향은 변하지 않은 것 같아."
+    ],
+    images: []
+  },
+
+// ----------------------------------------------------
+  // 🚨 [새로 추가] 4. 남은 아쉬움 카테고리 데이터 시작
+  // ----------------------------------------------------
+  
+  // Q1. 살면서 가장 후회하는 선택은?
+  "2025-07-21-01": {
+    title: "졸업 후, 워킹홀리데이를 가지 않은 것",
+    date: "2025년 7월 21일",
+    q: "Q. 살면서 가장 후회하는 선택은?",
+    body: [
+      "대학 졸업 후 바로 취업 전선에 뛰어든 거야. 1년 정도 시간을 내서 워킹홀리데이나 개인 작업 시간을 가졌어야 했어.",
+      "남들과의 속도를 맞추려다 나만의 시간을 잃은 것이 가장 후회돼. 그 1년의 경험이 지금의 디자인 시야를 얼마나 넓혀줬을까 생각해."
+    ],
+    images: []
+  },
+  // Q2. 용기가 없어 시도하지 못한 일은?
+  "2025-07-21-02": {
+    title: "파격적인 시안을 끝까지 밀어붙이지 못한 용기",
+    date: "2025년 7월 21일",
+    q: "Q. 용기가 없어 시도하지 못한 일은?",
+    body: [
+      "회사에서 냈던 파격적인 디자인 시안을 끝까지 밀어붙이지 못한 것. 당시 보수적인 팀 분위기에 눌려 결국 안전하고 무난한 길을 택했어.",
+      "결과적으로 팀은 안정적인 결과를 얻었지만, 디자이너로서의 내 자존감은 깎였지. 그때 더 용감하게 나의 철학을 방어했어야 했는데."
+    ],
+    images: []
+  },
+  // Q3. 만약 시간을 되돌린다면 언제로 돌아가고 싶나요?
+  "2025-07-21-03": {
+    title: "번아웃이 오기 시작했던 3년 전의 나",
+    date: "2025년 7월 21일",
+    q: "Q. 만약 시간을 되돌린다면 언제로 돌아가고 싶나요?",
+    body: [
+      "3년 전, 번아웃이 오기 시작했을 때로 돌아가고 싶어. 그때 무리하게 일만 하지 않고 과감하게 회사를 쉬거나 이직을 준비했어야 했어.",
+      "그때의 잘못된 결단이 지금의 만성적인 피로와 업무에 대한 회의감을 만들었어. 과거의 나에게 '잠시 멈춰도 괜찮다'고 말해주고 싶어."
+    ],
+    images: []
+  },
+  // Q4. 나에게 상처를 준 사람과 관련된 기억은?
+  "2025-07-21-04": {
+    title: "논리가 없다는 비판과 본질을 잃은 디자인",
+    date: "2025년 7월 21일",
+    q: "Q. 나에게 상처를 준 사람과 관련된 기억은?",
+    body: [
+      "신입 때, 선배에게 '네 디자인은 감성만 있고 논리가 없다'는 공개적인 비판을 들었을 때가 상처였어. 그 말이 너무 아파서 한동안 감성적인 디자인을 포기하고 딱딱하고 기능적인 디자인만 했다.",
+      "내 본질을 잃고 껍데기만 남은 디자인을 할 수밖에 없었던 그 시기가 가장 아쉬워. 비판은 수용하되, 내 영혼은 지켰어야 했는데."
+    ],
+    images: []
+  },
+  // Q5. 인생에서 가장 낭비했다고 생각하는 시간은?
+  "2025-07-21-05": {
+    title: "의미 없는 회사 회식과 시간의 가치",
+    date: "2025년 7월 21일",
+    q: "Q. 인생에서 가장 낭비했다고 생각하는 시간은?",
+    body: [
+      "의미 없는 회사 회식에 참석해서 시간을 보낸 것. 특히 말만 길고 결론이 없는 술자리 말이야.",
+      "그 시간에 포트폴리오를 만들거나, 혼자 사색하거나, 사랑하는 사람과 시간을 보내는 것이 훨씬 값졌을 거야. 내 인생의 시간을 타인의 눈치를 보느라 낭비했다는 생각이 들어."
+    ],
+    images: []
+  },
+
+  // ----------------------------------------------------
+  // 🚨 [새로 추가] 5. 앞으로의 시간 카테고리 데이터 시작
+  // ----------------------------------------------------
+  
+  // Q1. 앞으로 꼭 해보고 싶은 일은 무엇인가요?
+  "2025-07-22-01": {
+    title: "세상을 바꾸는 공익 디자인 프로젝트",
+    date: "2025년 7월 22일",
+    q: "Q. 앞으로 꼭 해보고 싶은 일은 무엇인가요?",
+    body: [
+      "상업적인 성공이 아닌 공익적인 목적을 가진 디자인 프로젝트를 해보고 싶어. 시각장애인을 위한 앱 접근성 개선 작업이나, 소외 계층을 위한 정보 디자인 같은 것.",
+      "나의 재능이 돈을 버는 수단이 아닌, 누군가의 삶을 조금이라도 더 편리하게 만드는 데 쓰이는 것을 보며 진정한 보람을 느끼고 싶어."
+    ],
+    images: []
+  },
+  // Q2. 내가 꼭 이루고 싶은 '나만의 디자인 철학'은 무엇인가요?
+  "2025-07-22-02": {
+    title: "형태가 아닌 '관계'를 디자인하는 사람",
+    date: "2025년 7월 22일",
+    q: "Q. 내가 꼭 이루고 싶은 '나만의 디자인 철학'은 무엇인가요?",
+    body: [
+      "'형태가 아닌 관계를 디자인한다'는 철학을 완성하고 싶어. 단순한 아름다움이나 트렌드를 쫓는 것이 아니라, 사용자와 제품, 서비스, 세상 사이의 더 나은 상호작용을 설계하는 디자이너가 되고 싶어.",
+      "내가 만든 결과물이 일시적인 유행이 아니라, 사람들의 삶 속에 깊이 스며들어 긍정적인 '습관'을 만드는 디자인을 하고 싶어."
+    ],
+    images: []
+  },
+  // Q3. 나의 지식이나 경험을 누구에게 어떻게 나누어 주고 싶나요?
+  "2025-07-22-03": {
+    title: "번아웃을 겪는 후배 디자이너들의 멘토가 되겠다",
+    date: "2025년 7월 22일",
+    q: "Q. 나의 지식이나 경험을 누구에게 어떻게 나누어 주고 싶나요?",
+    body: [
+      "가장 나누고 싶은 대상은 지금의 나와 같은 고민을 하는 후배 디자이너들이야. 특히 '번아웃'과 '자존감 하락'을 겪는 친구들에게 내 경험을 이야기해주고 싶어.",
+      "업무 스킬뿐만 아니라, '일과 삶의 경계를 디자인하는 방법'에 대해 조언하고 싶어. 주기적인 멘토링 세션이나 작은 강연을 통해 그들에게 쉼표(comma)를 찍는 법을 가르쳐주고 싶어."
+    ],
+    images: []
+  },
+  // Q4. 가족이나 친구들에게 남기고 싶은 특별한 당부의 말은?
+  "2025-07-22-04": {
+    title: "현재에 '마침표'가 아닌 '쉼표'를 찍는 삶",
+    date: "2025년 7월 22일",
+    q: "Q. 가족이나 친구들에게 남기고 싶은 특별한 당부의 말은?",
+    body: [
+      "너무 미래만을 위해 살지 말고, 현재에 충실하라는 당부를 남기고 싶어. 모든 순간을 '마침표'처럼 끝내려 하지 말고, 다음을 기약하는 '쉼표'처럼 즐기면서 살았으면 좋겠어.",
+      "나와 함께 했던 소소한 행복의 순간들을 자주 꺼내보면서, 슬픔보다는 따뜻한 미소를 지을 수 있기를 바라."
+    ],
+    images: []
+  },
+  // Q5. 10년 후의 나는 어떤 모습이길 바라나요?
+  "2025-07-22-05": {
+    title: "작은 산에 사는 느긋한 스튜디오 주인",
+    date: "2025년 7월 22일",
+    q: "Q. 10년 후의 나는 어떤 모습이길 바라나요?",
+    body: [
+      "복잡한 도심이 아닌, 작은 산 근처에 나만의 작은 디자인 스튜디오를 가지고 있는 모습이야. 프로젝트를 선별적으로 받으며 느긋하게 일하고 싶어.",
+      "돈을 많이 벌진 못해도, 나의 디자인 철학을 이해해 주는 소수의 클라이언트와 함께 본질적인 작업을 하는, 내면이 단단하고 여유로운 디자이너가 되어있기를 바라."
+    ],
+    images: []
+  },
+  // ----------------------------------------------------
+  // 🚨 [새로 추가] 5. 앞으로의 시간 카테고리 데이터 끝
+  // ----------------------------------------------------
+// ----------------------------------------------------
+  // 🚨 [새로 추가] 6. 마지막 순간에 대해 카테고리 데이터 시작
+  // ----------------------------------------------------
+  
+  // Q1. 내 장례식에 와서 웃었으면 하는 사람과 이유는?
+  "2025-07-23-01": {
+    title: "눈물이 아닌 미소를 보고 싶은 사람들",
+    date: "2025년 7월 23일",
+    q: "Q. 내 장례식에 와서 웃었으면 하는 사람과 이유는?",
+    body: [
+      "나를 사랑하는 모든 사람들이 슬퍼하는 대신, '정민이 덕분에 삶이 좀 더 즐거웠다'고 웃으며 이야기 나누었으면 좋겠어.",
+      "특히 나의 디자인 철학을 함께 나눴던 후배 디자이너들이 그랬으면 해. 그들에게 내 죽음이 슬픔보다는, 자신의 삶을 멋지게 마감한 선배의 모습으로 기억되길 바라."
+    ],
+    images: []
+  },
+  // Q2. 나의 유품은 누구에게 어떻게 전달되었으면 좋겠나요?
+  "2025-07-23-02": {
+    title: "디자인 파일과 보물 상자의 주인",
+    date: "2025년 7월 23일",
+    q: "Q. 나의 유품은 누구에게 어떻게 전달되었으면 좋겠나요?",
+    body: [
+      "디자인 작업 파일과 미니멀한 가구들은 이직할 때 많은 도움을 준 대학 동기(민수)에게 전달되었으면 좋겠어. 그의 창의적인 작업에 나의 자료들이 도움이 되었으면 해.",
+      "그리고 어릴 적부터 모아온 '기억의 보물 상자'는 엄마에게 드리고 싶어. 그 상자 안에 담긴 티켓과 메모들을 보며, 내가 얼마나 삶의 순간들을 소중히 여겼는지 알아주셨으면 좋겠어."
+    ],
+    images: []
+  },
+  // Q3. 이 세상에 남기고 싶은 마지막 메시지는?
+  "2025-07-23-03": {
+    title: "Leave no regrets, just simple lines.",
+    date: "2025년 7월 23일",
+    q: "Q. 이 세상에 남기고 싶은 마지막 메시지는?",
+    body: [
+      "'Leave no regrets, just simple lines.' (후회를 남기지 말고, 오직 간결한 선들만 남겨라.)",
+      "복잡하게 얽매이지 않고, 내 삶의 선들을 최대한 간결하고 바르게 그려왔다는 것. 그리고 그 삶에 후회는 없다는 것을 모두에게 알려주고 싶어. 깔끔한 디자인처럼 깔끔한 인생이었기를."
+    ],
+    images: []
+  },
+  // Q4. 나를 기억할 때 어떤 모습으로 기억되고 싶나요?
+  "2025-07-23-04": {
+    title: "1px의 완벽함을 포기하지 않은 사람",
+    date: "2025년 7월 23일",
+    q: "Q. 나를 기억할 때 어떤 모습으로 기억되고 싶나요?",
+    body: [
+      "'1px의 완벽함을 포기하지 않았던 디자이너'로 기억되고 싶어. 사소한 디테일 하나하나에도 의미와 정성을 담았던 사람으로.",
+      "그리고 가까운 사람들에게는 '늘 따뜻한 베이지색'처럼 포근했지만, 일할 때는 '선명한 검은색'처럼 기준이 확실했던 사람으로 기억되었으면 좋겠어."
+    ],
+    images: []
+  },
+  // Q5. 나의 죽음이 슬프지 않은 이유가 있다면?
+  "2025-07-23-05": {
+    title: "기록으로 삶이 완성되었기에",
+    date: "2025년 7월 23일",
+    q: "Q. 나의 죽음이 슬프지 않은 이유가 있다면?",
+    body: [
+      "나는 이 'comma' 서비스를 통해 내 일생의 기록을 모두 남겼어. 나의 모든 감정, 생각, 성취, 그리고 아쉬움까지도.",
+      "기록으로 내 삶이 완성**되었기 때문에, 더 이상 미련이 없어. 내가 남긴 이 기록들이 누군가에게 영감이 되거나 위로가 될 수 있다면, 나의 역할은 끝난 것이라고 생각해. 그러니까 슬퍼할 필요가 전혀 없어."
+    ],
+    images: []
+  }
+
+
+
+
+  
+  
+};
+
+
+
+
+
+    function loadEntry(key){
+      const e = sampleEntries[key];
+      if (e) {
+        bookComp.setData(e);
+      } else {
+        const dateStr = (key || "").slice(0,10);
+        bookComp.setData({
+          title: "기록이 없습니다",
+          date: dateStr || "",
+          q: "Q. ",
+          body: ["선택한 항목에 해당하는 기록이 아직 등록되지 않았습니다."],
+          images: []
+        });
+        console.warn("[loadEntry] missing key:", key);
+      }
+    }
+    
+    /* =======================
+       2) topics / 렌더 로직
+       ======================= */
+   const topics = [
+  {
+    id: 1,
+    title: "나에 대해서",
+    subs: [
+      { sid: 1, text: "나의 태몽에 대해서 알려주세요.", key: "2025-07-18-01", date: "2025-07-18" },
+      { sid: 2, text: "나의 이름의 뜻은 무엇인가요?", key: "2025-07-18-02", date: "2025-07-18" },
+      { sid: 3, text: "나의 생년월일과 별자리를 알려주세요.", key: "2025-07-18-03", date: "2025-07-18" },
+      { sid: 4, text: "나의 어린 시절 별명은 무엇이었나요?", key: "2025-07-18-04", date: "2025-07-18" },
+      { sid: 5, text: "성격을 잘 보여주는 어린 시절 일화는?", key: "2025-07-18-05", date: "2025-07-18" },
+    ]
+  },
+  {
+    id: 2,
+    title: "가족과 나", // '가족에 대해서' -> '가족과 나'로 변경
+    subs: [
+      { sid: 1, text: "부모님을 한 문장으로 표현한다면?", key: "2025-07-19-01", date: "2025-07-19" },
+      { sid: 2, text: "가족과의 일상 루틴을 소개해 주세요.", key: "2025-07-19-02", date: "2025-07-19" },
+      { sid: 3, text: "가족에게 물려받은 습관이 있나요?", key: "2025-07-19-03", date: "2025-07-19" },
+      { sid: 4, text: "가장 기억에 남는 가족 여행은?", key: "2025-07-19-04", date: "2025-07-19" },
+      { sid: 5, text: "가족에게 고맙다고 전하고 싶은 이야기는?", key: "2025-07-19-05", date: "2025-07-19" },
+    ]
+  },
+  {
+    id: 3,
+    title: "나의 어린 날들",
+    subs: [
+      { sid: 1, text: "가장 오래 간직했던 물건은 무엇인가요?", key: "2025-07-20-01", date: "2025-07-20" },
+      { sid: 2, text: "가장 기억에 남는 초등학교 시절의 선생님은?", key: "2025-07-20-02", date: "2025-07-20" },
+      { sid: 3, text: "친했던 친구와의 에피소드는 무엇인가요?", key: "2025-07-20-03", date: "2025-07-20" },
+      { sid: 4, text: "학교 끝나고 주로 무엇을 하며 시간을 보냈나요?", key: "2025-07-20-04", date: "2025-07-20" },
+      { sid: 5, text: "첫사랑에 대한 기억을 들려주세요.", key: "2025-07-20-05", date: "2025-07-20" },
+    ]
+  },
+  {
+    id: 4,
+    title: "남은 아쉬움",
+    subs: [
+      { sid: 1, text: "살면서 가장 후회하는 선택은?", key: "2025-07-21-01", date: "2025-07-21" },
+      { sid: 2, text: "용기가 없어 시도하지 못한 일은?", key: "2025-07-21-02", date: "2025-07-21" },
+      { sid: 3, text: "만약 시간을 되돌린다면 언제로 돌아가고 싶나요?", key: "2025-07-21-03", date: "2025-07-21" },
+      { sid: 4, text: "나에게 상처를 준 사람과 관련된 기억은?", key: "2025-07-21-04", date: "2025-07-21" },
+      { sid: 5, text: "인생에서 가장 낭비했다고 생각하는 시간은?", key: "2025-07-21-05", date: "2025-07-21" },
+    ]
+  },
+  {
+    id: 5,
+    title: "앞으로의 시간",
+    subs: [
+      { sid: 1, text: "미래의 나에게 남기는 메시지", key: "2025-07-22-01", date: "2025-07-22" },
+      { sid: 2, text: "죽기 전에 꼭 해보고 싶은 버킷리스트는?", key: "2025-07-22-02", date: "2025-07-22" },
+      { sid: 3, text: "나의 직업적 철학이 완성되는 순간은?", key: "2025-07-22-03", date: "2025-07-22" },
+      { sid: 4, text: "가장 이루고 싶었던 꿈은 무엇이었나요?", key: "2025-07-22-04", date: "2025-07-22" },
+      { sid: 5, text: "나의 묘비명에 적고 싶은 한 문장은?", key: "2025-07-22-05", date: "2025-07-22" },
+    ]
+  },
+  {
+    id: 6,
+    title: "마지막 순간에 대해",
+    subs: [
+      { sid: 1, text: "내 장례식에 와서 웃었으면 하는 사람과 이유는?", key: "2025-07-23-01", date: "2025-07-23" },
+      { sid: 2, text: "나의 유품은 누구에게 어떻게 전달되었으면 좋겠나요?", key: "2025-07-23-02", date: "2025-07-23" },
+      { sid: 3, text: "이 세상에 남기고 싶은 마지막 메시지는?", key: "2025-07-23-03", date: "2025-07-23" },
+      { sid: 4, text: "나를 기억할 때 어떤 모습으로 기억되고 싶나요?", key: "2025-07-23-04", date: "2025-07-23" },
+      { sid: 5, text: "나의 죽음이 슬프지 않은 이유가 있다면?", key: "2025-07-23-05", date: "2025-07-23" },
+    ]
+  },
+];
+    
+    let currentTopic = 0;
+    let currentSubKey = "";
+    
+    const qIndexEl = document.getElementById("qIndex");
+    const qTextEl  = document.getElementById("qText");
+    const listEl   = document.getElementById("questionItems");
+    const sortEl   = document.getElementById("sortOption");
+    
+    function renderSubList(){
+      const t = topics[currentTopic];
+      if(!t) return;
+      let subs = [...t.subs];
+      const opt = sortEl?.value || "작성일 순";
+      if (opt.includes("제목")) subs.sort((a,b)=>a.text.localeCompare(b.text,'ko'));
+      else                      subs.sort((a,b)=>a.date.localeCompare(b.date));
+    
+      listEl.innerHTML = subs.map(s => `
+        <li data-key="${s.key}" data-date="${s.date}">
+          ${s.text}
+          <small style="float:right;color:var(--muted)">${s.date}</small>
+        </li>
+      `).join("");
+    
+      listEl.querySelectorAll("li").forEach(li=>{
+        li.addEventListener("click", ()=>{
+          currentSubKey = li.dataset.key;
+          loadEntry(currentSubKey);
+          highlightCurrent();
+        });
+      });
+    }
+    
+    function renderTopic(ti){
+      const t = topics[ti];
+      if(!t) return;
+      qIndexEl.textContent = `${t.id}.`;
+      qTextEl.textContent  = t.title;
+      renderSubList();
+      if (t.subs?.[0]) {
+        currentSubKey = t.subs[0].key;
+        loadEntry(currentSubKey);  // 여기 시점엔 bookComp 준비됨
+        highlightCurrent();
+      }
+    }
+    
+    function highlightCurrent(){
+      listEl.querySelectorAll("li").forEach(li=>{
+        li.classList.toggle("is-active", li.dataset.key === currentSubKey);
+      });
+    }
+    
+    document.querySelector(".q-prev").addEventListener("click", ()=>{
+      currentTopic = (currentTopic - 1 + topics.length) % topics.length;
+      renderTopic(currentTopic);
+    });
+    document.querySelector(".q-next").addEventListener("click", ()=>{
+      currentTopic = (currentTopic + 1) % topics.length;
+      renderTopic(currentTopic);
+    });
+    if (sortEl) sortEl.addEventListener("change", renderSubList);
+    
+    // 초기 렌더
+    renderTopic(currentTopic);
+    </script>
+    
+    
+  
+    </body>
+    
+        
+
+</html>

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/gh/webfontworld/arita/AritaBuri.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+  <title>comma , page</title>
+  <style>
+/* ===== Design Tokens ===== */
+:root{
+  --bg:#f3f1ea; --paper:#fffdf8; --ink:#2b2b2b; --muted:#8b8b8b; --line:#dedbd2;
+  --accent:#b4a78a; --accent-ink:#5a5241;
+  --page-left:240px;   /* 좌우 기준선 */
+  --brandbar-h:72px;
+  --container-max:1440px;
+}
+
+/* 반응형 */
+@media (max-width:1440px){ :root{ --page-left:48px; } }
+@media (max-width:768px){ :root{ --page-left:24px; } }
+
+/* ===== Base ===== */
+html,body{
+  margin:0; color:var(--ink);
+  font-family:"Pretendard",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  line-height:1.6;
+}
+body { 
+  opacity: 1; 
+  transition: opacity .4s ease;
+  background-image: url('img/aboutHero.jpg');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% auto;
+  background-attachment: fixed;
+  background-color: #f3f1ea;
+}
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background: url('img/aboutHero.jpg') center top/100% auto no-repeat;
+  background-color: #f3f1ea;
+  z-index: -1;
+}
+body.fade-out { opacity: 0; }
+
+/* 중앙 컨테이너 */
+.container{ width:100%; max-width:var(--container-max); margin:0 auto; box-sizing:border-box; }
+
+/* ===== Brandbar / Nav ===== */
+.brandbar{
+  position:sticky; top:0; left:0; right:0; height:var(--brandbar-h);
+  display:flex; align-items:center; gap:20px; z-index:10;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(to bottom, rgba(255,255,255,0.101), rgba(255,255,255,0.044));
+  backdrop-filter:blur(4px);
+}
+
+
+.brandbar.light-background {
+ 
+    border-bottom: 1px solid var(--line);
+}
+.brandbar.light-background .logo {
+    color: var(--ink); 
+}
+.brandbar.light-background .nav-hamburger span,
+.brandbar.light-background .nav-hamburger span::before,
+.brandbar.light-background .nav-hamburger span::after {
+    background: #222; 
+}
+
+
+
+.logo{ margin-left: var(--page-left); display:flex; align-items:center; text-decoration:none; color: #fff; }
+.logo:hover{ color: var(--accent); }
+.logo-svg{ height: 28px; width:auto; display:block; }
+.nav-spacer{ flex:1 1 auto; }
+.nav-hamburger{ width:36px;height:36px;border:0;background:transparent; margin-right:var(--page-left); display:grid;place-items:center;cursor:pointer; }
+.nav-hamburger span,.nav-hamburger span::before,.nav-hamburger span::after{ 
+    display:block;width:18px;height:2px;
+    background: #f3f1fe;
+    content:"";position:relative; 
+}
+
+.nav-hamburger span::before{ position:absolute; top:-6px; left:0; }
+.nav-hamburger span::after{ position:absolute; top:6px; left:0; }
+
+/* ----- Fullscreen overlay ----- */
+.nav-overlay{ position:fixed; inset:0; z-index:10000; background:#000; color:#fff; display:none; }
+.nav-overlay[aria-hidden="false"]{ display:block; }
+.nav-close{ position:absolute; top:24px; right:240px; width:40px; height:40px; background:transparent; border:0; color:#fff; font-size:32px; line-height:1; cursor:pointer; }
+.nav-overlay-inner{ position:absolute; inset:72px 0 0 0; display:grid; grid-template-columns: 1fr 1fr; height:calc(100% - 72px); }
+.nav-left{ padding-left:240px; padding-top:24px; }
+.nav-sections{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:36px; }
+.nav-index{ display:block; font-size:12px; opacity:.6; margin-bottom:8px; }
+.nav-head{ display:inline-block; font-size:28px; font-weight:800; color:#fff; text-decoration:none; }
+.nav-sub{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+.nav-sub a{ color:#d6d6d6; text-decoration:none; font-size:14px; }
+.nav-sub a:hover{ color:#fff; }
+.nav-right{ display:flex; align-items:center; justify-content:flex-start; }
+.nav-brand-block{ max-width:520px; color:#d6d6d6; }
+.nav-brand{ font-size:32px; font-weight:800; color:#fff; margin-bottom:6px; }
+.nav-brand-sub{ margin-bottom:16px; }
+.nav-hr{ height:1px; background:#444; margin:14px 0 18px; }
+.nav-meta b{ color:#fff; font-weight:700; margin-right:10px; }
+.nav-copy{ margin-top:24px; font-size:12px; opacity:.7; }
+@media (max-width:1200px){ .nav-close{ right:24px; } .nav-left{ padding-left:24px; } }
+
+/* ----- Tabs ----- */
+.tabs{ display:flex; gap:18px; margin: 18px 240px 24px; }
+.tab{ font-size:15px; padding:8px 10px; border-radius:8px; color:var(--muted); border:0; cursor:pointer; }
+.tab.is-active{ color:var(--bg); font-weight:600; }
+.tabs .tab{ text-decoration:none; transition: opacity 0.3s ease; }
+.tabs .tab:hover{ color: var(--accent-ink); opacity:0.8; }
+
+/* ===== Main Sections ===== */
+main{ overflow:hidden; }
+
+/* 1) Hero */
+.hero{ position:relative; min-height:90vh; display:flex; align-items:center; color:#202020; }
+.hero .container{ padding-top:64px; padding-bottom:96px; }
+.hero-logo{ color: var(--line); }
+.hero-logo-svg{ height: 80px; width:auto; display:block; }
+@media (max-width: 768px){ .hero-logo-svg{ height:56px; } }
+.hero p{ max-width:1000px; color:var(--line); margin:8px 0 0; font-size:32px; }
+
+/* 2) Intro */
+.about-story{
+  position: relative;
+  background: url('img/about_us_intro.jpg') center/cover no-repeat;
+  min-height: 100vh;
+  display: flex; align-items: center;
+}
+.about-story .container{
+  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; box-sizing: border-box;
+}
+.as-left{ color:#2b2b2b; }
+.as-mark{ width: 56px; height: 56px; background: url('img/symbol_Logo_2.png') center/contain no-repeat; margin-bottom: 60px; }
+.as-eyebrow{ font-family: 'SUIT', system-ui, -apple-system, 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 28px; letter-spacing: .02em; color:#6f6b60; margin-bottom: 60px; }
+.as-title{ margin:0; font-family: 'SUIT', system-ui, -apple-system, 'Noto Sans KR', sans-serif; font-weight: 600; font-size: 48px; line-height: 1.45; color:#2b2b2b; }
+.as-right{ position: relative; display: flex; align-items: flex-end; justify-content: flex-end; min-height: 100%; padding-bottom: 40px; }
+.as-side{ position: relative; margin:0; color:#6c6a63; font-family:'SUIT',system-ui,-apple-system,'Noto Sans KR',sans-serif; font-size: 28px; font-weight: 400; line-height: 1.3; text-align: left; padding-left: clamp(140px, 16vw, 360px); transform: translateY(10%); }
+.as-side::before{ content:""; position:absolute; left:0; top:50%; transform:translateY(-50%); width: calc( clamp(140px, 16vw, 360px) - 24px ); height: 2px; background:#8f8b7f; opacity:.6; }
+@media (max-width: 980px){
+  .about-story .container{ grid-template-columns: 1fr; gap: 28px; padding: 80px var(--page-left); }
+  .as-right{ justify-content:flex-start; }
+  .as-side{ padding-left: 160px; }
+  .as-side::before{ width: 140px; }
+}
+@media (max-width: 560px){
+  .as-title{ font-size: 34px; }
+  .as-eyebrow{ font-size: 22px; }
+  .as-side{ padding-left: 120px; }
+  .as-side::before{ width: 100px; }
+}
+
+/* 3) Faced */
+.faced{ background: transparent; padding: 140px 0 120px; }
+.faced-copy{ max-width: 1100px; }
+.faced-eyebrow{ font-family:'SUIT',system-ui,-apple-system,'Noto Sans KR',sans-serif; font-weight:300; font-size:32px; color:#fff; line-height:1; margin:0; }
+.faced-head{ font-family:'SUIT',system-ui,-apple-system,'Noto Sans KR',sans-serif; font-weight:700; font-size:48px; color:#fff; line-height:1.4; margin:0; }
+.faced-head + .faced-tail{ margin-top: 130px; }
+.faced-tail{ font-family:'SUIT',system-ui,-apple-system,'Noto Sans KR',sans-serif; font-weight:300; font-size:32px; color:#fff; line-height:1.3; margin:0; white-space: pre-line; }
+.faced-title, .faced .lead, .faced-link, .faced-visual{ display:none !important; }
+@media (max-width: 980px){ .faced-head{ font-size: 40px; } }
+@media (max-width: 560px){
+  .faced-eyebrow{ font-size: 22px; }
+  .faced-head{ font-size: 30px; line-height: 1.35; }
+  .faced-tail{ font-size: 22px; }
+  .faced-head + .faced-tail{ margin-top: 80px; }
+}
+
+/* 3-2) 질문 스크롤 시퀀스 */
+.qs-alt{
+  --slides:3;
+  position:relative;
+  background-image:
+    linear-gradient(to bottom, rgba(238,237,230,.78), rgba(47,49,34,.90)),
+    url('img/qs_bg.png');
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% 100%, cover;
+  background-position: center, center top;
+  background-attachment: scroll, fixed;
+}
+.qs-alt .qs-sizer{ height: calc(var(--slides) * 100vh); }
+.qs-fixed{ position: fixed; left:50%; top:50%; transform: translate(-50%, -50%); width: min(90vw, 900px); z-index:2; pointer-events:none; transition: opacity .2s ease; }
+.qs-fixed.hidden{ opacity:0; visibility:hidden; }
+.qs-phrase{
+  position:absolute; inset:0; display:grid; place-items:center; text-align:center;
+  color: rgba(255,255,255,.88); font-size: clamp(22px, 3.4vw, 40px);
+  line-height:1.8; letter-spacing:.02em; white-space: pre-line; opacity:0; filter: blur(12px);
+  transition:none; font-family:'Arita Buri KR', serif; font-weight:400;
+}
+.qs-phrase .row{ display:flex; justify-content:center; gap:min(10vw, 120px); }
+.qs-phrase .row + .row{ margin-top:.8em; }
+@supports (-webkit-touch-callout: none){ .qs-alt{ background-attachment: scroll, scroll; background-position: center, center; } }
+
+
+/* ----- Core Value를 위한 임시 스타일 (CSS에 추가 권장) ----- */
+
+    .qs-phrase .cv-row-alt { 
+        display: flex; 
+        justify-content: center; 
+        align-items: flex-end; 
+        gap: clamp(10px, 3vw, 0px);
+        margin-top: 40px; 
+        flex-wrap: wrap;
+    }
+
+    .qs-phrase .cv-title-alt { 
+    font-size: 0.7em; 
+    font-family: 'SUIT', system-ui, -apple-system, 'Noto Sans KR', sans-serif;
+    font-weight: 500; 
+    margin-bottom: 50px;
+}
+    .qs-phrase .cv-item-wrapper {
+        display: flex; 
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin: 0 50px;
+    }
+
+.qs-phrase .cv-item-star { 
+    width: clamp(30px, 3.5vw, 40px);  
+    height: clamp(30px, 3.5vw, 40px);  
+    background-image: url('img/asterisk.png'); 
+    background-size: contain;       
+    background-repeat: no-repeat;     
+    background-position: center;     
+    margin-bottom: 20px;
+    opacity: 1 !important;            
+}
+    .qs-phrase .cv-item-label { 
+        font-family: 'SUIT', system-ui, -apple-system, 'Noto Sans KR', sans-serif;
+        font-size: clamp(18px, 2.5vw, 32px); 
+        font-weight: 300; 
+        letter-spacing: normal;
+        white-space: nowrap;
+    }
+    .qs-phrase .cv-dash-alt::before {
+
+        content: "";
+        display: block;
+        width: clamp(20px, 4vw, 50px); 
+        height: 2px;
+        background: rgba(255, 255, 255, .4);
+        margin-bottom: 50px;
+    }
+
+
+
+
+/* 4) 서비스 : 가로 슬라이드 */
+.service.svc-horizontal{ position: relative; height: 100vh; padding: 0; background:#000; overflow:hidden; }
+.svc-track{ height:100%; display:flex; will-change: transform; transition: transform .6s cubic-bezier(.22,.61,.36,1); }
+.svc-slide{ position: relative; min-width: 100vw; height: 100%; background: center/cover no-repeat var(--bg, none); isolation:isolate; }
+.svc-slide::after{ content:""; position:absolute; inset:0; background: radial-gradient(120% 120% at 50% 60%, rgba(0,0,0,.0) 40%, rgba(0,0,0,.25) 100%); pointer-events:none; }
+
+
+/* 5) 가치 */
+.values{ min-height: 100vh; display:flex; align-items:center; }
+.values > .container{ display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.cv-title{ font-family:'SUIT',system-ui,-apple-system,'Noto Sans KR',sans-serif; font-weight:300; font-size:28px; line-height:1; margin:0; letter-spacing:.02em; color: var(--bg); }
+.cv-title + .cv-row{ margin-top:170px; }
+.cv-row{ display:flex; align-items:flex-start; justify-content:center; gap: 50px; flex-wrap:wrap; }
+.cv-item{ display:flex; flex-direction:column; align-items:center; text-align:center; min-width:120px; }
+.cv-star{ width:47px; height:47px; object-fit:contain; display:block; margin:0; }
+.cv-label{ margin-top:30px; font-family:'SUIT',system-ui,-apple-system,'Noto Sans KR',sans-serif; font-weight:300; font-size:28px; line-height:1; color:#fff; }
+.cv-dash{ width:50px; height:2px; background:rgba(255,255,255,.5); align-self:center; display:inline-block; content:""; }
+@media (max-width: 980px){ .cv-row{ gap: 36px; } }
+@media (max-width: 560px){ .cv-title{ font-size:22px; } .cv-star{ width:36px; height:36px; } .cv-label{ font-size:22px; } .cv-dash{ width:30px; } }
+
+
+
+/* Reveal */
+.reveal{ opacity:0; transform: translateY(18px); transition:.7s ease; }
+.reveal.on{ opacity:1; transform:none; }
+
+/* Top button */
+.to-top{ position: fixed; bottom: 40px; right: 40px; width: 48px; height: 48px; border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(4px); cursor: pointer; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition: all .4s ease; z-index:100; }
+.to-top img{ width:20px; height:20px; filter: invert(1); }
+.to-top.show{ opacity:1; visibility:visible; transform: translateY(0); }
+.to-top:hover{ background: rgba(43,43,43,.9); }
+  </style>
+</head>
+<body>
+
+  <!-- SVG Sprite -->
+
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="comma-logo-full" viewBox="0 0 1460 213">
+    <!-- ↓ /mnt/data/Logo.svg의 내용 그대로 -->
+    <path d="M879.318 186H859L867.983 130H896L879.318 186Z" fill="currentColor"/>
+    <path d="M1012.7 146.991C1022.32 146.991 1030.81 144.64 1038.16 139.939C1045.71 135.049 1051.56 128.279 1055.71 119.628C1059.86 110.978 1061.93 101.199 1061.93 90.291C1061.93 79.3836 1059.86 69.6985 1055.71 61.2358C1051.56 52.7731 1045.71 46.191 1038.16 41.4896C1030.81 36.6 1022.32 34.1552 1012.7 34.1552C1004.21 34.1552 996.195 36.694 988.65 41.7716C981.105 46.8493 975.069 53.7134 970.542 62.3642C966.015 71.0149 963.752 80.3239 963.752 90.291C963.752 100.446 966.015 109.943 970.542 118.782C975.069 127.433 981.105 134.297 988.65 139.375C996.195 144.452 1004.21 146.991 1012.7 146.991ZM953 24.2821H963.469V57.8507C967.996 48.6358 974.786 40.9254 983.84 34.7194C992.895 28.3254 1002.61 25.1284 1012.98 25.1284C1024.49 25.1284 1034.68 27.9492 1043.54 33.591C1052.59 39.0448 1059.67 46.7552 1064.76 56.7224C1069.85 66.5015 1072.4 77.691 1072.4 90.291C1072.4 103.079 1069.85 114.457 1064.76 124.424C1059.67 134.391 1052.59 142.196 1043.54 147.837C1034.68 153.291 1024.49 156.018 1012.98 156.018C1001.48 156.018 991.291 152.727 982.426 146.145C973.749 139.375 967.43 131.664 963.469 123.013V213H953V24.2821Z" fill="currentColor"/>
+    <path d="M1139.6 155.454C1128.09 155.454 1117.81 152.727 1108.76 147.273C1099.89 141.631 1092.91 133.827 1087.82 123.86C1082.73 113.893 1080.18 102.609 1080.18 90.009C1080.18 77.409 1082.73 66.1254 1087.82 56.1582C1092.91 46.191 1099.89 38.4806 1108.76 33.0269C1117.81 27.3851 1128.09 24.5642 1139.6 24.5642C1150.73 24.5642 1160.63 27.5731 1169.31 33.591C1177.98 39.4209 1184.49 47.1313 1188.83 56.7224V24.2821H1199.02V154.325H1188.83V123.296C1185.06 131.57 1178.74 138.999 1169.87 145.581C1161.01 152.163 1150.92 155.454 1139.6 155.454ZM1090.65 90.009C1090.65 100.916 1092.73 110.696 1096.88 119.346C1101.02 127.809 1106.78 134.391 1114.13 139.093C1121.68 143.794 1130.17 146.145 1139.6 146.145C1148.28 146.145 1156.39 143.794 1163.93 139.093C1171.48 134.203 1177.51 127.433 1182.04 118.782C1186.57 110.131 1188.83 100.54 1188.83 90.009C1188.83 79.4776 1186.57 69.8866 1182.04 61.2358C1177.51 52.5851 1171.48 45.909 1163.93 41.2075C1156.39 36.3179 1148.28 33.8731 1139.6 33.8731C1130.17 33.8731 1121.68 36.3179 1114.13 41.2075C1106.78 45.909 1101.02 52.491 1096.88 60.9537C1092.73 69.4164 1090.65 79.1015 1090.65 90.009Z" fill="currentColor"/>
+    <path d="M1273.27 146.427C1282.52 146.427 1291.01 143.888 1298.74 138.81C1306.47 133.733 1312.6 126.869 1317.13 118.218C1321.66 109.567 1323.92 100.164 1323.92 90.009C1323.92 80.0418 1321.66 70.8269 1317.13 62.3642C1312.6 53.7134 1306.47 46.8493 1298.74 41.7716C1291.01 36.694 1282.52 34.1552 1273.27 34.1552C1264.03 34.1552 1255.73 36.506 1248.38 41.2075C1241.21 45.909 1235.55 52.5851 1231.4 61.2358C1227.44 69.6985 1225.46 79.2895 1225.46 90.009C1225.46 100.916 1227.44 110.696 1231.4 119.346C1235.55 127.809 1241.21 134.485 1248.38 139.375C1255.73 144.076 1264.03 146.427 1273.27 146.427ZM1214.99 90.009C1214.99 77.409 1217.44 66.2194 1222.35 56.4403C1227.25 46.6612 1234.14 39.0448 1243 33.591C1251.87 27.9492 1261.96 25.1284 1273.27 25.1284C1283.27 25.1284 1293.08 28.3254 1302.7 34.7194C1312.51 41.1134 1319.49 48.8239 1323.64 57.8507V24.2821H1333.82V146.145C1333.82 159.121 1331.47 170.687 1326.75 180.842C1322.03 190.997 1315.24 198.896 1306.38 204.537C1297.7 210.179 1287.52 213 1275.82 213C1265.07 213 1255.83 211.213 1248.09 207.64C1240.36 204.255 1233.19 198.049 1226.59 189.022L1234.51 182.534C1240.17 190.245 1246.21 195.699 1252.62 198.896C1259.03 202.093 1266.77 203.691 1275.82 203.691C1290.35 203.691 1301.95 198.237 1310.62 187.33C1319.3 176.422 1323.64 162.224 1323.64 144.734V121.603C1320.43 131.57 1314.11 139.751 1304.68 146.145C1295.44 152.539 1284.97 155.736 1273.27 155.736C1261.96 155.736 1251.87 152.915 1243 147.273C1234.14 141.631 1227.25 133.827 1222.35 123.86C1217.44 113.893 1214.99 102.609 1214.99 90.009Z" fill="currentColor"/>
+    <path d="M1403.69 154.607C1392.19 154.607 1381.91 151.881 1372.85 146.427C1363.8 140.785 1356.73 133.075 1351.63 123.296C1346.54 113.328 1343.99 102.045 1343.99 89.4448C1343.99 76.8448 1346.54 65.5612 1351.63 55.594C1356.73 45.6269 1363.8 37.9164 1372.85 32.4627C1381.91 26.8209 1392.19 24 1403.69 24C1415.39 24 1424.92 26.5388 1432.27 31.6164C1439.82 36.506 1444.34 40.2672 1445.85 42.9C1447.55 45.5328 1450.38 50.8925 1454.34 58.9791C1458.11 67.8179 1460 79.1015 1460 92.8299H1354.18C1354.18 102.985 1356.26 112.106 1360.41 120.193C1364.74 128.091 1370.59 134.297 1377.95 138.81C1385.49 143.324 1394.08 145.581 1403.69 145.581C1413.69 145.581 1421.61 143.888 1427.46 140.503C1433.5 136.93 1437.18 134.109 1438.5 132.04C1439.82 129.972 1441.8 126.304 1444.44 121.039L1453.21 125.27C1449.63 133.545 1443.78 140.503 1435.67 146.145C1427.56 151.787 1416.9 154.607 1403.69 154.607ZM1449.81 83.5209C1449.63 75.2463 1447.64 67.1597 1443.87 59.2612C1440.29 51.1746 1435.01 44.6866 1428.03 39.797C1421.24 34.9075 1413.13 32.6507 1403.69 33.0269C1389.17 33.0269 1377.29 37.7284 1368.04 47.1313C1358.99 56.3463 1354.37 68.4761 1354.18 83.5209H1449.81Z" fill="currentColor"/>
+    <path d="M722.11 0.01C696.96 0.01 674.54 11.79 659.97 30.09C645.4 11.8 622.98 0.01 597.83 0.01C572.68 0.01 550.28 11.78 535.7 30.06C521.13 11.79 498.72 0.01 473.57 0.01C448.42 0.01 426 11.79 411.43 30.09C396.86 11.8 374.44 0.01 349.29 0.01C316.82 0.01 288.88 19.6 276.56 47.57C264.23 19.61 236.29 0.01 203.82 0.01C201.25 0.01 198.74 0.15 196.04 0.4C195.42 0.46 194.81 0.55 193.69 0.7C192 0.92 190.33 1.16 188.71 1.47C187.98 1.61 187.21 1.78 186.12 2.04C185.82 2.11 185.53 2.19 185.24 2.26C183.99 2.56 182.73 2.87 181.49 3.23C180.94 3.39 180.3 3.6 179.7 3.79C177.87 4.38 176.05 5.01 174.28 5.73C173.93 5.87 173.61 6.01 173.27 6.15C163.92 10.1 155.31 15.84 147.92 23.24C132.85 38.31 124.55 58.34 124.55 79.65C124.55 90.3 126.62 100.63 130.58 110.17C130.6 110.2 130.6 110.21 130.6 110.21C131.51 112.4 132.54 114.54 133.65 116.65C133.81 116.97 133.98 117.28 134.15 117.6C135.1 119.36 136.15 121.06 137.24 122.75C137.56 123.28 137.89 123.81 138.2 124.25C139.56 126.25 141 128.18 142.53 130.04C157.7 148.41 180.04 158.95 203.84 158.95C231.33 158.95 255.59 144.92 269.86 123.65V159.03H304.52V79.48H304.49C304.49 54.77 324.59 34.66 349.31 34.66C374.03 34.66 394.13 54.76 394.13 79.48H394.16V159.03H428.82V79.48H428.79C428.79 54.77 448.89 34.66 473.61 34.66C498.33 34.66 518.23 54.58 518.41 79.14C518.41 79.25 518.39 79.36 518.39 79.47H518.42V159.02H553.08V79.47C553.08 79.36 553.06 79.25 553.06 79.14C553.24 54.58 573.26 34.66 597.86 34.66C622.46 34.66 642.68 54.76 642.68 79.48C642.68 123.3 678.33 158.95 722.15 158.95V124.29C697.44 124.29 677.33 104.19 677.33 79.47C677.33 54.75 697.43 34.65 722.15 34.65C746.87 34.65 766.97 54.75 766.97 79.47V159.02H801.63V79.47C801.63 35.65 765.98 0 722.16 0H722.11V0.01ZM203.82 124.31C190.4 124.31 177.79 118.36 169.22 107.98C168.36 106.95 167.57 105.87 166.61 104.43L166.1 103.62C165.6 102.84 165.1 102.06 164.64 101.24L163.96 99.91C163.57 99.13 163.17 98.36 162.86 97.65L162.2 96.05C161.9 95.3 161.62 94.53 161.31 93.59L160.85 92.17C160.61 91.33 160.4 90.48 160.05 88.99L159.83 88.02C159.65 87.09 159.53 86.15 159.42 85.27L159.22 83.84C159.08 82.41 159 80.96 159 79.5C159 66.08 164.95 53.47 175.29 44.92C176.34 44.06 177.43 43.25 178.94 42.25L179.73 41.76C180.47 41.28 181.23 40.8 182.11 40.31L183.38 39.66C184.14 39.27 184.91 38.88 185.78 38.5L187.21 37.91C188.01 37.59 188.81 37.29 189.68 37.01L191.14 36.54C191.99 36.29 192.85 36.08 194.17 35.78L195.29 35.53C196.22 35.35 197.16 35.23 198.07 35.11L199.42 34.91C200.87 34.77 202.33 34.69 203.81 34.69C228.52 34.69 248.63 54.79 248.63 79.51C248.63 104.23 228.53 124.33 203.81 124.33V124.31H203.82ZM34.65 79.49C34.65 104.21 54.75 124.3 79.46 124.31C89.77 124.31 99.44 120.92 107.43 114.49C108.72 117.8 110.16 121 111.63 124.1C115.15 131.5 119.79 138.35 125.35 144.37C112 153.81 95.91 158.96 79.46 158.96C35.65 158.96 0 123.31 0 79.49C0 35.67 35.65 0.01 79.47 0.01C102.07 0.01 122.41 9.57 136.88 24.77C133.79 28.59 131.09 32.6 128.59 36.58C124.34 43.34 121.11 50.72 119.02 58.42C111.47 44.3 96.57 34.67 79.47 34.67C54.75 34.67 34.65 54.77 34.65 79.49Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+
+
+  <!-- Brandbar -->
+  <div class="brandbar">
+    <a href="index.html" class="logo" aria-label="comma , page">
+      <svg class="logo-svg" role="img" aria-hidden="true" preserveAspectRatio="xMinYMid meet">
+        <use href="#comma-logo-full" transform="translate(-42,0)" ></use>
+      </svg>
+    </a>
+    
+    <div class="nav-spacer"></div>
+    <button id="navHamburger" class="nav-hamburger" aria-label="메뉴 열기" aria-controls="navOverlay" aria-expanded="false">
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Nav overlay -->
+  <div id="navOverlay" class="nav-overlay" aria-hidden="true">
+    <button id="navClose" class="nav-close" aria-label="메뉴 닫기">×</button>
+    <div class="nav-overlay-inner">
+      <div class="nav-left">
+        <ul class="nav-sections">
+          <li><span class="nav-index">01</span><a href="intro.html" class="nav-head">HOME</a></li>
+          <li>
+            <span class="nav-index">02</span><a href="about_us.html" class="nav-head">ABOUT –</a>
+            <div class="nav-sub">
+              <a href="about_us.html">우리는</a>
+              <a href="about_d.html">디지털 유산이란</a>
+            </div>
+          </li>
+          <li>
+            <span class="nav-index">03</span><a href="Sub1_lifetime.html" class="nav-head">일생기록</a>
+            <div class="nav-sub">
+        
+           
+            </div>
+          </li>
+          <li>
+            <span class="nav-index">04</span><a href="Sub2_diary.html" class="nav-head">하루기록 –</a>
+            <div class="nav-sub">
+              <a href="Sub2_diary.html">일기</a>
+              <a href="Sub2_qna.html">질문질답</a>
+              <a href="Sub2_buket.html">버킷리스트</a>
+            </div>
+          </li>
+          <li><span class="nav-index">05</span><a href="Sub3_ heritage.html" class="nav-head">접근목록 <small>[에필로그]</small></a></li>
+          <li><span class="nav-index">06</span><a href="Sub4_visiting_list.html" class="nav-head">마이페이지</a></li>
+        </ul>
+      </div>
+      <div class="nav-right">
+        <div class="nav-brand-block">
+          <div class="nav-brand">comma ,</div>
+          <div class="nav-brand-sub">고인이 준비한 당신을 위한 기억의 공간</div>
+          <div class="nav-hr"></div>
+          <div class="nav-meta">
+            <div><b>디자이너</b> 김민정 김선정 노채린</div>
+            <div><b>문의전화</b> 043 - 229 - 8660(학과사무실)</div>
+          </div>
+          <div class="nav-copy">© 2025, Department of Digital Media Design, Cheongju University. All rights reserved.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="left">
+    <nav class="tabs page-gutter" role="tablist" aria-label="about탭">
+      <a href="about_us.html" class="tab is-active" role="tab" aria-selected="true">ABOUT</a>
+      <a href="about_d.html" class="tab" role="tab">디지털유산이란</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+<main>
+    <section class="hero">
+        <div class="container reveal">
+            <h1 class="hero-logo">
+                <svg class="hero-logo-svg" role="img" aria-hidden="true" preserveAspectRatio="xMinYMid meet">
+                    <use href="#comma-logo-full"></use>
+                </svg>
+            </h1>
+            <p>
+                고인이 당신을 위해 남긴 기억들을 모아, <br>
+                하나의 이야기로 기억될 수 있도록 정리하는<br> 온라인 추모공간입니다.
+            </p>
+        </div>
+    </section>
+
+    <section class="about-story">
+        <div class="container">
+            <div class="as-left reveal">
+                <div class="as-mark" aria-hidden="true"></div>
+                <div class="as-eyebrow">ABOUT OUR STORY</div>
+                <h2 class="as-title">
+                    우리는 오늘<br>
+                    삶의 대부분을 온라인에 남깁니다
+                </h2>
+            </div>
+            <aside class="as-right reveal">
+                <p class="as-side">
+                    사진, 글, 음악, 메시지<br>
+                    모두가 흔적이 됩니다
+                </p>
+            </aside>
+        </div>
+    </section>
+
+    <section class="faced">
+        <div class="container">
+            <div class="faced-copy reveal">
+                <p class="faced-eyebrow">우리는 고민했습니다</p>
+                <h3 class="faced-head">남겨진 기록이 데이터가 아닌 ‘사람’으로<br> 기억될 수 있을까</h3>
+                <p class="faced-tail">그 고민에서,<br>comma가 시작되었습니다.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<section class="qs-alt" id="qs">
+    <div class="qs-sizer"></div>
+    <div class="qs-fixed" id="qsFixed" aria-live="polite">
+        <div class="qs-phrase" id="qsNow"></div>
+        <div class="qs-phrase" id="qsNext"></div>
+    </div>
+</section>
+
+
+
+
+<section class="service svc-horizontal" id="svc">
+    <div class="svc-track" id="svcTrack" aria-live="polite">
+
+        <section class="svc-slide" style="--bg:url('img/service_0.jpg')" data-active="true"></section>
+
+        <section class="svc-slide" style="--bg:url('img/service_1.jpg')"></section>
+
+        <section class="svc-slide" style="--bg:url('img/service_2.jpg')"></section>
+
+        <section class="svc-slide" style="--bg:url('img/service_3.jpg')"></section>
+
+        <section class="svc-slide" style="--bg:url('img/service_4.jpg')"></section>
+        
+    </div>
+
+    <button class="svc-nav svc-nav--prev" id="svcPrev" aria-label="이전">
+        <img src="img/arrow_left.svg" alt="">
+    </button>
+    <button class="svc-nav svc-nav--next" id="svcNext" aria-label="다음">
+        <img src="img/arrow_right.svg" alt="">
+    </button>
+</section>
+
+<button id="toTopBtn" class="to-top" aria-label="맨 위로 이동">
+    <img src="img/page_up.svg" alt="위로">
+</button>
+
+
+
+
+
+<script>
+    /* ===== nav overlay ===== */
+    const navHamburger=document.getElementById('navHamburger');
+    const navOverlay=document.getElementById('navOverlay');
+    const navClose=document.getElementById('navClose');
+    function openNav(){ navOverlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
+    function closeNav(){ navOverlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; }
+    navHamburger.addEventListener('click', openNav);
+    navClose.addEventListener('click', closeNav);
+    window.addEventListener('keydown', e=>{ if(e.key==='Escape' && navOverlay.getAttribute('aria-hidden')==='false') closeNav(); });
+
+    /* ===== reveal ===== */
+    const io=new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting){ en.target.classList.add('on'); io.unobserve(en.target); }
+      });
+    },{threshold:.15});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const brandbar = document.querySelector('.brandbar');
+    const lightSections = document.querySelectorAll('.hero, .about-story');
+    
+  
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            
+            if (entry.isIntersecting) {
+             
+                brandbar.classList.add('light-background');
+            } else if (!document.querySelector('.hero').getBoundingClientRect().top > 0) {
+              
+                 let isAnyLightSectionVisible = false;
+                 lightSections.forEach(sec => {
+                     const rect = sec.getBoundingClientRect();
+                     // 섹션이 뷰포트 안에 일부라도 보인다면 true
+                     if (rect.bottom > 0 && rect.top < window.innerHeight) {
+                         isAnyLightSectionVisible = true;
+                     }
+                 });
+
+              
+                 if (window.scrollY === 0) {
+                 
+                 }
+                
+              
+            }
+        });
+    }, {
+    
+        rootMargin: `-72px 0px 0px 0px`, 
+        threshold: 0
+    });
+    
+    lightSections.forEach(section => observer.observe(section));
+
+    window.addEventListener('scroll', () => {
+        const firstDarkSectionTop = document.querySelector('.faced').getBoundingClientRect().top;
+        
+      
+        const qsAltTop = document.querySelector('.qs-alt').getBoundingClientRect().top;
+
+        if (qsAltTop < brandbar.offsetHeight) {
+        
+            brandbar.classList.remove('light-background');
+        } else {
+         
+            brandbar.classList.add('light-background');
+        }
+
+  
+        if (window.scrollY === 0) {
+             brandbar.classList.add('light-background');
+        }
+    });
+
+ 
+    const qsAltTop = document.querySelector('.qs-alt').getBoundingClientRect().top;
+    if (qsAltTop < brandbar.offsetHeight) {
+        brandbar.classList.remove('light-background');
+    } else {
+        brandbar.classList.add('light-background');
+    }
+});
+
+    /* ===== 질문 스크롤 시퀀스 + 코어 밸류 통합 ===== */
+    (function(){
+      const lines = [
+        "무엇이 남아야 하고,\n무엇이 사라져야 할까?",
+        "남겨진 사람들은 그 흔적을\n어떻게 마주해야 할까?",
+        "어떤 모습으로\n기억되고 싶은가?",
+        "CORE VALUE\n기억 • 존중 • 연결 • 지속성"
+      ];
+      
+      function toLayoutHTML(text){
+        const isCoreValue = text.startsWith("CORE VALUE");
+        const parts = text.split("\n").map(row=>{
+          if (isCoreValue && row.startsWith("CORE VALUE")) {
+              const titleRow = row.split('\n')[0];
+              return `<div class="row cv-title-alt">${titleRow}</div>`;
+          }
+          if (isCoreValue && row.includes('•')) {
+              const values = row.split(" • ").filter(v => v.trim() !== '');
+              let html = '';
+              values.forEach((val, i) => {
+                  html += `
+                      <div class="cv-item-wrapper">
+                          <div class="cv-item-star"></div>  <div class="cv-item-label">${val.trim()}</div>
+                      </div>
+                  `;
+                  if (i < values.length - 1) {
+                      html += `<div class="cv-dash-alt"></div>`;
+                  }
+              });
+              return `<div class="cv-row-alt">${html}</div>`;
+          }
+          const words = row.split(/\s+/);
+          return `<div class="row">${words.map(w=>`<span>${w}</span>`).join("")}</div>`;
+        });
+        return parts.join("");
+      }
+
+      const section = document.getElementById('qs');
+      const sizer   = section.querySelector('.qs-sizer');
+      const fixed   = document.getElementById('qsFixed');
+      const now     = document.getElementById('qsNow');
+      const next    = document.getElementById('qsNext');
+
+      section.style.setProperty('--slides', lines.length);
+
+      let cur = 0;
+      now.innerHTML  = toLayoutHTML(lines[0]);
+      next.innerHTML = toLayoutHTML(lines[1] ?? lines[0]);
+
+      function bounds(){
+        const r = sizer.getBoundingClientRect();
+        const start = window.scrollY + r.top;
+        const end   = window.scrollY + r.bottom - window.innerHeight;
+        return {start, end};
+      }
+      let range = bounds();
+      window.addEventListener('resize', ()=> range = bounds());
+
+      const lerp=(a,b,t)=>a+(b-a)*t;
+
+      function tick(){
+        const y = window.scrollY;
+        const {start,end} = range;
+
+        if (y < start || y > end){
+          fixed.classList.add('hidden');
+          requestAnimationFrame(tick);
+          return;
+        } else fixed.classList.remove('hidden');
+
+        const total = Math.max(1, end - start);
+        const idxFloat = Math.min(lines.length - 1, Math.max(0, (y - start) / total * lines.length));
+        const idx = Math.floor(idxFloat);
+        const t = idxFloat - idx;
+
+        if (idx !== cur){
+          cur = idx;
+          now.innerHTML  = toLayoutHTML(lines[cur]);
+          next.innerHTML = toLayoutHTML(lines[cur+1] ?? lines[cur]);
+        }
+        
+        if (cur === lines.length - 1) {
+          now.style.filter = `blur(0px)`;
+          now.style.opacity = '1';
+          next.style.filter = `blur(12px)`; 
+          next.style.opacity = '0';
+        } else {
+          now.style.filter = `blur(${lerp(0,12,t)}px)`;
+          now.style.opacity = String(lerp(1,0,t));
+          next.style.filter = `blur(${lerp(12,0,t)}px)`;
+          next.style.opacity = String(lerp(0,1,t));
+        }
+
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    })();
+
+
+    /* ===== Service : 가로 슬라이드 제어 (최종 수정) ===== */
+    (function(){
+      const section = document.getElementById('svc');
+      const track   = document.getElementById('svcTrack');
+      const prevBtn = document.getElementById('svcPrev');
+      const nextBtn = document.getElementById('svcNext');
+
+      const total = track.children.length;
+      let index = 0;
+      let animating = false;
+
+      function goTo(i){
+        if(animating) return;
+        index = Math.max(0, Math.min(total-1, i));
+        animating = true;
+
+        Array.from(track.children).forEach((s, si)=>{
+          s.setAttribute('data-active', si === index ? 'true' : 'false');
+        });
+
+        track.style.transform = `translate3d(${-index*100}vw,0,0)`;
+        setTimeout(()=> animating = false, 620);
+      }
+
+      prevBtn.addEventListener('click', ()=> goTo(index-1));
+      nextBtn.addEventListener('click', ()=> goTo(index+1));
+
+      // ⭐️ 휠 이벤트 (튀는 현상 방지 적용)
+      section.addEventListener('wheel', (e) => {
+        // 1. 화면에 딱 맞는지 확인
+        const rect = section.getBoundingClientRect();
+        const isAtTop = Math.abs(rect.top) <= 5;
+
+        if (!isAtTop) return;
+
+
+        if (animating) {
+            e.preventDefault();
+            return;
+        }
+
+        // 3. 슬라이드 로직
+        if (e.deltaY > 0) {
+          // ▼ 아래로 휠
+          if (index < total - 1) {
+            e.preventDefault();
+            goTo(index + 1);
+          } 
+   
+        } else {
+          // ▲ 위로 휠
+          if (index > 0) {
+            e.preventDefault();
+            goTo(index - 1);
+          }
+        
+        }
+      }, { passive: false });
+
+
+      window.addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowRight') goTo(index+1);
+        if(e.key==='ArrowLeft')  goTo(index-1);
+      });
+
+      window.addEventListener('resize', ()=> {
+        track.style.transition = 'none';
+        track.style.transform = `translate3d(${-index*100}vw,0,0)`;
+        requestAnimationFrame(()=> track.style.transition = '');
+      });
+
+      goTo(0);
+    })();
+
+    /* ===== Scroll to Top ===== */
+    const toTopBtn = document.getElementById('toTopBtn');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) { toTopBtn.classList.add('show'); }
+      else { toTopBtn.classList.remove('show'); }
+    });
+    toTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

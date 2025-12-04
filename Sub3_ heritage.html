@@ -1,0 +1,858 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>comma, page</title>
+        <link href="https://fonts.googleapis.com/css2?family=Apple+SD+Gothic+Neo:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+ :root{
+  /* 👇 여기 두 개를 바꿔주세요 */
+  --bg:#212121;       /* 디테일 페이지와 같은 어두운 배경 */
+  --ink:#f3f1ea;      /* 어두운 배경이니까 글자는 밝게 */
+  
+  --muted:#8b8b8b; 
+  --line:#444444;     /* (선택사항) 선 색상도 어둡게 맞추면 더 자연스러워요 */
+  --accent:#b4a78a; 
+  --accent-ink:#5a5241; 
+  --paper:#2b2b2b;    /* (선택사항) 캘린더나 카드 배경도 어둡게 하려면 이것도 수정 */
+
+  --page-left:240px;
+  --brandbar-h:72px;
+}
+
+    html,body{
+      /* 가로 스크롤을 위해 body의 세로 스크롤을 막고, 전체 높이를 100%로 설정 */
+      height:100%; margin:0; background:var(--bg); color:var(--ink);
+      font-family:"Pretendard",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+      line-height:1.5;
+      overflow: hidden; /* body의 기본 스크롤을 막습니다. */
+    }
+    
+    /* 좌측 기준선에 맞춰 들여쓰기 하는 유틸 */
+    .page-gutter{ margin-left: var(--page-left); }
+    
+    /* 작은 화면에서는 좌우 여백 축소(선택) */
+    @media (max-width: 1200px){
+      :root{ --page-left:24px; }
+      /* 네비게이션 오버레이 미디어 쿼리 추가 */
+      .nav-hamburger{ margin-right:var(--page-left); }
+      .nav-close{ right:24px; }
+      .nav-left{ padding-left:24px; }
+    }
+
+
+/* ===== Brandbar / Nav ===== */
+.brandbar{
+  position:fixed; top:0; left:0; right:0; height:var(--brandbar-h); /* 🚨 fixed로 통일 */
+  display:flex; align-items:center; gap:20px; z-index:9999;
+  /* 🚨 라인 색상을 밝은 색으로 변경하여 대비 강화 */
+  border-bottom:1px solid rgba(255, 255, 255, 0.2); /* 은은한 밝은 회색 라인 */
+  background:linear-gradient(to bottom, rgba(33, 33, 33, 0.95), rgba(33, 33, 33, 0.8)); /* 🚨 배경색도 확실히 어둡게 설정 */
+  backdrop-filter:blur(4px);
+}
+.logo{ margin-left: var(--page-left); display:flex; align-items:center; text-decoration:none; color: var(--ink); }
+.logo:hover{ color: var(--accent); }
+.logo-svg{ height: 28px; width:auto; display:block; }
+.nav-spacer{ flex:1 1 auto; }
+.nav-hamburger{ width:36px;height:36px;border:0;background:transparent; margin-right: calc(var(--page-left) + 15px); display:grid;place-items:center;cursor:pointer; }
+.nav-hamburger span,.nav-hamburger span::before,.nav-hamburger span::after{ display:block;width:18px;height:2px;background:var(--ink);content:"";position:relative; }
+.nav-hamburger span::before{ position:absolute; top:-6px; left:0; }
+.nav-hamburger span::after{ position:absolute; top:6px; left:0; }
+
+
+/* Overlay */
+.nav-overlay{ position:fixed; inset:0; background:#000; color:#fff; display:none; z-index:10000; }
+.nav-overlay[aria-hidden="false"]{ display:block; }
+.nav-close{ position:absolute; top:24px; right:var(--page-left); width:40px; height:40px; background:transparent; border:0; color:#fff; font-size:32px; line-height:1; cursor:pointer; }
+.nav-overlay-inner{ position:absolute; inset:var(--brandbar-h) 0 0 0; height:calc(100% - var(--brandbar-h)); display:grid; grid-template-columns:1fr 1fr; }
+.nav-left{ padding-left:var(--page-left); padding-top:24px; }
+.nav-sections{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:36px; }
+.nav-index{ display:block; font-size:12px; opacity:.6; margin-bottom:8px; }
+.nav-head{ display:inline-block; font-size:28px; font-weight:800; color:#fff; text-decoration:none; }
+.nav-sub{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+.nav-sub a{ color:#d6d6d6; text-decoration:none; font-size:14px; }
+.nav-sub a:hover{ color:#fff; }
+
+.nav-right{ display:flex; align-items:center; }
+.nav-brand-block{ max-width:520px; color:#d6d6d6; }
+.nav-brand{ font-size:32px; font-weight:800; color:#fff; margin-bottom:6px; }
+.nav-brand-sub{ margin-bottom:16px; }
+.nav-hr{ height:1px; background:#444; margin:14px 0 18px; }
+.nav-meta b{ color:#fff; font-weight:700; margin-right:10px; }
+.nav-copy{ margin-top:24px; font-size:12px; opacity:.7; }
+
+
+
+
+/* ------------------------------------------- */
+/* Tabs & Title: Fixed로 변경 (새로운 스타일) */
+/* ------------------------------------------- */
+.tabs-container { /* 탭과 소분류 탭을 묶는 컨테이너 */
+    position: fixed;
+    top: var(--brandbar-h);
+    left: 240px; /*민정이가 수정함*/
+    right: 0;
+    z-index: 150;
+    background: var(--bg);
+}
+
+.tabs{ 
+  display:flex; 
+  gap:18px; 
+  margin: 18px 0 24px; /* 기존 margin 유지 */
+}
+
+/* 🚨 .tab 스타일 수정 (약 134번째 줄 근처) */
+.tab{
+  font-size:15px; padding:8px 10px; border-radius:8px; color:var(--muted);
+  background:transparent; border:0; cursor:pointer;
+  transition: all 0.2s ease; /* 🚨 트랜지션 속성 추가 (부드러운 전환) */
+}
+
+/* 🚨 [추가] 마우스 호버 스타일 */
+.tab:hover {
+    background: transparent; /* 🚨 배경색을 투명하게 변경 */
+    color: var(--ink);        /* 🚨 글자색만 밝게 유지 */
+}
+
+/* 🚨 .tab.is-active 스타일은 기존대로 유지하여 활성 탭 색상 보존 */
+.tab.is-active{ 
+    background:var(--accent); /* 기존 강조색 */
+    color:var(--accent-ink); /* 기존 글자색 */
+    font-weight:600; 
+}
+
+.tabs-small{ display:flex; gap:10px; margin-left: auto; padding-right: var(--page-left); }
+
+.tab-small{
+    font-size:14px; padding:8px 12px; border-radius:9999px; color:var(--muted);
+    background:transparent; border:1px solid var(--line); cursor:pointer;
+    transition: background-color .2s;
+    white-space: nowrap;
+}
+
+
+.tab-small:hover{ background: #fdfaf5; }
+
+/* ⭐️ 선택된 카테고리 (소분류) 강조 스타일 */
+.tab-small.is-active {
+    background: #cac0aa;  /* 베이지색 배경 (#b4a78a) */
+    color: #fff;                /* 흰색 글자 */
+    border-color: #cac0aa; /* 테두리도 같은 색으로 */
+    font-weight: 700;           /* 굵게 */
+}
+
+
+.tab.is-active { 
+    background: transparent; /* 🚨 배경을 투명하게 변경 (박스 제거) */
+    color: #fff;             /* 🚨 배경이 어두우니 글자는 흰색으로 강조 */
+    font-weight: 800;        /* 굵게 표시 */
+}
+
+
+
+.section-title-fixed { /* 제목도 Fixed로 변경 */
+  position: fixed;
+  /* top 위치는 JS에서 동적으로 계산하거나, 대략적인 값을 계산해야 합니다. */
+  /* 여기서는 간단하게 tabs-container 아래에 오도록 계산합니다. */
+  top: calc(var(--brandbar-h) + 18px + 40px + 24px); 
+  left: 240px;  /*민정이가 수정함*/
+  right: 0;
+  z-index: 150;
+  background: var(--bg);
+  padding-bottom: 12px; /* 제목 아래 여백 */
+}
+
+.section-title-inner {
+    font-size:24px; 
+    font-weight:700; 
+    margin: 0; /* 기존 margin을 page-gutter과 함께 사용 */
+}
+
+
+/* ------------------------------------------- */
+/* 🚨 접근 목록 카드 레이아웃 스타일 (크기 확장 반영) */
+/* ------------------------------------------- */
+
+.root {
+    /* 카드를 담는 컨테이너. 상단 패딩은 JS에서 계산 */
+    min-height: 100vh;
+}
+
+/* 카드 컨테이너: 가로 스크롤 가능 영역 */
+.card-container{
+    padding-left:var(--page-left); 
+    padding-right:var(--page-left); 
+    padding-bottom:32px;
+    height: calc(100vh - 250px); /* 임시 높이, JS에서 정확한 값 설정 */
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-behavior:smooth;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+    white-space:nowrap; /* 카드들이 한 줄에 배치되도록 */
+} 
+.card-container::-webkit-scrollbar{display:none;}
+
+/* 카드 래퍼: 가로 너비 확장 및 카드 배치 */
+
+.card-wrapper{
+    display:flex;
+    align-items:flex-start;
+    /* gap을 구버전인 24px로 복구 */
+    gap: 24px; /* 🚨 32px -> 24px로 복구 */
+    height: 100%;
+    padding-top: 24px;
+}
+
+/* 개별 카드 스타일 */
+.access-card{
+    display: inline-block;
+    flex-shrink: 0;
+    /* width와 height를 구버전으로 복구 */
+    width: 320px; /* 🚨 384px -> 320px로 복구 */
+    min-height: 520px; /* 🚨 600px -> 520px로 복구 */
+    background: var(--paper);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--line);
+    padding: 24px;
+    transition: transform .3s ease, box-shadow .3s ease;
+    cursor: pointer;
+    vertical-align: top;
+    white-space: normal;
+}
+
+.access-card:hover{
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    transform: translateY(-4px);
+}
+
+.card-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.card-logo{ display:flex; align-items:center; gap:8px; font-weight:800; }
+.card-status{ font-size:14px; color:var(--muted); white-space:nowrap; }
+
+.card-section-title{ font-size:16px; font-weight:600; color:var(--ink); margin-top:20px; }
+/* Sub3_ heritage.html CSS 수정 */
+
+
+.card-detail{ 
+    margin-top:8px; 
+    display:grid; 
+    /* 레이블 열 너비를 구버전 150px로 복구 */
+    grid-template-columns: 150px 1fr; /* 🚨 180px -> 150px로 복구 */
+    /* 간격을 구버전 6px 12px로 복구 */
+    gap: 6px 12px; /* 🚨 8px 16px -> 6px 12px로 복구 */
+    font-size:15px; 
+}
+
+/* 2. .card-label: 줄바꿈 방지 재확인 */
+.card-label{ 
+    color:var(--muted); 
+    white-space:nowrap; /* 줄바꿈 방지 */
+}
+.card-value{ color:var(--ink); }
+
+.value-right {
+    text-align: right;
+}
+
+
+.card-hr{ height:1px; background:var(--line); margin:18px 0; }
+
+.card-memo-title{ font-size:16px; font-weight:600; color:var(--ink); margin-bottom:12px; }
+.card-memo-content{ font-size:15px; color:var(--ink); line-height:1.6; overflow:hidden; }
+
+/* ------------------------------------------- */
+/* 🔒 2차 인증 잠금 화면 스타일 */
+/* ------------------------------------------- */
+.auth-layer {
+  position: fixed;
+  inset: 0; /* 화면 전체 덮기 */
+  z-index: 20000; /* 네비게이션보다 위에 */
+  
+  /* 배경 흐림 효과 (다크 모드에 맞춤) */
+  background: rgba(33, 33, 33, 0.6); 
+  backdrop-filter: blur(12px); /* ⭐️ 블러 효과 핵심 */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  opacity: 1;
+  transition: opacity 0.5s ease; /* 부드럽게 사라짐 */
+}
+
+/* 사라질 때 클래스 */
+.auth-layer.hidden {
+  opacity: 0;
+  pointer-events: none; /* 클릭 불가능하게 */
+}
+
+.auth-box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  
+  /* 박스 등장 애니메이션 */
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-lock-icon {
+  width: 64px;
+  height: 64px;
+  background: #fff;
+  color: #212121;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  margin-bottom: 8px;
+}
+
+.auth-btn {
+  font-family: "SUIT", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #212121;
+  background: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 999px; /* 알약 모양 */
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.auth-btn:active {
+  transform: scale(0.98);
+}
+
+.auth-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  font-weight: 300;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+
+
+    </style>
+</head>
+
+    <body>
+
+
+      <!-- SVG Sprite -->
+ <!-- SVG Sprite: 재사용 가능한 로고 심볼 -->
+<!-- ⬇️ head 바로 아래 쪽 스프라이트 영역에 추가 -->
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="comma-logo-full" viewBox="0 0 1460 213">
+    <!-- ↓ /mnt/data/Logo.svg의 내용 그대로 -->
+    <path d="M879.318 186H859L867.983 130H896L879.318 186Z" fill="currentColor"/>
+    <path d="M1012.7 146.991C1022.32 146.991 1030.81 144.64 1038.16 139.939C1045.71 135.049 1051.56 128.279 1055.71 119.628C1059.86 110.978 1061.93 101.199 1061.93 90.291C1061.93 79.3836 1059.86 69.6985 1055.71 61.2358C1051.56 52.7731 1045.71 46.191 1038.16 41.4896C1030.81 36.6 1022.32 34.1552 1012.7 34.1552C1004.21 34.1552 996.195 36.694 988.65 41.7716C981.105 46.8493 975.069 53.7134 970.542 62.3642C966.015 71.0149 963.752 80.3239 963.752 90.291C963.752 100.446 966.015 109.943 970.542 118.782C975.069 127.433 981.105 134.297 988.65 139.375C996.195 144.452 1004.21 146.991 1012.7 146.991ZM953 24.2821H963.469V57.8507C967.996 48.6358 974.786 40.9254 983.84 34.7194C992.895 28.3254 1002.61 25.1284 1012.98 25.1284C1024.49 25.1284 1034.68 27.9492 1043.54 33.591C1052.59 39.0448 1059.67 46.7552 1064.76 56.7224C1069.85 66.5015 1072.4 77.691 1072.4 90.291C1072.4 103.079 1069.85 114.457 1064.76 124.424C1059.67 134.391 1052.59 142.196 1043.54 147.837C1034.68 153.291 1024.49 156.018 1012.98 156.018C1001.48 156.018 991.291 152.727 982.426 146.145C973.749 139.375 967.43 131.664 963.469 123.013V213H953V24.2821Z" fill="currentColor"/>
+    <path d="M1139.6 155.454C1128.09 155.454 1117.81 152.727 1108.76 147.273C1099.89 141.631 1092.91 133.827 1087.82 123.86C1082.73 113.893 1080.18 102.609 1080.18 90.009C1080.18 77.409 1082.73 66.1254 1087.82 56.1582C1092.91 46.191 1099.89 38.4806 1108.76 33.0269C1117.81 27.3851 1128.09 24.5642 1139.6 24.5642C1150.73 24.5642 1160.63 27.5731 1169.31 33.591C1177.98 39.4209 1184.49 47.1313 1188.83 56.7224V24.2821H1199.02V154.325H1188.83V123.296C1185.06 131.57 1178.74 138.999 1169.87 145.581C1161.01 152.163 1150.92 155.454 1139.6 155.454ZM1090.65 90.009C1090.65 100.916 1092.73 110.696 1096.88 119.346C1101.02 127.809 1106.78 134.391 1114.13 139.093C1121.68 143.794 1130.17 146.145 1139.6 146.145C1148.28 146.145 1156.39 143.794 1163.93 139.093C1171.48 134.203 1177.51 127.433 1182.04 118.782C1186.57 110.131 1188.83 100.54 1188.83 90.009C1188.83 79.4776 1186.57 69.8866 1182.04 61.2358C1177.51 52.5851 1171.48 45.909 1163.93 41.2075C1156.39 36.3179 1148.28 33.8731 1139.6 33.8731C1130.17 33.8731 1121.68 36.3179 1114.13 41.2075C1106.78 45.909 1101.02 52.491 1096.88 60.9537C1092.73 69.4164 1090.65 79.1015 1090.65 90.009Z" fill="currentColor"/>
+    <path d="M1273.27 146.427C1282.52 146.427 1291.01 143.888 1298.74 138.81C1306.47 133.733 1312.6 126.869 1317.13 118.218C1321.66 109.567 1323.92 100.164 1323.92 90.009C1323.92 80.0418 1321.66 70.8269 1317.13 62.3642C1312.6 53.7134 1306.47 46.8493 1298.74 41.7716C1291.01 36.694 1282.52 34.1552 1273.27 34.1552C1264.03 34.1552 1255.73 36.506 1248.38 41.2075C1241.21 45.909 1235.55 52.5851 1231.4 61.2358C1227.44 69.6985 1225.46 79.2895 1225.46 90.009C1225.46 100.916 1227.44 110.696 1231.4 119.346C1235.55 127.809 1241.21 134.485 1248.38 139.375C1255.73 144.076 1264.03 146.427 1273.27 146.427ZM1214.99 90.009C1214.99 77.409 1217.44 66.2194 1222.35 56.4403C1227.25 46.6612 1234.14 39.0448 1243 33.591C1251.87 27.9492 1261.96 25.1284 1273.27 25.1284C1283.27 25.1284 1293.08 28.3254 1302.7 34.7194C1312.51 41.1134 1319.49 48.8239 1323.64 57.8507V24.2821H1333.82V146.145C1333.82 159.121 1331.47 170.687 1326.75 180.842C1322.03 190.997 1315.24 198.896 1306.38 204.537C1297.7 210.179 1287.52 213 1275.82 213C1265.07 213 1255.83 211.213 1248.09 207.64C1240.36 204.255 1233.19 198.049 1226.59 189.022L1234.51 182.534C1240.17 190.245 1246.21 195.699 1252.62 198.896C1259.03 202.093 1266.77 203.691 1275.82 203.691C1290.35 203.691 1301.95 198.237 1310.62 187.33C1319.3 176.422 1323.64 162.224 1323.64 144.734V121.603C1320.43 131.57 1314.11 139.751 1304.68 146.145C1295.44 152.539 1284.97 155.736 1273.27 155.736C1261.96 155.736 1251.87 152.915 1243 147.273C1234.14 141.631 1227.25 133.827 1222.35 123.86C1217.44 113.893 1214.99 102.609 1214.99 90.009Z" fill="currentColor"/>
+    <path d="M1403.69 154.607C1392.19 154.607 1381.91 151.881 1372.85 146.427C1363.8 140.785 1356.73 133.075 1351.63 123.296C1346.54 113.328 1343.99 102.045 1343.99 89.4448C1343.99 76.8448 1346.54 65.5612 1351.63 55.594C1356.73 45.6269 1363.8 37.9164 1372.85 32.4627C1381.91 26.8209 1392.19 24 1403.69 24C1415.39 24 1424.92 26.5388 1432.27 31.6164C1439.82 36.506 1444.34 40.2672 1445.85 42.9C1447.55 45.5328 1450.38 50.8925 1454.34 58.9791C1458.11 67.8179 1460 79.1015 1460 92.8299H1354.18C1354.18 102.985 1356.26 112.106 1360.41 120.193C1364.74 128.091 1370.59 134.297 1377.95 138.81C1385.49 143.324 1394.08 145.581 1403.69 145.581C1413.69 145.581 1421.61 143.888 1427.46 140.503C1433.5 136.93 1437.18 134.109 1438.5 132.04C1439.82 129.972 1441.8 126.304 1444.44 121.039L1453.21 125.27C1449.63 133.545 1443.78 140.503 1435.67 146.145C1427.56 151.787 1416.9 154.607 1403.69 154.607ZM1449.81 83.5209C1449.63 75.2463 1447.64 67.1597 1443.87 59.2612C1440.29 51.1746 1435.01 44.6866 1428.03 39.797C1421.24 34.9075 1413.13 32.6507 1403.69 33.0269C1389.17 33.0269 1377.29 37.7284 1368.04 47.1313C1358.99 56.3463 1354.37 68.4761 1354.18 83.5209H1449.81Z" fill="currentColor"/>
+    <path d="M722.11 0.01C696.96 0.01 674.54 11.79 659.97 30.09C645.4 11.8 622.98 0.01 597.83 0.01C572.68 0.01 550.28 11.78 535.7 30.06C521.13 11.79 498.72 0.01 473.57 0.01C448.42 0.01 426 11.79 411.43 30.09C396.86 11.8 374.44 0.01 349.29 0.01C316.82 0.01 288.88 19.6 276.56 47.57C264.23 19.61 236.29 0.01 203.82 0.01C201.25 0.01 198.74 0.15 196.04 0.4C195.42 0.46 194.81 0.55 193.69 0.7C192 0.92 190.33 1.16 188.71 1.47C187.98 1.61 187.21 1.78 186.12 2.04C185.82 2.11 185.53 2.19 185.24 2.26C183.99 2.56 182.73 2.87 181.49 3.23C180.94 3.39 180.3 3.6 179.7 3.79C177.87 4.38 176.05 5.01 174.28 5.73C173.93 5.87 173.61 6.01 173.27 6.15C163.92 10.1 155.31 15.84 147.92 23.24C132.85 38.31 124.55 58.34 124.55 79.65C124.55 90.3 126.62 100.63 130.58 110.17C130.6 110.2 130.6 110.21 130.6 110.21C131.51 112.4 132.54 114.54 133.65 116.65C133.81 116.97 133.98 117.28 134.15 117.6C135.1 119.36 136.15 121.06 137.24 122.75C137.56 123.28 137.89 123.81 138.2 124.25C139.56 126.25 141 128.18 142.53 130.04C157.7 148.41 180.04 158.95 203.84 158.95C231.33 158.95 255.59 144.92 269.86 123.65V159.03H304.52V79.48H304.49C304.49 54.77 324.59 34.66 349.31 34.66C374.03 34.66 394.13 54.76 394.13 79.48H394.16V159.03H428.82V79.48H428.79C428.79 54.77 448.89 34.66 473.61 34.66C498.33 34.66 518.23 54.58 518.41 79.14C518.41 79.25 518.39 79.36 518.39 79.47H518.42V159.02H553.08V79.47C553.08 79.36 553.06 79.25 553.06 79.14C553.24 54.58 573.26 34.66 597.86 34.66C622.46 34.66 642.68 54.76 642.68 79.48C642.68 123.3 678.33 158.95 722.15 158.95V124.29C697.44 124.29 677.33 104.19 677.33 79.47C677.33 54.75 697.43 34.65 722.15 34.65C746.87 34.65 766.97 54.75 766.97 79.47V159.02H801.63V79.47C801.63 35.65 765.98 0 722.16 0H722.11V0.01ZM203.82 124.31C190.4 124.31 177.79 118.36 169.22 107.98C168.36 106.95 167.57 105.87 166.61 104.43L166.1 103.62C165.6 102.84 165.1 102.06 164.64 101.24L163.96 99.91C163.57 99.13 163.17 98.36 162.86 97.65L162.2 96.05C161.9 95.3 161.62 94.53 161.31 93.59L160.85 92.17C160.61 91.33 160.4 90.48 160.05 88.99L159.83 88.02C159.65 87.09 159.53 86.15 159.42 85.27L159.22 83.84C159.08 82.41 159 80.96 159 79.5C159 66.08 164.95 53.47 175.29 44.92C176.34 44.06 177.43 43.25 178.94 42.25L179.73 41.76C180.47 41.28 181.23 40.8 182.11 40.31L183.38 39.66C184.14 39.27 184.91 38.88 185.78 38.5L187.21 37.91C188.01 37.59 188.81 37.29 189.68 37.01L191.14 36.54C191.99 36.29 192.85 36.08 194.17 35.78L195.29 35.53C196.22 35.35 197.16 35.23 198.07 35.11L199.42 34.91C200.87 34.77 202.33 34.69 203.81 34.69C228.52 34.69 248.63 54.79 248.63 79.51C248.63 104.23 228.53 124.33 203.81 124.33V124.31H203.82ZM34.65 79.49C34.65 104.21 54.75 124.3 79.46 124.31C89.77 124.31 99.44 120.92 107.43 114.49C108.72 117.8 110.16 121 111.63 124.1C115.15 131.5 119.79 138.35 125.35 144.37C112 153.81 95.91 158.96 79.46 158.96C35.65 158.96 0 123.31 0 79.49C0 35.67 35.65 0.01 79.47 0.01C102.07 0.01 122.41 9.57 136.88 24.77C133.79 28.59 131.09 32.6 128.59 36.58C124.34 43.34 121.11 50.72 119.02 58.42C111.47 44.3 96.57 34.67 79.47 34.67C54.75 34.67 34.65 54.77 34.65 79.49Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+
+  <!-- Brandbar -->
+  <div class="brandbar">
+    <a href="index.html" class="logo" aria-label="comma , page">
+      <svg class="logo-svg" role="img" aria-hidden="true" preserveAspectRatio="xMinYMid meet">
+        <use href="#comma-logo-full" transform="translate(-42,0)" ></use>
+      </svg>
+    </a>
+    
+    <div class="nav-spacer"></div>
+    <button id="navHamburger" class="nav-hamburger" aria-label="메뉴 열기" aria-controls="navOverlay" aria-expanded="false">
+      <span></span>
+    </button>
+  </div>
+  
+<!-- 풀스크린 네비 오버레이 -->
+<div id="navOverlay" class="nav-overlay" aria-hidden="true">
+  <button id="navClose" class="nav-close" aria-label="메뉴 닫기">×</button>
+
+  <div class="nav-overlay-inner">
+    <div class="nav-left">
+      <ul class="nav-sections">
+        <li>
+          <span class="nav-index">01</span>
+          <a href="index.html" class="nav-head">HOME</a>
+        </li>
+        <li>
+          <span class="nav-index">02</span>
+          <a href="about_us.html" class="nav-head">ABOUT –</a>
+          <div class="nav-sub">
+            <a href="about_us.html">우리는</a>
+            <a href="about_d.html">디지털 유산이란</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">03</span>
+          <a href="Sub1_lifetime.html" class="nav-head">일생기록</a>
+          <div class="nav-sub">
+
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">04</span>
+          <a href="Sub2_diary.html" class="nav-head">하루기록 –</a>
+          <div class="nav-sub">
+            <a href="Sub2_diary.html">일기</a>
+            <a href="Sub2_qna.html">질문질답</a>
+            <a href="Sub2_buket.html">버킷리스트</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">05</span>
+          <a href="Sub3_ heritage.html" class="nav-head">접근목록 <small>[에필로그]</small></a>
+        </li>
+        <li>
+          <span class="nav-index">06</span>
+          <a href="Sub4_visiting_list.html" class="nav-head">마이페이지</a>
+        </li>
+      </ul>
+    </div>
+      <div class="nav-right">
+        <div class="nav-brand-block">
+          <div class="nav-brand">comma ,</div>
+          <div class="nav-brand-sub">고인이 준비한 당신을 위한 기억의 공간</div>
+          <div class="nav-hr"></div>
+          <div class="nav-meta">
+            <div><b>디자이너</b> 김민정 김선정 노채린</div>
+            <div><b>문의전화</b> 043 - 229 - 8660(학과사무실)</div>
+          </div>
+          <div class="nav-copy">© 2025, Department of Digital Media Design, Cheongju University. All rights reserved.</div>
+        </div>
+      </div>           
+   </div>
+
+</div>
+
+  <div class="header-container">
+    <div class="tabs-container">
+        <nav class="tabs page-gutter" role="tablist" aria-label="정리 상태 탭">
+            <button class="tab is-active" role="tab" aria-selected="true">정리 전</button>
+            <button class="tab" role="tab">정리 중</button>
+            <button class="tab" role="tab">정리 완료</button>
+            <button class="tab" role="tab">전체보기</button> <div class="tabs-small" role="tablist">
+        </div>
+            
+            <div class="tabs-small" role="tablist">
+                <button class="tab-small is-active" role="tab">소셜</button>
+                <button class="tab-small" role="tab">엔터테인먼트</button>
+                <button class="tab-small" role="tab">쇼핑 및 음식</button>
+                <button class="tab-small" role="tab">건강 및 피트니스</button>
+                <button class="tab-small" role="tab">여행</button>
+                <button class="tab-small" role="tab">게임</button>
+            </div>
+        </nav>
+    </div>
+
+    
+    <div class="section-title-fixed">
+        <h2 id="sectionTitle" class="section-title-inner page-gutter">이전에 정리가 완료된 목록이에요</h2>
+    </div>
+  </div>
+  <div id="root" class="root">
+    <div class="card-container">
+        <div class="card-wrapper">
+            </div>
+    </div>
+
+<div id="authLayer" class="auth-layer">
+    <div class="auth-box">
+      <div class="auth-lock-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      
+      <button id="btnAuth" class="auth-btn">2차 인증하기</button>
+      
+      <p class="auth-desc">* 유산 목록 확인은 2차 인증이 필요합니다.</p>
+    </div>
+  </div>
+
+
+
+
+
+  </div>
+<script>
+    (function initPage(){
+
+      const authLayer = document.getElementById('authLayer');
+      const btnAuth = document.getElementById('btnAuth');
+      
+      // 1. 시작할 때 스크롤 막기
+      document.body.style.overflow = 'hidden';
+
+      // 2. 버튼 클릭 시 잠금 해제
+      if(btnAuth && authLayer) {
+        btnAuth.addEventListener('click', () => {
+          // 부드럽게 사라지기
+          authLayer.classList.add('hidden');
+          
+          // 스크롤 풀기
+          document.body.style.overflow = '';
+          
+          // (선택사항) 0.5초 뒤에 완전히 삭제 (DOM에서 제거하려면)
+          setTimeout(() => {
+            authLayer.style.display = 'none';
+          }, 500);
+        });
+      }
+
+      const navHamburger = document.getElementById('navHamburger');
+      const navOverlay   = document.getElementById('navOverlay');
+      const navClose     = document.getElementById('navClose');
+      if(navHamburger && navOverlay && navClose) {
+        function openNav(){ navOverlay.setAttribute('aria-hidden','false'); navHamburger.setAttribute('aria-expanded','true'); document.documentElement.style.overflow='hidden'; }
+        function closeNav(){ navOverlay.setAttribute('aria-hidden','true'); navHamburger.setAttribute('aria-expanded','false'); document.documentElement.style.overflow=''; }
+        
+        navHamburger.addEventListener('click', openNav);
+        navClose.addEventListener('click', closeNav);
+        window.addEventListener('keydown', e => { if(e.key==='Escape' && navOverlay.getAttribute('aria-hidden')==='false') closeNav(); });
+      }
+// -----------------------------------------------------------------
+   // ----- 데이터 (확장된 28개 항목, 모든 필터 조합 커버) -----
+      const accessRecords = [
+        // 1. 소셜 (Social) - 8개 항목 (인스타/X/구글 등 중복 계정 포함)
+        {
+            service: "인스타그램", status: "정리 중", date: "2025. 06. 15 (일)", settingDate: "미지정", settingWay: "미정", processType: "기록 보존", id: "jmin_designs", password: "socialPASS", memo: "포트폴리오용 게시물(minimal/line art)만 남기고, 개인적인 DM은 모두 삭제. 백업 후 보존 요청.", category: "소셜"
+        },
+        {
+            service: "인스타그램", status: "삭제 예정", date: "2025. 06. 15 (일)", settingDate: "2025. 07. 01 (화)", settingWay: "노소린", processType: "계정 삭제", id: "jmin_daily", password: "oldPASS", memo: "친구들 팔로우용. 2023년 이후 사용 안 함. 사적인 내용 많음. 완전 삭제 요청.", category: "소셜"
+        },
+        // ⭐️ 소셜 - 정리 완료 (이미 존재)
+        {
+            service: "Google Mail", status: "정리 완료", date: "2025. 06. 20 (토)", settingDate: "2025. 06. 30 (월)", settingWay: "김지윤", processType: "중요 이메일 백업", id: "jmin.work@gmail", password: "workPASS", memo: "업무 및 포폴 관련 이메일 백업 후 보존 완료.", category: "소셜"
+        },
+        // ⭐️ 소셜 - 정리 전 (이미 존재)
+        {
+            service: "Google Mail", status: "정리 전", date: "2025. 06. 20 (토)", settingDate: "미지정", settingWay: "미정", processType: "삭제 예정", id: "old.chm94@gmail", password: "oldMAIL", memo: "대학 시절 사용한 메일. 불필요한 스팸 많음. 완전 삭제 예정.", category: "소셜"
+        },
+        {
+            service: "X (Twitter)", status: "삭제 예정", date: "2025. 06. 01 (월)", settingDate: "2025. 07. 01 (화)", settingWay: "노소린", processType: "계정 삭제", id: "jmin_thoughts", password: "oldPASS", memo: "업무와 무관한 개인적인 푸념, 기록 가치 낮음. 완전 삭제 요청.", category: "소셜"
+        },
+        {
+            service: "X (Twitter)", status: "정리 중", date: "2025. 06. 01 (월)", settingDate: "미지정", settingWay: "미정", processType: "자료 백업", id: "jmin_design_feed", password: "curationPASS", memo: "디자인 트렌드 큐레이션 계정. 자료 백업 후 보존.", category: "소셜"
+        },
+        {
+            service: "개인 도메인", status: "정리 중", date: "2025. 07. 05 (토)", settingDate: "미지정", settingWay: "김지윤", processType: "웹사이트 아카이브", id: "choijmin.com", password: "domainPASS", memo: "최종 포트폴리오 웹사이트. 모든 페이지 아카이브 후 도메인 소멸 요청.", category: "소셜"
+        },
+        {
+            service: "Naver Blog", status: "정리 전", date: "2025. 07. 08 (화)", settingDate: "미지정", settingWay: "노소린", processType: "비공개 전환", id: "jmin_note", password: "naverPASS", memo: "디자인 툴 사용법(Blender/Figma)에 대한 개인적인 학습 노트. 비공개로 보존 가치 있음.", category: "소셜"
+        },
+        // 2. 엔터테인먼트 (Entertainment) - 6개 항목 (포트폴리오, 미디어 포함)
+        {
+            service: "Spotify", status: "음악 재생 목록 보존", date: "2025. 06. 22 (일)", settingDate: "미지정", settingWay: "김지윤", processType: "계정 보존/공유", id: "jmin_spotify", password: "musicPASS", memo: "가장 좋아하는 작업용 재즈 힙합/앰비언트 플레이리스트는 영구 보존." , category: "엔터테인먼트"
+        },
+        // ⭐️ 엔터테인먼트 - 정리 전 (이미 존재)
+        {
+            service: "Netflix", status: "정리 전", date: "2025. 06. 18 (수)", settingDate: "미지정", settingWay: "노소린", processType: "시청 기록 백업", id: "jmin_netflix", password: "videoPASS", memo: "인생 영화 목록(미니멀리즘/영상미 강조)만 캡처하여 백업 후 계정 삭제." , category: "엔터테인먼트"
+        },
+        // ⭐️ 엔터테인먼트 - 정리 완료 (이미 존재)
+        {
+            service: "Pinterest", status: "정리 완료", date: "2025. 07. 05 (토)", settingDate: "2025. 07. 15 (화)", settingWay: "채나은", processType: "자료 보존 완료", id: "jmin_pins", password: "pinPASS", memo: "디자인 레퍼런스, 무드보드. 이미지 자료 보존 완료." , category: "엔터테인먼트"
+        },
+        {
+            service: "Behance", status: "정리 중", date: "2025. 07. 01 (화)", settingDate: "미지정", settingWay: "미정", processType: "포트폴리오 아카이브 보존", id: "choijmin_art", password: "behancePASS", memo: "과거 모든 프로젝트 파일 백업 및 정리 중.", category: "엔터테인먼트"
+        },
+        {
+            service: "Dribbble", status: "정리 중", date: "2025. 07. 15 (화)", settingDate: "미지정", settingWay: "미정", processType: "계정 보존/공유", id: "jmin_dribble", password: "dribblePASS", memo: "UI/UX 시안 아카이브. 포트폴리오와 함께 보존.", category: "엔터테인먼트"
+        },
+        {
+            service: "YouTube", status: "음악/강의 목록 보존", date: "2025. 07. 18 (금)", settingDate: "미지정", settingWay: "김지윤", processType: "재생 목록 백업", id: "jmin_tube", password: "youtubePASS", memo: "디자인 강의 및 작업용 앰비언트 재생 목록(Playlist)만 백업.", category: "엔터테인먼트"
+        },
+        // 3. 쇼핑 및 음식 (Shopping & Food) - 4개 항목
+        // ⭐️ 쇼핑 및 음식 - 정리 완료 (이미 존재)
+        {
+            service: "마켓컬리", status: "정리 완료", date: "2025. 06. 25 (수)", settingDate: "2025. 07. 05 (토)", settingWay: "김지윤", processType: "삭제 완료", id: "jmin_mK", password: "foodPASS", memo: "로그인 정보만 남기고 삭제 완료. 구매 목록은 기록 가치가 낮음.", category: "쇼핑 및 음식"
+        },
+        {
+            service: "배달의민족", status: "정리 중", date: "2025. 06. 25 (수)", settingDate: "미지정", settingWay: "미정", processType: "주요 주문 기록 백업", id: "jmin_delivery", password: "mealPASS", memo: "야근/번아웃 시 주문 기록은 '삶의 기록'으로 간주하여 일부 메모와 함께 백업." , category: "쇼핑 및 음식"
+        },
+        {
+            service: "Wadiz (펀딩)", status: "정리 전", date: "2025. 07. 03 (목)", settingDate: "미지정", settingWay: "채나은", processType: "펀딩 기록 백업", id: "jmin_funding", password: "fundPASS", memo: "흥미로웠던 디자인 제품 펀딩 기록. 백업 후 삭제.", category: "쇼핑 및 음식"
+        },
+        {
+            service: "29CM", status: "정리 전", date: "2025. 07. 20 (일)", settingDate: "미지정", settingWay: "채나은", processType: "구매 기록 확인", id: "jmin_shop", password: "trendPASS", memo: "평소 선호했던 의류 및 디자인 소품 구매 기록. 취향 분석 자료로 보존 가치 있음.", category: "쇼핑 및 음식"
+        },
+        // 4. 건강 및 피트니스 (Health & Fitness) - 3개 항목 (새 항목 1개 추가)
+        {
+            service: "Nike Run", status: "정리 중", date: "2025. 06. 05 (목)", settingDate: "미지정", settingWay: "채나은", processType: "산책 코스 백업", id: "jmin_run", password: "runPASS", memo: "퇴근 후 스트레스 해소용 '생각 정리 산책 코스' 기록만 GPS 정보와 함께 보존." , category: "건강 및 피트니스"
+        },
+        // ⭐️ 건강 및 피트니스 - 정리 완료 (이미 존재)
+        {
+            service: "수면 기록 앱", status: "정리 완료", date: "2025. 06. 05 (목)", settingDate: "2025. 07. 10 (목)", settingWay: "김지윤", processType: "데이터 이관 완료", id: "jmin_sleep", password: "sleepPASS", memo: "디자이너로서 불규칙했던 수면 패턴 분석 기록은 연구 자료로 보존." , category: "건강 및 피트니스"
+        },
+        // 🚀 추가 1: '건강 및 피트니스' - '정리 전' 채우기
+        {
+            service: "Fitbit", status: "정리 전", date: "2025. 07. 25 (금)", settingDate: "미지정", settingWay: "미정", processType: "데이터 백업", id: "jmin_health", password: "fitPASS", memo: "일상 활동량, 심박수 기록. 사망 전 마지막 3개월 데이터 보존 요청.", category: "건강 및 피트니스"
+        },
+        // 5. 여행 (Travel) - 4개 항목 (새 항목 1개 추가)
+        {
+            service: "TripAdvisor", status: "정리 중", date: "2025. 06. 12 (목)", settingDate: "미지정", settingWay: "미정", processType: "주요 예약 기록 보존", id: "jmin_trip", password: "travelPASS", memo: "여행 중 찍은 스케치, 메모 등과 연결될 수 있는 예약 정보만 보존." , category: "여행"
+        },
+        {
+            service: "대한항공", status: "정리 중", date: "2025. 06. 12 (목)", settingDate: "2025. 07. 01 (화)", settingWay: "노소린", processType: "마일리지 소멸 확인", id: "jmin_sky", password: "flyPASS", memo: "마일리지 잔액 확인 후, 남아있다면 가족 여행 마일리지로 전환 요청." , category: "여행"
+        },
+        // ⭐️ 여행 - 정리 완료 (이미 존재)
+        {
+            service: "에어비앤비", status: "정리 완료", date: "2025. 07. 01 (화)", settingDate: "2025. 07. 20 (일)", settingWay: "채나은", processType: "숙소/여행 기록 보존 완료", id: "jmin_airbnb", password: "airbnbPASS", memo: "여행지 숙소 정보 및 기록 보존 완료.", category: "여행"
+        },
+        // 🚀 추가 2: '여행' - '정리 전' 채우기
+        {
+            service: "Booking.com", status: "정리 전", date: "2025. 07. 20 (일)", settingDate: "미지정", settingWay: "노소린", processType: "예약/취소 기록 삭제", id: "jmin_book", password: "bookPASS", memo: "여행지 관련 검색 및 예약 취소 기록. 삭제 요청.", category: "여행"
+        },
+        // 6. 게임 (Games) - 3개 항목 (새 항목 1개 추가)
+        // ⭐️ 게임 - 정리 전 (이미 존재)
+        {
+            service: "스팀", status: "삭제 예정", date: "2025. 06. 30 (월)", settingDate: "2025. 07. 30 (수)", settingWay: "채나은", processType: "게임 기록 삭제", id: "jmin_steam", password: "gamePASS", memo: "대부분 시간 낭비였음. 개인 플레이 시간 기록 없이 삭제.", category: "게임"
+        },
+        {
+            service: "닌텐도", status: "정리 중", date: "2025. 06. 30 (월)", settingDate: "미지정", settingWay: "미정", processType: "기기 초기화", id: "jmin_nintendo", password: "funPASS", memo: "가족들이 가끔 사용했으므로, 기기 초기화 후 물려줄지 여부 결정." , category: "게임"
+        },
+        // 🚀 추가 3: '게임' - '정리 완료' 채우기
+        {
+            service: "Play Station", status: "정리 완료", date: "2025. 07. 10 (목)", settingDate: "2025. 07. 25 (금)", settingWay: "채나은", processType: "세이브 파일 보존", id: "jmin_psn", password: "psnPASS", memo: "가장 아꼈던 RPG 게임의 세이브 파일만 별도로 백업하여 보존 완료.", category: "게임"
+        },
+        // ... (기존 accessRecords 배열 내용)
+
+// 1. 소셜 (Social) 섹션 끝에 추가
+        // 🚀 추가 4: '소셜' - '정리 중' 항목 보강
+        {
+            service: "Facebook", status: "정리 중", date: "2025. 07. 22 (화)", settingDate: "미지정", settingWay: "노소린", processType: "사진/추억 보존", id: "jmin_fb", password: "fbPASS", memo: "친구들과의 사진 및 추억이 많음. 타임라인만 백업 후 비공개 전환 예정.", category: "소셜"
+        },
+// ... (다음 카테고리로 이동)
+
+// 2. 엔터테인먼트 (Entertainment) 섹션 끝에 추가
+        // 🚀 추가 5: '엔터테인먼트' - '정리 중' 항목 보강
+        {
+            service: "Twitch", status: "정리 중", date: "2025. 07. 25 (금)", settingDate: "미지정", settingWay: "김지윤", processType: "구독 해지 및 시청 기록 삭제", id: "jmin_live", password: "livePASS", memo: "가끔 보던 스트리머 채널. 정기 구독 해지 및 시청 기록 정리 중.", category: "엔터테인먼트"
+        },
+// ... (다음 카테고리로 이동)
+
+// 3. 쇼핑 및 음식 (Shopping & Food) 섹션 끝에 추가
+        // 🚀 추가 6: '쇼핑 및 음식' - '정리 중' 항목 보강
+        {
+            service: "쿠팡", status: "정리 중", date: "2025. 07. 15 (화)", settingDate: "미지정", settingWay: "채나은", processType: "와우 멤버십 해지 및 구매 목록 백업", id: "jmin_coup", password: "coupPASS", memo: "로켓와우 멤버십 해지 및 자주 구매한 생활용품 목록만 백업하여 가족에게 인계.", category: "쇼핑 및 음식"
+        },
+// ... (다음 카테고리로 이동)
+
+// 4. 건강 및 피트니스 (Health & Fitness) 섹션 끝에 추가
+        // 🚀 추가 7: '건강 및 피트니스' - '정리 중' 항목 보강
+        {
+            service: "Apple Health", status: "정리 중", date: "2025. 07. 27 (일)", settingDate: "미지정", settingWay: "김지윤", processType: "건강 데이터 추출 및 삭제", id: "jmin_ap", password: "apPASS", memo: "수면, 활동량 등 아이폰 건강 앱에 축적된 모든 데이터 추출 중.", category: "건강 및 피트니스"
+        },
+// ... (다음 카테고리로 이동)
+
+// 5. 여행 (Travel) 섹션 끝에 추가
+        // 🚀 추가 8: '여행' - '정리 중' 항목 보강
+        {
+            service: "Agoda", status: "정리 중", date: "2025. 07. 23 (수)", settingDate: "미지정", settingWay: "노소린", processType: "위시리스트 보존", id: "jmin_agoda", password: "agoPASS", memo: "나중에 가고 싶었던 국내/외 숙소 위시리스트 보존 요청.", category: "여행"
+        },
+// ... (다음 카테고리로 이동)
+
+// 6. 게임 (Games) 섹션 끝에 추가
+        // 🚀 추가 9: '게임' - '정리 중' 항목 보강
+        {
+            service: "Blizzard", status: "정리 전", date: "2025. 07. 28 (월)", settingDate: "미지정", settingWay: "채나은", processType: "친구 목록 백업 및 계정 보존", id: "jmin_blz", password: "blzPASS", memo: "함께 게임했던 친구 목록 백업. 계정은 일단 보존.", category: "게임"
+        },
+        {
+    service: "스팀", status: "삭제 예정", date: "2025. 06. 30 (월)", settingDate: "2025. 07. 30 (수)", settingWay: "채나은", processType: "게임 기록 삭제", id: "jmin_steam", password: "gamePASS", memo: "대부분 시간 낭비였음. 개인 플레이 시간 기록 없이 삭제.", category: "게임"
+},
+
+
+
+      ];
+
+      function createCardHTML(record) {
+        // ... (HTML 생성 로직 유지) ...
+        const logoIcon = record.service === '카카오톡' 
+            ? `<div style="display:inline-flex; width:24px; height:24px; background:#FEE500; border-radius:50%; align-items:center; justify-content:center; font-size:12px; font-weight:900; color:#191919;">T</div>` 
+            : `<div style="display:inline-flex; width:24px; height:24px; background:#DEDEDE; border-radius:50%; align-items:center; justify-content:center; font-size:12px; font-weight:900; color:#555;">${record.service.charAt(0)}</div>`;
+        
+        const namePlaceholder = record.service === '카카오톡' ? '이름' : '계정주';
+        
+        return `
+          <div class="access-card" data-category="${record.category}"> 
+            <div class="card-top">
+              <div class="card-logo">${logoIcon} ${record.service}</div>
+              <div class="card-status">${record.date}</div>
+            </div>
+            
+            <div class="card-section-title">${record.status}</div>
+
+            <div class="card-detail">
+              <div class="card-label">설정 완료일</div><div class="card-value">${record.settingDate}</div>
+              <div class="card-label">설정된 지정인</div><div class="card-value">${record.settingWay}</div>
+              <div class="card-label">처리 방식</div><div class="card-value">${record.processType}</div>
+            </div>
+
+            <div class="card-hr"></div>
+
+            <div class="card-section-title">로그인 정보</div>
+            <div class="card-detail">
+              <div class="card-label">${namePlaceholder}</div><div class="card-value">정민</div>
+             
+              <div class="card-label">아이디</div><div class="card-value">${record.id}</div>
+              <div class="card-label">비밀번호</div><div class="card-value">${record.password}</div>
+            </div>
+
+            <div class="card-hr"></div>
+
+            <div class="card-memo-title">메모</div>
+            <p class="card-memo-content">${record.memo}</p>
+          </div>
+        `;
+      }
+
+
+  // 🚨 [수정된 필터링 로직]
+      let currentStatus = '정리 전'; // 초기 상태
+      let currentFilterCategory = '소셜'; // 초기 카테고리
+      const allRecords = accessRecords; 
+      const tabsLarge = document.querySelectorAll('.tabs button.tab'); 
+      const tabsSmall = document.querySelectorAll('.tabs-small .tab-small'); 
+      const cardWrapper = document.querySelector('.card-wrapper');
+      const sectionTitleEl = document.getElementById('sectionTitle');
+
+      
+      function renderCards(statusFilter = currentStatus, categoryFilter = currentFilterCategory) {
+        currentStatus = statusFilter;
+        currentFilterCategory = categoryFilter;
+
+        let filteredData = allRecords;
+
+        // 1. 카테고리(소셜/게임 등) 필터링 (항상 적용)
+        filteredData = filteredData.filter(record => record.category === categoryFilter);
+
+        // 2. 상태(정리 전/중/완료) 필터링
+        // ⭐️ '전체보기'가 아닐 때만 상태로 필터링합니다.
+        if (statusFilter !== '전체보기') {
+            filteredData = filteredData.filter(record => record.status === statusFilter);
+        }
+
+        
+        // 제목 업데이트
+        const count = filteredData.length;
+        sectionTitleEl.textContent = `[${statusFilter} / ${categoryFilter}] 목록 (${count}개)`;
+
+        let html = '';
+        if (count > 0) {
+            filteredData.forEach(record => {
+                html += createCardHTML(record);
+            });
+        } else {
+            // 결과가 없을 때 메시지
+            html = `<p style="color:var(--muted); padding-left:24px; font-size:18px;">선택한 조건에 해당하는 기록이 없습니다.</p>`;
+        }
+        cardWrapper.innerHTML = html;
+        
+        // 탭 활성화 상태 업데이트
+        tabsLarge.forEach(t => {
+            t.classList.toggle('is-active', t.textContent === statusFilter);
+        });
+        tabsSmall.forEach(t => {
+            t.classList.toggle('is-active', t.textContent === categoryFilter);
+        });
+      }
+
+
+      document.addEventListener('DOMContentLoaded', ()=>{
+        const root = document.getElementById('root');
+        const cardContainer = root.querySelector('.card-container');
+        const tabsContainer = document.querySelector('.tabs-container');
+        const titleFixed = document.querySelector('.section-title-fixed');
+        
+        
+        // 🚨 1. 큰 탭 (정리 상태) 클릭 이벤트 리스너 추가
+        tabsLarge.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const selectedStatus = e.target.textContent;
+                // 상태가 바뀔 때, 카테고리는 현재 상태 유지 (currentFilterCategory)
+                renderCards(selectedStatus, currentFilterCategory);
+            });
+        });
+
+        // 🚨 2. 작은 탭 (카테고리) 클릭 이벤트 리스너 추가
+        tabsSmall.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const selectedCategory = e.target.textContent;
+                // 카테고리가 바뀔 때, 상태는 현재 상태 유지 (currentStatus)
+                renderCards(currentStatus, selectedCategory);
+            });
+        });
+        
+        // 초기 렌더링: '정리 전' & '소셜' 카테고리 로드
+        renderCards('정리 전', '소셜');
+
+
+        // 헤더 높이 계산 및 컨테이너 패딩 적용
+        const BRAND_H = 72;
+        
+        function applyLayout(){
+            // Fixed Tabs 영역 높이
+            const tabsHeight = tabsContainer.offsetHeight; 
+            // Fixed Title 영역 높이
+            const titleHeight = titleFixed.offsetHeight; 
+
+            // root의 상단 패딩 설정 (카드 시작 위치)
+            const totalFixedHeaderHeight = BRAND_H + tabsHeight + titleHeight; 
+            root.style.paddingTop = totalFixedHeaderHeight + 'px';
+            
+            // card-container의 높이 설정 (스크롤 영역)
+            cardContainer.style.height = `calc(100vh - ${totalFixedHeaderHeight}px)`;
+        }
+        
+        // DOM 로드 후 및 리사이즈 시 높이 재계산
+        applyLayout();
+        window.addEventListener('resize', applyLayout);
+        setTimeout(applyLayout, 0);
+
+
+        // -------------------------------------------------------------
+        // 가로 스크롤 기능 추가 (세로 휠을 가로 이동으로 변환)
+        // -------------------------------------------------------------
+        document.body.addEventListener('wheel', (e)=>{
+          if(navOverlay && navOverlay.getAttribute('aria-hidden') === 'false') return; 
+
+          // 세로 휠을 가로 스크롤로 변환
+          if(cardContainer && Math.abs(e.deltaY) > 5){
+            e.preventDefault();
+            cardContainer.scrollLeft += e.deltaY * 2;
+          }
+        }, {passive:false});
+      });
+    })();
+  </script>
+  
+    </body>
+    
+        
+
+</html>

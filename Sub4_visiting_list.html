@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>comma , page</title>
+  <style>
+    
+:root{
+  --bg:#212121;       /* 🚨 배경색을 어둡게 */
+  --ink:#f3f1ea;      /* 🚨 글자색을 밝게 */
+  --muted:#8b8b8b; 
+  --line:#444444;     /* 어두운 선 */
+  --accent:#b4a78a; 
+  --accent-ink:#f3f1ea; /* 강조색 위 글자색도 밝게 유지 */
+  --paper:#2b2b2b;    /* 🚨 카드 배경색을 어둡게 */
+
+  --page-left:240px;
+  --brandbar-h:72px;
+}
+
+/* 전체 폰트 및 기본 */
+html,body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Pretendard",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  line-height:1.5;
+}
+
+/* 페이드 효과 기본값 */
+body {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+  margin-bottom: 100px;
+}
+body.fade-out {
+  opacity: 0;
+}
+
+
+
+
+
+
+/* 좌측 기준선 */
+.page-gutter { 
+    margin-left: var(--page-left);
+    margin-right: var(--page-left); 
+}
+
+/* 작은 화면에서는 여백 줄이기 */
+@media (max-width: 1200px){
+  :root{ --page-left:24px; }
+}
+
+
+/* ===== Brandbar / Nav ===== */
+.brandbar{
+  position:sticky; top:0; left:0; right:0; height:var(--brandbar-h);
+  display:flex; align-items:center; gap:20px; z-index:10;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(to bottom, rgba(255,255,255,0.101), rgba(255,255,255,0.044));
+  backdrop-filter:blur(4px);
+}
+.logo{ margin-left: var(--page-left); display:flex; align-items:center; text-decoration:none; color: var(--ink); }
+.logo:hover{ color: var(--accent); }
+.logo-svg{ height: 28px; width:auto; display:block; }
+.nav-spacer{ flex:1 1 auto; }
+.nav-hamburger{ width:36px;height:36px;border:0;background:transparent; margin-right: calc(var(--page-left) + 15px); display:grid;place-items:center;cursor:pointer; }
+.nav-hamburger span,.nav-hamburger span::before,.nav-hamburger span::after{ display:block;width:18px;height:2px;background:var(--ink);content:"";position:relative; }
+.nav-hamburger span::before{ position:absolute; top:-6px; left:0; }
+.nav-hamburger span::after{ position:absolute; top:6px; left:0; }
+
+/* ----- Fullscreen overlay ----- */
+.nav-overlay{
+  position:fixed; inset:0; z-index:10000; background:#000;
+  color:#fff; display:none;
+}
+.nav-overlay[aria-hidden="false"]{ display:block; }
+
+.nav-close{
+  position:absolute; top:24px; right:240px; width:40px; height:40px;
+  background:transparent; border:0; color:#fff; font-size:32px; line-height:1; cursor:pointer;
+}
+
+.nav-overlay-inner{
+  position:absolute; inset:72px 0 0 0; /* 네비 바 높이만큼 내림 */
+  display:grid; grid-template-columns: 1fr 1fr; height:calc(100% - 72px);
+}
+
+/* Left column (menu) */
+.nav-left{
+  padding-left:240px; padding-top:24px;
+}
+.nav-sections{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:36px; }
+.nav-index{ display:block; font-size:12px; opacity:.6; margin-bottom:8px; }
+.nav-head{
+  display:inline-block; font-size:28px; font-weight:800; color:#fff; text-decoration:none;
+}
+.nav-sub{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+.nav-sub a{ color:#d6d6d6; text-decoration:none; font-size:14px; }
+.nav-sub a:hover{ color:#fff; }
+
+/* Right column (branding/info) */
+.nav-right{
+  display:flex; align-items:center; justify-content:flex-start;
+}
+.nav-brand-block{ max-width:520px; color:#d6d6d6; }
+.nav-brand{ font-size:32px; font-weight:800; color:#fff; margin-bottom:6px; }
+.nav-brand-sub{ margin-bottom:16px; }
+.nav-hr{ height:1px; background:#444; margin:14px 0 18px; }
+.nav-meta b{ color:#fff; font-weight:700; margin-right:10px; }
+.nav-copy{ margin-top:24px; font-size:12px; opacity:.7; }
+
+
+
+/* 작은 화면에서도 패딩 유지 */
+@media (max-width:1200px){
+  .nav-close{ right:24px; }
+  .nav-left{ padding-left:24px; }
+}
+
+/* 섹션 타이틀 */
+.sect-title{
+  margin: 28px 0 10px;
+  font-size: 16px; font-weight: 700;
+}
+
+
+/* 좌우 카드 래퍼 */
+.profile-row{
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+
+/* 카드 공통 */
+
+/* 카드 공통 */
+.card{
+  background: #2b2b2b; /* 🚨 밝은색 -> 어두운색 */
+  border: 1px solid #444; /* 테두리도 어둡게 */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+/* 왼쪽 카드 상단 '정보 수정하기' */
+.edit-link{
+  position: absolute; top: 14px; right: 18px;
+  font-size: 12px; color: #888; text-decoration: none;
+}
+.edit-link:hover{ color: #fff; }
+
+/* 왼쪽 카드 내용 */
+.card-profile .card-body{
+  display: grid;
+  grid-template-columns: 100px 1fr 420px;
+  column-gap: 22px;
+  align-items: center;
+  padding: 30px 20px 18px 22px;
+}
+.avatar{
+  width: 88px; height: 88px; border-radius: 50%; object-fit: cover;
+  display: block; border: 1px solid #444;
+}
+
+/* 이름/소개 */
+.profile-col .rel{
+  font-size: 12px; color: var(--muted); margin-bottom: 2px;
+}
+.profile-col .name{
+  font-size: 22px; margin: 0 0 8px; font-weight: 800;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,.08);
+  width: 220px;
+}
+.profile-col .from{
+  display: flex; gap: 6px; align-items: baseline;
+  font-size: 13px; color: #6c6c6c;
+}
+.profile-col .from b{
+  font-weight: 600; color: #9b9b9b;
+}
+
+/* 메타(전화/메일/주소) 테이블 느낌 */
+.meta{ margin: 0; }
+.meta > div{
+  display: grid; grid-template-columns: 68px 1fr;
+  gap: 10px; align-items: baseline;
+  font-size: 14px;
+}
+.meta dt{
+  margin: 0; color: #b8b8b8; font-weight: 600;
+}
+.meta dd{
+  margin: 0; color: #b8b8b8;
+}
+
+/* 오른쪽 카드: 함께한 인물 */
+.card-friends{ padding: 14px 16px 18px; }
+.card-friends .card-head{
+  margin: 2px 0 12px;
+  font-size: 16px; font-weight: 700; color: #b8b8b8;
+}
+.friend-list{
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.friend-list li{ text-align: center; }
+.friend-list img{
+  width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+  display: block; margin: 0 auto 6px;
+  filter: saturate(.75) brightness(.95); /* 스샷 톤 맞춤 */
+}
+.friend-list p{
+  margin: 0; font-size: 12px; color: #6e6e6e;
+}
+
+/* 반응형 (1200↓ 화면에서 좌우 여백 규칙 유지) */
+@media (max-width:1200px){
+  .profile-row{ grid-template-columns: 1fr; }
+  .card-profile .card-body{
+    grid-template-columns: 88px 1fr; row-gap: 14px;
+  }
+  .meta{ grid-column: 1 / -1; }
+}
+
+
+/* 탭 메뉴 */
+.tabs {
+  display: flex; 
+  gap: 50px;
+  margin-top: 70px; 
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0px;
+}
+.tabs a {
+  text-decoration:none; color:var(--muted); font-weight:500;
+}
+.tabs .is-active { color: var(--ink); border-bottom: 2px solid var(--accent); padding-bottom:4px; }
+
+.tabs a :hover {
+
+}
+/* 리스트를 ‘블럭(그리드)’으로 */
+.visit-cards.blocks{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr); /* 항상 4개 고정 */
+  gap: 10px;
+}
+
+/* 리스트를 ‘블럭(그리드)’으로 */
+.visit-cards.blocks{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 10px; /* 크기 조정 */
+}
+
+/* 카드 박스 */
+.visit-card.block{
+  background:var(--paper);               /* 🚨 다크 모드 배경색으로 변경 */
+  border:1px solid var(--line);         /* 🚨 테두리 색상 변경 */
+  border-radius:18px;                
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* 쉐도우는 어두운 테마에 맞춰 강화 */
+  padding:14px 14px 18px;
+}
+
+/* 상단: 날짜/장소 */
+.vc-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:8px 4px 12px; border-radius:12px;
+}
+.vc-date{ font-size:18px; line-height:1.25; color:var(--muted); } 
+.vc-date b{ font-size:20px; font-weight:800; color:var(--ink); } /* 🚨 날짜 볼드 밝게 */
+.vc-place{ text-align:right; font-size:13px; color:var(--muted); } /* 🚨 장소 밝게 */
+.vc-place span{ opacity:.8; }
+
+/* 섹션 타이틀(회색 라인) */
+.vc-sec{
+  margin:12px 0 10px; padding:8px 0 6px;
+  font-size:14px; font-weight:700; color:var(--ink); /* 🚨 제목 밝게 */
+  border-bottom:1px solid var(--line); /* 🚨 선 색상 변경 */
+}
+
+/* 아이템(썸네일 + 텍스트 2줄) */
+.vc-item{
+  display:grid; grid-template-columns: 70px 1fr; gap:10px; /* 🚨 크기 및 간격 조정 */
+  padding: 8px 6px; border-bottom:1px solid var(--line); /* 🚨 패딩 및 선 색상 조정 */
+}
+.vc-item:last-of-type{ border-bottom:none; }
+
+/* 썸네일 크기 축소 및 배경색 변경 */
+.thumb{
+  width:70px; height:70px; /* 🚨 크기 조정 */
+  border-radius:6px; object-fit:cover;
+  display:block; background:var(--paper); /* 🚨 배경색 어둡게 */
+}
+.thumb.muted{ filter:saturate(.7) brightness(.8); } /* Muted 썸네일 톤 조정 */
+
+.txt .kind{
+  font-size:12px; font-weight:700; margin:2px 0 4px;
+  color: #8b9e6c; /* 🚨 차분하고 밝은 초록 포인트 */
+}
+.txt .title{ font-size:15px; color:var(--ink); } /* 🚨 제목 밝게 */
+.txt .sub{ font-size:14px; color:var(--muted); } /* 🚨 부제목 밝게 */
+
+/* 감정 태그 */
+.vc-tags{ display:flex; gap:18px; padding:8px 6px 4px; }
+.vc-tags span{ color:var(--muted); } /* 🚨 태그 텍스트 밝게 */
+
+/* 좁은 화면 */
+@media (max-width:420px){
+  .vc-date b{ font-size:18px; }
+  .visit-cards.blocks{ grid-template-columns: 1fr; }
+}
+
+.pagination {
+  margin: 48px auto 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.page-btn, .num {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.page-btn:hover, .num:hover {
+  color: var(--ink);
+}
+
+.num.is-active {
+  color: var(--ink);
+  font-weight: 700;
+  border-bottom: 1px solid var(--ink);
+}
+
+
+.visit-card.block { display:flex; flex-direction:column; }
+.is-hidden { display:none !important; }
+
+
+
+
+/* 반응형 */
+@media (max-width: 640px) {
+  .pagination { gap: 16px; }
+  .num { font-size: 14px; }
+}
+
+
+
+
+
+  </style>
+</head>
+<body>     
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="comma-logo-full" viewBox="0 0 1460 213">
+    <!-- ↓ /mnt/data/Logo.svg의 내용 그대로 -->
+    <path d="M879.318 186H859L867.983 130H896L879.318 186Z" fill="currentColor"/>
+    <path d="M1012.7 146.991C1022.32 146.991 1030.81 144.64 1038.16 139.939C1045.71 135.049 1051.56 128.279 1055.71 119.628C1059.86 110.978 1061.93 101.199 1061.93 90.291C1061.93 79.3836 1059.86 69.6985 1055.71 61.2358C1051.56 52.7731 1045.71 46.191 1038.16 41.4896C1030.81 36.6 1022.32 34.1552 1012.7 34.1552C1004.21 34.1552 996.195 36.694 988.65 41.7716C981.105 46.8493 975.069 53.7134 970.542 62.3642C966.015 71.0149 963.752 80.3239 963.752 90.291C963.752 100.446 966.015 109.943 970.542 118.782C975.069 127.433 981.105 134.297 988.65 139.375C996.195 144.452 1004.21 146.991 1012.7 146.991ZM953 24.2821H963.469V57.8507C967.996 48.6358 974.786 40.9254 983.84 34.7194C992.895 28.3254 1002.61 25.1284 1012.98 25.1284C1024.49 25.1284 1034.68 27.9492 1043.54 33.591C1052.59 39.0448 1059.67 46.7552 1064.76 56.7224C1069.85 66.5015 1072.4 77.691 1072.4 90.291C1072.4 103.079 1069.85 114.457 1064.76 124.424C1059.67 134.391 1052.59 142.196 1043.54 147.837C1034.68 153.291 1024.49 156.018 1012.98 156.018C1001.48 156.018 991.291 152.727 982.426 146.145C973.749 139.375 967.43 131.664 963.469 123.013V213H953V24.2821Z" fill="currentColor"/>
+    <path d="M1139.6 155.454C1128.09 155.454 1117.81 152.727 1108.76 147.273C1099.89 141.631 1092.91 133.827 1087.82 123.86C1082.73 113.893 1080.18 102.609 1080.18 90.009C1080.18 77.409 1082.73 66.1254 1087.82 56.1582C1092.91 46.191 1099.89 38.4806 1108.76 33.0269C1117.81 27.3851 1128.09 24.5642 1139.6 24.5642C1150.73 24.5642 1160.63 27.5731 1169.31 33.591C1177.98 39.4209 1184.49 47.1313 1188.83 56.7224V24.2821H1199.02V154.325H1188.83V123.296C1185.06 131.57 1178.74 138.999 1169.87 145.581C1161.01 152.163 1150.92 155.454 1139.6 155.454ZM1090.65 90.009C1090.65 100.916 1092.73 110.696 1096.88 119.346C1101.02 127.809 1106.78 134.391 1114.13 139.093C1121.68 143.794 1130.17 146.145 1139.6 146.145C1148.28 146.145 1156.39 143.794 1163.93 139.093C1171.48 134.203 1177.51 127.433 1182.04 118.782C1186.57 110.131 1188.83 100.54 1188.83 90.009C1188.83 79.4776 1186.57 69.8866 1182.04 61.2358C1177.51 52.5851 1171.48 45.909 1163.93 41.2075C1156.39 36.3179 1148.28 33.8731 1139.6 33.8731C1130.17 33.8731 1121.68 36.3179 1114.13 41.2075C1106.78 45.909 1101.02 52.491 1096.88 60.9537C1092.73 69.4164 1090.65 79.1015 1090.65 90.009Z" fill="currentColor"/>
+    <path d="M1273.27 146.427C1282.52 146.427 1291.01 143.888 1298.74 138.81C1306.47 133.733 1312.6 126.869 1317.13 118.218C1321.66 109.567 1323.92 100.164 1323.92 90.009C1323.92 80.0418 1321.66 70.8269 1317.13 62.3642C1312.6 53.7134 1306.47 46.8493 1298.74 41.7716C1291.01 36.694 1282.52 34.1552 1273.27 34.1552C1264.03 34.1552 1255.73 36.506 1248.38 41.2075C1241.21 45.909 1235.55 52.5851 1231.4 61.2358C1227.44 69.6985 1225.46 79.2895 1225.46 90.009C1225.46 100.916 1227.44 110.696 1231.4 119.346C1235.55 127.809 1241.21 134.485 1248.38 139.375C1255.73 144.076 1264.03 146.427 1273.27 146.427ZM1214.99 90.009C1214.99 77.409 1217.44 66.2194 1222.35 56.4403C1227.25 46.6612 1234.14 39.0448 1243 33.591C1251.87 27.9492 1261.96 25.1284 1273.27 25.1284C1283.27 25.1284 1293.08 28.3254 1302.7 34.7194C1312.51 41.1134 1319.49 48.8239 1323.64 57.8507V24.2821H1333.82V146.145C1333.82 159.121 1331.47 170.687 1326.75 180.842C1322.03 190.997 1315.24 198.896 1306.38 204.537C1297.7 210.179 1287.52 213 1275.82 213C1265.07 213 1255.83 211.213 1248.09 207.64C1240.36 204.255 1233.19 198.049 1226.59 189.022L1234.51 182.534C1240.17 190.245 1246.21 195.699 1252.62 198.896C1259.03 202.093 1266.77 203.691 1275.82 203.691C1290.35 203.691 1301.95 198.237 1310.62 187.33C1319.3 176.422 1323.64 162.224 1323.64 144.734V121.603C1320.43 131.57 1314.11 139.751 1304.68 146.145C1295.44 152.539 1284.97 155.736 1273.27 155.736C1261.96 155.736 1251.87 152.915 1243 147.273C1234.14 141.631 1227.25 133.827 1222.35 123.86C1217.44 113.893 1214.99 102.609 1214.99 90.009Z" fill="currentColor"/>
+    <path d="M1403.69 154.607C1392.19 154.607 1381.91 151.881 1372.85 146.427C1363.8 140.785 1356.73 133.075 1351.63 123.296C1346.54 113.328 1343.99 102.045 1343.99 89.4448C1343.99 76.8448 1346.54 65.5612 1351.63 55.594C1356.73 45.6269 1363.8 37.9164 1372.85 32.4627C1381.91 26.8209 1392.19 24 1403.69 24C1415.39 24 1424.92 26.5388 1432.27 31.6164C1439.82 36.506 1444.34 40.2672 1445.85 42.9C1447.55 45.5328 1450.38 50.8925 1454.34 58.9791C1458.11 67.8179 1460 79.1015 1460 92.8299H1354.18C1354.18 102.985 1356.26 112.106 1360.41 120.193C1364.74 128.091 1370.59 134.297 1377.95 138.81C1385.49 143.324 1394.08 145.581 1403.69 145.581C1413.69 145.581 1421.61 143.888 1427.46 140.503C1433.5 136.93 1437.18 134.109 1438.5 132.04C1439.82 129.972 1441.8 126.304 1444.44 121.039L1453.21 125.27C1449.63 133.545 1443.78 140.503 1435.67 146.145C1427.56 151.787 1416.9 154.607 1403.69 154.607ZM1449.81 83.5209C1449.63 75.2463 1447.64 67.1597 1443.87 59.2612C1440.29 51.1746 1435.01 44.6866 1428.03 39.797C1421.24 34.9075 1413.13 32.6507 1403.69 33.0269C1389.17 33.0269 1377.29 37.7284 1368.04 47.1313C1358.99 56.3463 1354.37 68.4761 1354.18 83.5209H1449.81Z" fill="currentColor"/>
+    <path d="M722.11 0.01C696.96 0.01 674.54 11.79 659.97 30.09C645.4 11.8 622.98 0.01 597.83 0.01C572.68 0.01 550.28 11.78 535.7 30.06C521.13 11.79 498.72 0.01 473.57 0.01C448.42 0.01 426 11.79 411.43 30.09C396.86 11.8 374.44 0.01 349.29 0.01C316.82 0.01 288.88 19.6 276.56 47.57C264.23 19.61 236.29 0.01 203.82 0.01C201.25 0.01 198.74 0.15 196.04 0.4C195.42 0.46 194.81 0.55 193.69 0.7C192 0.92 190.33 1.16 188.71 1.47C187.98 1.61 187.21 1.78 186.12 2.04C185.82 2.11 185.53 2.19 185.24 2.26C183.99 2.56 182.73 2.87 181.49 3.23C180.94 3.39 180.3 3.6 179.7 3.79C177.87 4.38 176.05 5.01 174.28 5.73C173.93 5.87 173.61 6.01 173.27 6.15C163.92 10.1 155.31 15.84 147.92 23.24C132.85 38.31 124.55 58.34 124.55 79.65C124.55 90.3 126.62 100.63 130.58 110.17C130.6 110.2 130.6 110.21 130.6 110.21C131.51 112.4 132.54 114.54 133.65 116.65C133.81 116.97 133.98 117.28 134.15 117.6C135.1 119.36 136.15 121.06 137.24 122.75C137.56 123.28 137.89 123.81 138.2 124.25C139.56 126.25 141 128.18 142.53 130.04C157.7 148.41 180.04 158.95 203.84 158.95C231.33 158.95 255.59 144.92 269.86 123.65V159.03H304.52V79.48H304.49C304.49 54.77 324.59 34.66 349.31 34.66C374.03 34.66 394.13 54.76 394.13 79.48H394.16V159.03H428.82V79.48H428.79C428.79 54.77 448.89 34.66 473.61 34.66C498.33 34.66 518.23 54.58 518.41 79.14C518.41 79.25 518.39 79.36 518.39 79.47H518.42V159.02H553.08V79.47C553.08 79.36 553.06 79.25 553.06 79.14C553.24 54.58 573.26 34.66 597.86 34.66C622.46 34.66 642.68 54.76 642.68 79.48C642.68 123.3 678.33 158.95 722.15 158.95V124.29C697.44 124.29 677.33 104.19 677.33 79.47C677.33 54.75 697.43 34.65 722.15 34.65C746.87 34.65 766.97 54.75 766.97 79.47V159.02H801.63V79.47C801.63 35.65 765.98 0 722.16 0H722.11V0.01ZM203.82 124.31C190.4 124.31 177.79 118.36 169.22 107.98C168.36 106.95 167.57 105.87 166.61 104.43L166.1 103.62C165.6 102.84 165.1 102.06 164.64 101.24L163.96 99.91C163.57 99.13 163.17 98.36 162.86 97.65L162.2 96.05C161.9 95.3 161.62 94.53 161.31 93.59L160.85 92.17C160.61 91.33 160.4 90.48 160.05 88.99L159.83 88.02C159.65 87.09 159.53 86.15 159.42 85.27L159.22 83.84C159.08 82.41 159 80.96 159 79.5C159 66.08 164.95 53.47 175.29 44.92C176.34 44.06 177.43 43.25 178.94 42.25L179.73 41.76C180.47 41.28 181.23 40.8 182.11 40.31L183.38 39.66C184.14 39.27 184.91 38.88 185.78 38.5L187.21 37.91C188.01 37.59 188.81 37.29 189.68 37.01L191.14 36.54C191.99 36.29 192.85 36.08 194.17 35.78L195.29 35.53C196.22 35.35 197.16 35.23 198.07 35.11L199.42 34.91C200.87 34.77 202.33 34.69 203.81 34.69C228.52 34.69 248.63 54.79 248.63 79.51C248.63 104.23 228.53 124.33 203.81 124.33V124.31H203.82ZM34.65 79.49C34.65 104.21 54.75 124.3 79.46 124.31C89.77 124.31 99.44 120.92 107.43 114.49C108.72 117.8 110.16 121 111.63 124.1C115.15 131.5 119.79 138.35 125.35 144.37C112 153.81 95.91 158.96 79.46 158.96C35.65 158.96 0 123.31 0 79.49C0 35.67 35.65 0.01 79.47 0.01C102.07 0.01 122.41 9.57 136.88 24.77C133.79 28.59 131.09 32.6 128.59 36.58C124.34 43.34 121.11 50.72 119.02 58.42C111.47 44.3 96.57 34.67 79.47 34.67C54.75 34.67 34.65 54.77 34.65 79.49Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+  <!-- Brandbar -->
+  <div class="brandbar">
+    <a href="index.html" class="logo" aria-label="comma , page">
+      <svg class="logo-svg" role="img" aria-hidden="true" preserveAspectRatio="xMinYMid meet">
+        <use href="#comma-logo-full" transform="translate(-42,0)" ></use>
+      </svg>
+    </a>
+    
+    <div class="nav-spacer"></div>
+    <button id="navHamburger" class="nav-hamburger" aria-label="메뉴 열기" aria-controls="navOverlay" aria-expanded="false">
+      <span></span>
+    </button>
+  </div>
+
+<!-- 풀스크린 네비 오버레이 -->
+<div id="navOverlay" class="nav-overlay" aria-hidden="true">
+  <button id="navClose" class="nav-close" aria-label="메뉴 닫기">×</button>
+
+  <div class="nav-overlay-inner">
+    <div class="nav-left">
+      <ul class="nav-sections">
+        <li>
+          <span class="nav-index">01</span>
+          <a href="index.html" class="nav-head">HOME</a>
+        </li>
+        <li>
+          <span class="nav-index">02</span>
+          <a href="about_us.html" class="nav-head">ABOUT –</a>
+          <div class="nav-sub">
+            <a href="about_us.html">우리는</a>
+            <a href="about_d.html">디지털 유산이란</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">03</span>
+          <a href="Sub1_lifetime.html" class="nav-head">일생기록</a>
+          <div class="nav-sub">
+          
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">04</span>
+          <a href="Sub2_diary.html" class="nav-head">하루기록 –</a>
+          <div class="nav-sub">
+            <a href="Sub2_diary.html">일기</a>
+            <a href="Sub2_qna.html">질문질답</a>
+            <a href="Sub2_buket.html">버킷리스트</a>
+          </div>
+        </li>
+        <li>
+          <span class="nav-index">05</span>
+          <a href="Sub3_ heritage.html" class="nav-head">접근목록 <small>[에필로그]</small></a>
+        </li>
+        <li>
+          <span class="nav-index">06</span>
+          <a href="Sub4_visiting_list.html" class="nav-head">마이페이지</a>
+        </li>
+      </ul>
+    </div>
+      <div class="nav-right">
+        <div class="nav-brand-block">
+          <div class="nav-brand">comma ,</div>
+          <div class="nav-brand-sub">고인이 준비한 당신을 위한 기억의 공간</div>
+          <div class="nav-hr"></div>
+          <div class="nav-meta">
+            <div><b>디자이너</b> 김민정 김선정 노채린</div>
+            <div><b>문의전화</b> 043 - 229 - 8660(학과사무실)</div>
+          </div>
+          <div class="nav-copy">© 2025, Department of Digital Media Design, Cheongju University. All rights reserved.</div>
+        </div>
+      </div>           
+   </div>
+
+</div>
+
+<!-- ▼ 프로필 섹션 시작 -->
+<main class="page-gutter" style="margin-top: 40px;">
+
+    <!-- 프로필 타이틀 -->
+<h3 class="sect-title">프로필</h3>
+
+<section class="profile-row">
+  <!-- 왼쪽: 프로필 정보 카드 -->
+  <article class="card card-profile">
+    <a href="#" class="edit-link">정보 수정하기</a>
+
+    <div class="card-body">
+      <img class="avatar" src="img/6월18일1.jpg" alt="" />
+
+      <div class="profile-col">
+        <div class="rel">가족 / 엄마</div>
+        <h2 class="name">김지원</h2>
+        <div class="from">
+          <b>from 정민,</b>
+          <span>너무나도 아름답고 감사한 우리 엄마</span>
+        </div>
+      </div>
+
+      <dl class="meta">
+        <div>
+          <dt>전화번호</dt>
+          <dd>+82 3271-6435</dd>
+        </div>
+        <div>
+          <dt>이메일</dt>
+          <dd>ryuivncm4508@gmail.com</dd>
+        </div>
+        <div>
+          <dt>주소</dt>
+          <dd>충청북도 청주시 청원구 안덕벌로 87-1</dd>
+        </div>
+      </dl>
+    </div>
+  </article>
+
+  <!-- 오른쪽: 함께한 인물 카드 -->
+  <aside class="card card-friends">
+    <h4 class="card-head">추억을 함께한 인물</h4>
+    <ul class="friend-list">
+      <li>
+        <img src="img/6월18일_2.jpg" alt="">
+        <p>남채영</p>
+      </li>
+      <li>
+        <img src="img/6월18일_3.jpg" alt="">
+        <p>박하람</p>
+      </li>
+      <li>
+        <img src="img/6월18일_4.jpg" alt="">
+        <p>채나은</p>
+      </li>
+      <li>
+        <img src="img/6월18일_5.jpg" alt="">
+        <p>채태수</p>
+      </li>
+    </ul>
+  </aside>
+</section>
+    </section>
+  
+    <!-- 탭 메뉴 -->
+    <nav class="tabs">
+      <a href="Sub4_visiting_list.html" class="tab is-active">방문기록</a>
+      <a href="Sub4_letterbox.html">편지함</a>
+      <a href="Sub4_guestbook.html">방명록</a>
+    </nav>
+  
+<section class="visit-cards blocks" id="cardContainer">
+    
+    <article class="visit-card block">
+        <header class="vc-head">
+            <div class="vc-date"><span>2025년</span><br><b>08월 29일 방문</b></div>
+            <div class="vc-place"><span>장소</span><br>호반 안식원</div>
+        </header>
+
+        <h5 class="vc-sec">함께한 기억</h5>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/life_11.jpg" alt="일생기록 사진">
+            <div class="txt">
+                <div class="kind is-accent">일생기록</div>
+                <div class="title">2011. 04. 07,</div>
+                <div class="sub">데이지 꽃</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb muted" src="img/buketd_1.jpg" alt="버킷리스트 이미지">
+            <div class="txt">
+                <div class="kind is-accent">버킷리스트</div>
+                <div class="title">정민, 12번째</div>
+                <div class="sub">이루지 못한 소원</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/album_1.jpg" alt="음악 앨범 커버">
+            <div class="txt">
+                <div class="kind is-accent">정민,의 테마</div>
+                <div class="title">정민, 즐겨듣던</div>
+                <div class="sub">비밀의 화원<br></div>
+            </div>
+        </div>
+
+        <h5 class="vc-sec">함께한 마음</h5>
+        <div class="vc-tags">
+            <span>따뜻함</span><span>고마움</span><span>그리움</span>
+        </div>
+    </article>
+
+    <article class="visit-card block">
+        <header class="vc-head">
+            <div class="vc-date"><span>2025년</span><br><b>07월 05일 방문</b></div>
+            <div class="vc-place"><span>장소</span><br>청주시 추모공원</div>
+        </header>
+
+        <h5 class="vc-sec">함께한 기억</h5>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/life_detail_20.jpg" alt="포트폴리오 스케치 사진">
+            <div class="txt">
+                <div class="kind is-accent">일생기록</div>
+                <div class="title">2025. 06. 10,</div>
+                <div class="sub">포폴 로고 유레카</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/buketd_2.jpg" alt="버킷리스트 이미지">
+            <div class="txt">
+                <div class="kind is-accent">버킷리스트</div>
+                <div class="title">정민, 5번째</div>
+                <div class="sub">파리에서 작업하기</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb muted" src="img/album_2.jpg" alt="음악 앨범 커버">
+            <div class="txt">
+                <div class="kind is-accent">정민,의 테마</div>
+                <div class="title">정민, 작업용</div>
+                <div class="sub">My Love Mine All mine<br></div>
+            </div>
+        </div>
+
+        <h5 class="vc-sec">함께한 마음</h5>
+        <div class="vc-tags">
+            <span>영감</span><span>성취</span><span>감사</span>
+        </div>
+    </article>
+
+    <article class="visit-card block">
+        <header class="vc-head">
+            <div class="vc-date"><span>2025년</span><br><b>06월 20일 방문</b></div>
+            <div class="vc-place"><span>장소</span><br>경복궁 돌담길</div>
+        </header>
+
+        <h5 class="vc-sec">함께한 기억</h5>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/life_14.jpg" alt="수화 동아리 사진">
+            <div class="txt">
+                <div class="kind is-accent">일생기록</div>
+                <div class="title">2013. 04. 10,</div>
+                <div class="sub">수화 동아리</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/buketd_3.jpg" alt="버킷리스트 이미지">
+            <div class="txt">
+                <div class="kind is-accent">버킷리스트</div>
+                <div class="title">정민, 3번째</div>
+                <div class="sub">남자친구와 여행</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb muted" src="img/album_3.jpg" alt="음악 앨범 커버">
+            <div class="txt">
+                <div class="kind is-accent">정민,의 테마</div>
+                <div class="title">정민, 설렘 가득</div>
+                <div class="sub">Bunny<br></div>
+            </div>
+        </div>
+
+        <h5 class="vc-sec">함께한 마음</h5>
+        <div class="vc-tags">
+            <span>설렘</span><span>애틋함</span><span>사랑</span>
+        </div>
+    </article>
+
+    <article class="visit-card block">
+        <header class="vc-head">
+            <div class="vc-date"><span>2025년</span><br><b>05월 13일 방문</b></div>
+            <div class="vc-place"><span>장소</span><br>호반 안식원</div>
+        </header>
+
+        <h5 class="vc-sec">함께한 기억</h5>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/life_12.jpg" alt="하얀 국화 사진">
+            <div class="txt">
+                <div class="kind is-accent">일생기록</div>
+                <div class="title">2010. 12. 24,</div>
+                <div class="sub">할머니의 부엌</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb muted" src="img/buketd_4.jpg" alt="버킷리스트 이미지">
+            <div class="txt">
+                <div class="kind is-accent">버킷리스트</div>
+                <div class="title">정민, 7번째</div>
+                <div class="sub">함께 걷기</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/album_4.jpg" alt="음악 앨범 커버">
+            <div class="txt">
+                <div class="kind is-accent">정민,의 테마</div>
+                <div class="title">정민, 위로받던</div>
+                <div class="sub">깊은 밤을 날아서<br></div>
+            </div>
+        </div>
+
+        <h5 class="vc-sec">함께한 마음</h5>
+        <div class="vc-tags">
+            <span>위로</span><span>애정</span><span>평온</span>
+        </div>
+    </article>
+    
+    <article class="visit-card block">
+        <header class="vc-head">
+            <div class="vc-date"><span>2025년</span><br><b>04월 01일 방문</b></div>
+            <div class="vc-place"><span>장소</span><br>동네 공원 벤치</div>
+        </header>
+
+        <h5 class="vc-sec">함께한 기억</h5>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/life_9.png" alt="모닥불 사진">
+            <div class="txt">
+                <div class="kind is-accent">일생기록</div>
+                <div class="title">2005. 02. 14,</div>
+                <div class="sub">겨울밤의 모닥불</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb muted" src="img/buketd_5.jpg" alt="버킷리스트 이미지">
+            <div class="txt">
+                <div class="kind is-accent">버킷리스트</div>
+                <div class="title">정민, 1번째</div>
+                <div class="sub">공예체험 해보기</div>
+            </div>
+        </div>
+
+        <div class="vc-item">
+            <img class="thumb" src="img/album_5.jpg" alt="음악 앨범 커버">
+            <div class="txt">
+                <div class="kind is-accent">정민,의 테마</div>
+                <div class="title">정민, 도전의 날</div>
+                <div class="sub">눈 꽃<br></div>
+            </div>
+        </div>
+
+        <h5 class="vc-sec">함께한 마음</h5>
+        <div class="vc-tags">
+            <span>후회</span><span>용기</span><span>도전</span>
+        </div>
+    </article>
+</section>
+      
+      
+  </main>
+  <!-- ▲ 프로필 섹션 끝 -->
+
+  <!-- ▼ 페이지 네이션 -->
+  <nav class="pagination" id="pagination">
+    <button class="page-btn prev" aria-label="이전 페이지">←</button>
+    <div class="page-numbers" id="pageNumbers"></div>
+    <button class="page-btn next" aria-label="다음 페이지">→</button>
+  </nav>
+  <!-- ▲ 페이지 네이션 -->
+  
+
+
+  <script>
+        // 햄버거 → 오버레이 열기 / 닫기
+    const navHamburger = document.getElementById('navHamburger');
+    const navOverlay   = document.getElementById('navOverlay');
+    const navClose     = document.getElementById('navClose');
+
+    function openNav(){
+      navOverlay.setAttribute('aria-hidden','false');
+      navHamburger.setAttribute('aria-expanded','true');
+      // 스크롤 고정(필요 시)
+      document.documentElement.style.overflow = 'hidden';
+    }
+    function closeNav(){
+      navOverlay.setAttribute('aria-hidden','true');
+      navHamburger.setAttribute('aria-expanded','false');
+      document.documentElement.style.overflow = '';
+    }
+
+    navHamburger.addEventListener('click', openNav);
+    navClose.addEventListener('click', closeNav);
+
+    // ESC 닫기
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && navOverlay.getAttribute('aria-hidden') === 'false') closeNav();
+    });
+    
+    //화면전환 효과
+//화면전환 효과
+document.querySelectorAll('.tabs a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault(); 
+    const href = this.getAttribute('href');
+    document.body.classList.add('fade-out');
+    setTimeout(() => {
+      window.location.href = href; 
+    }, 400);
+  });
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const cardsPerPage = 8;
+  const container = document.getElementById('cardContainer');
+  const cards = Array.from(container.querySelectorAll('.visit-card.block'));
+  const totalPages = Math.max(1, Math.ceil(cards.length / cardsPerPage));
+
+  const pagination = document.getElementById('pagination');
+  const pageNumbers = document.getElementById('pageNumbers');
+  const btnPrev = pagination.querySelector('.page-btn.prev');
+  const btnNext = pagination.querySelector('.page-btn.next');
+
+  let currentPage = 1;
+
+  function renderPageButtons() {
+    pageNumbers.innerHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'num' + (i === currentPage ? ' is-active' : '');
+      b.textContent = i;
+      b.addEventListener('click', () => showPage(i));
+      pageNumbers.appendChild(b);
+    }
+    // 화살표 비활성화 상태
+    btnPrev.disabled = currentPage === 1;
+    btnNext.disabled = currentPage === totalPages;
+  }
+
+  function showPage(page) {
+    currentPage = Math.min(Math.max(1, page), totalPages);
+    const start = (currentPage - 1) * cardsPerPage;
+    const end = start + cardsPerPage;
+
+    cards.forEach((card, idx) => {
+      card.classList.toggle('is-hidden', !(idx >= start && idx < end));
+    });
+
+    renderPageButtons();
+  }
+
+  // 화살표 이벤트
+  btnPrev.addEventListener('click', () => showPage(currentPage - 1));
+  btnNext.addEventListener('click', () => showPage(currentPage + 1));
+
+  // 키보드(← →)도 지원
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft')  showPage(currentPage - 1);
+    if (e.key === 'ArrowRight') showPage(currentPage + 1);
+  });
+
+  // 최초 렌더
+  showPage(1);
+});
+  </script>
+</body>
+</html>
